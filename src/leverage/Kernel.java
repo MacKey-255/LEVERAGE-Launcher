@@ -161,7 +161,7 @@ public final class Kernel {
             Parent p = loader.load();
             final Scene main = new Scene(p);
             stage.getIcons().add(APPLICATION_ICON);
-            stage.setTitle("Krothium Minecraft Launcher");
+            stage.setTitle("Minecraft Launcher - LEVERAGE");
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
                 public void handle(WindowEvent event) {

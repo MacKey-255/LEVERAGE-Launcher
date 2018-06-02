@@ -268,7 +268,7 @@ public class GameLauncher {
                         }
                         Stage stage = new Stage();
                         stage.getIcons().add(Kernel.APPLICATION_ICON);
-                        stage.setTitle("Krothium Minecraft Launcher - " + Language.get(69));
+                        stage.setTitle("Minecraft Launcher - LEVERAGE");
                         stage.setScene(new Scene(parent));
                         stage.setResizable(true);
                         stage.setMaximized(false);

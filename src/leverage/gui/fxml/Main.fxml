@@ -500,7 +500,7 @@
                               <HBox alignment="CENTER_LEFT" maxWidth="700.0" prefHeight="45.0" prefWidth="700.0">
                                  <children>
                                     <ComboBox fx:id="existingUsers" onAction="#updateAuthServer" prefHeight="39.0" prefWidth="280.0" styleClass="text-5" />
-                                    <Label fx:id="authServer" prefHeight="15.0" prefWidth="105.0" text="(Krothium)">
+                                    <Label fx:id="authServer" prefHeight="15.0" prefWidth="105.0" text="(LEVERAGE)">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -567,12 +567,12 @@
                         </StackPane>
                         <HBox alignment="CENTER_LEFT" maxWidth="700.0" prefHeight="30.0" prefWidth="700.0">
                            <children>
-                              <RadioButton fx:id="authKrothium" mnemonicParsing="false" selected="true" styleClass="text-5" text="Krothium">
+                              <RadioButton fx:id="authKrothium" mnemonicParsing="false" selected="true" styleClass="text-5" text="LEVERAGE">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="authType" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="authMojang" mnemonicParsing="false" styleClass="text-5" text="Mojang" toggleGroup="$authType">
+                              <RadioButton fx:id="authMojang" mnemonicParsing="false" styleClass="text-5" text="OFFLINE" toggleGroup="$authType">
                                  <HBox.margin>
                                     <Insets left="15.0" />
                                  </HBox.margin>
