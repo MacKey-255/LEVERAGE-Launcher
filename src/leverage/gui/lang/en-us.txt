@@ -7,7 +7,7 @@ Settings
 Launch Options
 Are you sure you want to logout?
 Failed to load JavaFX. Please update Java.
-Are you sure you want to delete the cache?
+Are you sure you want to delete?
 Cache deleted successfully
 PLAY
 Downloading
@@ -103,3 +103,18 @@ No news available
 No news available to show
 Cape file exceeds 128KB file size limit.
 Skin file exceeds 128KB file size limit.
+Optimization
+Delete Logs
+Delete Crash Reports
+Delete Configurations
+Delete Extra Data
+Delete Resource Pack
+Delete Saves
+Delete Shaders Pack
+Logs deleted successfully
+Crash Reports deleted successfully
+Configurations deleted successfully
+Extra Data deleted successfully
+Resource Pack deleted successfully
+Saves deleted successfully
+Shaders Pack deleted successfully

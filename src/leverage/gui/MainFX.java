@@ -60,7 +60,7 @@ import java.util.zip.ZipOutputStream;
 
 public class MainFX {
 
-    @FXML private Label progressText, newsLabel, skinsLabel, settingsLabel, launchOptionsLabel,
+    @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
             keepLauncherOpen, outputLog, enableSnapshots, historicalVersions,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
@@ -69,8 +69,9 @@ public class MainFX {
             authenticationLabel, authServer;
     @FXML private Button playButton, deleteButton, changeIcon, deleteSkin, deleteCape, logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
-            selectCape, exportLogs, downloadServer, deleteCache, profilePopupButton;
-    @FXML private Tab loginTab, newsTab, skinsTab,
+            selectCape, exportLogs, downloadServer, deleteCache, deleteLogs, deleteCrash,
+            deleteSave, deleteConfig, deleteExtra, deleteShader, deleteResources, profilePopupButton;
+    @FXML private Tab loginTab, newsTab, optimizeTab, skinsTab,
             settingsTab, launchOptionsTab, profileEditorTab;
     @FXML private ProgressBar progressBar;
     @FXML private TabPane contentPane;
@@ -262,6 +263,7 @@ public class MainFX {
         helpButton.setText(Language.get(2));
         logoutButton.setText(Language.get(3));
         newsLabel.setText(Language.get(4));
+        optimizeLabel.setText(Language.get(106));
         skinsLabel.setText(Language.get(5));
         settingsLabel.setText(Language.get(6));
         launchOptionsLabel.setText(Language.get(7));
@@ -311,6 +313,13 @@ public class MainFX {
         iconLabel.setText(Language.get(92));
         includeCape.setText(Language.get(93));
         deleteCache.setText(Language.get(94));
+        deleteLogs.setText(Language.get(107));
+        deleteCrash.setText(Language.get(108));
+        deleteSave.setText(Language.get(112));
+        deleteConfig.setText(Language.get(109));
+        deleteExtra.setText(Language.get(110));
+        deleteShader.setText(Language.get(113));
+        deleteResources.setText(Language.get(111));
         forgotPasswordLink.setText(Language.get(97));
         profileName.setPromptText(Language.get(98));
         authenticationLabel.setText(Language.get(99));
@@ -325,6 +334,7 @@ public class MainFX {
      * Loads the skin preview for the logged user
      */
     private void loadTextures() {
+        console.print("Loading textures Module...");
         if (loadingTextures) {
             return;
         }
@@ -1183,6 +1193,8 @@ public class MainFX {
         Tab oldTab = selection.getSelectedItem();
         if (oldTab == newsTab) {
             newsLabel.getStyleClass().remove("selectedItem");
+        } else if (oldTab == optimizeTab) {
+            optimizeLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == skinsTab) {
             skinsLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == settingsTab) {
@@ -1204,6 +1216,9 @@ public class MainFX {
         if (source == newsLabel) {
             newsLabel.getStyleClass().add("selectedItem");
             selection.select(newsTab);
+        } else if (source == optimizeLabel) {
+            optimizeLabel.getStyleClass().add("selectedItem");
+            selection.select(optimizeTab);
         } else if (source == skinsLabel) {
             skinsLabel.getStyleClass().add("selectedItem");
             selection.select(skinsTab);
@@ -1881,6 +1896,105 @@ public class MainFX {
         }
     }
 
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteLogs() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/logs"));
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(114));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteCrash() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/crash-reports"));
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(115));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteSave() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/saves"));
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(119));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteConfig() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/config"));
+            Utils.deleteDirectory(new File(home+"/journeymap"));
+            Utils.deleteDirectory(new File(home+"/customnpcs"));
+            Utils.deleteDirectory(new File(home+"/astralsorcery"));
+            File delete = new File(home+"/xaerominimap.txt");
+            delete.delete();
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(116));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteShader() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            System.out.println(home);
+            Utils.deleteDirectory(new File(home+"/shaderpacks"));
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(120));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteResources() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/resourcepacks"));
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(118));
+        }
+    }
+
+    /**
+     * Removes the launcher cache
+     */
+    @FXML private void deleteExtra() {
+        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
+        if (result == 1) {
+            String home = Utils.getWorkingDirectory().getPath();
+            Utils.deleteDirectory(new File(home+"/backups"));
+            Utils.deleteDirectory(new File(home+"/server-resource-packs"));
+            Utils.deleteDirectory(new File(home+"/playerskinsWhitelist"));
+            Utils.deleteDirectory(new File(home+"/CustomDISkins"));
+            File delete;
+            String[] files = {"usernamecache.json", "usercache.json", "InnerStateServer-1.1.json"};
+            for(int i=0; i<files.length; i++) {
+                delete = new File(home+"/"+files[i]);
+                delete.delete();
+            }
+            kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(117));
+        }
+    }
+    
     /**
      * Opens the URL of the selected version server in the default user web browser
      */

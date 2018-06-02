@@ -2,11 +2,6 @@ package leverage.auth.user;
 
 import java.util.ArrayList;
 
-/**
- * @author DarkLBP
- *         website https://krothium.com
- */
-
 public class User {
     private final String id, username;
     private String accessToken;

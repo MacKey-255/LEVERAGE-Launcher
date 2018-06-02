@@ -19,8 +19,8 @@ public class Settings {
     public Settings(Kernel k) {
         kernel = k;
         console = kernel.getConsole();
-        supportedLocales.put("en-us", "English - United States");
         supportedLocales.put("es-es", "Español - España");
+        supportedLocales.put("en-us", "English - United States");
     }
 
     /**

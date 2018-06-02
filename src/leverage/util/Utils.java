@@ -72,11 +72,10 @@ public final class Utils {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File f : files) {
-                    if (f.isDirectory()) {
+                    if (f.isDirectory())
                         deleteDirectory(f);
-                    } else {
+                    else
                         f.delete();
-                    }
                 }
             }
         }

@@ -7,7 +7,7 @@ Ajustes
 Opciones de lanzamiento
 ¿Estás seguro de que quieres cerrar la sesión?
 Fallo al cargar JavaFX. Por favor, actualiza Java.
-¿Estás seguro de que quieres eliminar la cache?
+¿Estás seguro de que quieres realizar esta acción?
 Cache eliminada correctamente
 JUGAR
 Descargando
@@ -103,3 +103,18 @@ No hay noticias disponibles
 No hay noticias disponibles para mostrar
 El archivo de la capa excede el tamaño máximo de 128KB.
 El archivo de la skin excede el tamaño máximo de 128KB.
+Optimización
+Eliminar Logs
+Eliminar Reportes de Crash
+Eliminar Configuraciones
+Eliminar Datos Extra
+Eliminar Paquetes de Recursos
+Eliminar Salvas de Mundos
+Eliminar Paquetes de Sombras
+Logs eliminados correctamente
+Reportes eliminados correctamente
+Configuraciones eliminadas correctamente
+Datos Extra eliminados correctamente
+Paquetes de Recursos eliminados correctamente
+Salvas eliminadas correctamente
+Paquetes de Sombras eliminados correctamente
