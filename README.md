@@ -1,1 +1,2 @@
-Minecraft-Launcher-LEVERAGE
+Minecraft-Launcher-LEVERAGE:
+	- Basado en Launcher Krothium
