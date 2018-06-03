@@ -1,5 +1,6 @@
 package leverage.gui;
 
+import com.mojang.util.UUIDTypeAdapter;
 import leverage.Settings;
 import leverage.Kernel;
 import leverage.Console;
@@ -48,12 +49,15 @@ import leverage.gui.lang.Language;
 import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -61,7 +65,7 @@ import java.util.zip.ZipOutputStream;
 public class MainFX {
 
     @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
-            keepLauncherOpen, outputLog, enableSnapshots, historicalVersions,
+            keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, includeCape, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
@@ -264,6 +268,7 @@ public class MainFX {
         logoutButton.setText(Language.get(3));
         newsLabel.setText(Language.get(4));
         optimizeLabel.setText(Language.get(106));
+        launcherOptimize.setText(Language.get(121));
         skinsLabel.setText(Language.get(5));
         settingsLabel.setText(Language.get(6));
         launchOptionsLabel.setText(Language.get(7));
@@ -276,6 +281,7 @@ public class MainFX {
                 playButton.setText(Language.get(12));
             }
         }
+        updateAuthServer();
         usernameLabel.setText(Language.get(18));
         passwordLabel.setText(Language.get(19));
         loginButton.setText(Language.get(20));
@@ -354,6 +360,7 @@ public class MainFX {
                     loadingTextures = true;
                     if (alex == null || steve == null) {
                         //Load placeholder skins
+                        console.print("Loading textures Skins...");
                         alex = new Image("/leverage/gui/textures/alex.png");
                         steve = new Image("/leverage/gui/textures/steve.png");
                     }
@@ -418,6 +425,7 @@ public class MainFX {
                     selectCape.setDisable(false);
                 } catch (Exception ex) {
                     console.print("Failed to parse remote profile textures.");
+                    MainFX.this.toggleSkinType();
                     ex.printStackTrace(console.getWriter());
                 }
                 loadingTextures = false;
@@ -1673,10 +1681,11 @@ public class MainFX {
                 String user;
                 if (authKrothium.isSelected()) {
                     user = "krothium://" + username.getText();
+                    auth.authenticate(user, password.getText());
                 } else {
                     user = username.getText();
+                    auth.authenticate(user, password.getText());
                 }
-                auth.authenticate(user, password.getText());
                 kernel.saveProfiles();
                 username.setText("");
                 password.setText("");
@@ -1902,7 +1911,7 @@ public class MainFX {
     @FXML private void deleteLogs() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/logs"));
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(114));
         }
@@ -1914,7 +1923,7 @@ public class MainFX {
     @FXML private void deleteCrash() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/crash-reports"));
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(115));
         }
@@ -1926,7 +1935,7 @@ public class MainFX {
     @FXML private void deleteSave() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/saves"));
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(119));
         }
@@ -1938,7 +1947,7 @@ public class MainFX {
     @FXML private void deleteConfig() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/config"));
             Utils.deleteDirectory(new File(home+"/journeymap"));
             Utils.deleteDirectory(new File(home+"/customnpcs"));
@@ -1955,7 +1964,7 @@ public class MainFX {
     @FXML private void deleteShader() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             System.out.println(home);
             Utils.deleteDirectory(new File(home+"/shaderpacks"));
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(120));
@@ -1968,7 +1977,7 @@ public class MainFX {
     @FXML private void deleteResources() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/resourcepacks"));
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(118));
         }
@@ -1980,7 +1989,7 @@ public class MainFX {
     @FXML private void deleteExtra() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(10));
         if (result == 1) {
-            String home = Utils.getWorkingDirectory().getPath();
+            String home = Kernel.APPLICATION_WORKING_DIR.getPath();
             Utils.deleteDirectory(new File(home+"/backups"));
             Utils.deleteDirectory(new File(home+"/server-resource-packs"));
             Utils.deleteDirectory(new File(home+"/playerskinsWhitelist"));
@@ -2043,7 +2052,7 @@ public class MainFX {
             if (user.getType() == UserType.KROTHIUM) {
                 authServer.setText("(LEVERAGE)");
             } else {
-                authServer.setText("(Mojang)");
+                authServer.setText("(OFFLINE)");
             }
         }
     }

@@ -93,6 +93,7 @@ public class Authentication {
      * @throws AuthenticationException If authentication failed
      */
     public final void authenticate(String username, String password) throws AuthenticationException {
+        console.print("AUTHENTICACION");
         JSONObject request = new JSONObject();
         JSONObject agent = new JSONObject();
         UserType type;
@@ -119,78 +120,62 @@ public class Authentication {
         String response;
         String authURL;
         if (type == UserType.MOJANG) {
-            authURL = "https://" + mojangDomain + authenticatePath;
-        } else {
-            authURL = "https://" + krothiumDomain + authenticatePath;
-        }
-        
-        //My Login
-        try {
-            String accessToken = "844d6e87-0248-43d7-ab7f-e23f17afbc05";
-            String selectedProfile = "50b7b2b6-b074-3379-86e4-9ea5ed8cdadd";
-            String userID = "50b7b2b6-b074-3379-86e4-9ea5ed8cdadd";
-            clientToken = "844d6e87-0248-43d7-ab7f-e23f17afbc05";
+            console.print("MOJANG");
+            UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes());
             ArrayList<UserProfile> userProfiles = new ArrayList<>();
-            JSONArray uprofs = new JSONArray("[{\"name\":\"MacKey\",\"id\":\"50b7b2b6-b074-3379-86e4-9ea5ed8cdadd\",\"expiresOn\":\"2018-06-25 20:35:41 -0400\"}]");
-            for (int i = 0; i < uprofs.length(); i++){
-                JSONObject prof = uprofs.getJSONObject(i);
-                UserProfile up = new UserProfile(prof.getString("id"), prof.getString("name"));
-                userProfiles.add(up);
-            }
-            User u = new User(userID, accessToken, username, type, userProfiles, selectedProfile);
+            UserProfile up = new UserProfile(uuid.toString(), username);
+            userProfiles.add(up);
+
+            User u = new User(uuid.toString(), clientToken, username, type, userProfiles, uuid.toString());
             selectedAccount = u;
             authenticated = true;
             addUser(u);
-        } catch (JSONException ex) {
-            ex.printStackTrace(console.getWriter());
-            throw new AuthenticationException("Authentication server replied wrongly.");
-        }
-        
-        //Login Krothium
-        /*
-        
-        try {
-            response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
-        } catch (IOException ex) {
-            console.print("Failed to send request to authentication server");
-            ex.printStackTrace(console.getWriter());
-            throw new AuthenticationException("Failed to send request to authentication server");
-        }
-        if (response.isEmpty()) {
-            throw new AuthenticationException("Authentication server does not respond.");
-        }
-        JSONObject r;
-        try {
-            r = new JSONObject(response);
-        } catch (JSONException ex) {
-            throw new AuthenticationException("Failed to read authentication response.");
-        }
-        if (!r.has("error")) {
-            try {
-                String accessToken = r.getString("accessToken");
-                String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
-                String userID = r.getJSONObject("user").getString("id");
-                clientToken = r.getString("clientToken");
-                ArrayList<UserProfile> userProfiles = new ArrayList<>();
-                JSONArray uprofs = r.getJSONArray("availableProfiles");
-                for (int i = 0; i < uprofs.length(); i++){
-                    JSONObject prof = uprofs.getJSONObject(i);
-                    UserProfile up = new UserProfile(prof.getString("id"), prof.getString("name"));
-                    userProfiles.add(up);
-                }
-                User u = new User(userID, accessToken, username, type, userProfiles, selectedProfile);
-                selectedAccount = u;
-                authenticated = true;
-                addUser(u);
-            } catch (JSONException ex) {
-                ex.printStackTrace(console.getWriter());
-                throw new AuthenticationException("Authentication server replied wrongly.");
-            }
         } else {
-            authenticated = false;
-            throwError(r);
+            authURL = "https://" + krothiumDomain + authenticatePath;
+
+            try {
+                response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
+            } catch (IOException ex) {
+                console.print("Failed to send request to authentication server");
+                ex.printStackTrace(console.getWriter());
+                throw new AuthenticationException("Failed to send request to authentication server");
+            }
+            if (response.isEmpty()) {
+                throw new AuthenticationException("Authentication server does not respond.");
+            }
+            JSONObject r;
+            try {
+                r = new JSONObject(response);
+            } catch (JSONException ex) {
+                throw new AuthenticationException("Failed to read authentication response.");
+            }
+            if (!r.has("error")) {
+                try {
+                    String accessToken = r.getString("accessToken");
+                    String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
+                    String userID = r.getJSONObject("user").getString("id");
+                    clientToken = r.getString("clientToken");
+                    ArrayList<UserProfile> userProfiles = new ArrayList<>();
+                    JSONArray uprofs = r.getJSONArray("availableProfiles");
+                    for (int i = 0; i < uprofs.length(); i++){
+                        JSONObject prof = uprofs.getJSONObject(i);
+                        UserProfile up = new UserProfile(prof.getString("id"), prof.getString("name"));
+                        userProfiles.add(up);
+                    }
+                    User u = new User(userID, accessToken, username, type, userProfiles, selectedProfile);
+                    selectedAccount = u;
+                    authenticated = true;
+                    addUser(u);
+                } catch (JSONException ex) {
+                    ex.printStackTrace(console.getWriter());
+                    throw new AuthenticationException("Authentication server replied wrongly.");
+                }
+            } else {
+                authenticated = false;
+                throwError(r);
+            }
         }
-        */
+
     }
 
     /**
@@ -198,6 +183,7 @@ public class Authentication {
      * @throws AuthenticationException If the refresh failed
      */
     public final void refresh() throws AuthenticationException, JSONException{
+        console.print("REFRESCAR");
         if (selectedAccount == null) {
             throw new AuthenticationException("No user is selected.");
         }
@@ -216,25 +202,14 @@ public class Authentication {
         String response;
         String refreshURL;
         if (u.getType() == UserType.MOJANG) {
-            refreshURL = "https://" + mojangDomain + refreshPath;
+            console.print("MOJANG2");
+            Kernel.USE_LOCAL = true;
+            authenticated = true;
+            console.print("Authenticated locally.");
+            return;
         } else {
             refreshURL = "https://" + krothiumDomain + refreshPath;
         }
-        
-        //My Login
-        try {
-            clientToken = "844d6e87-0248-43d7-ab7f-e23f17afbc05";
-            u.setAccessToken("844d6e87-0248-43d7-ab7f-e23f17afbc05");
-            String selectedProfile = "50b7b2b6-b074-3379-86e4-9ea5ed8cdadd";
-            u.setSelectedProfile(selectedProfile);
-            authenticated = true;
-        } catch (JSONException ex) {
-            ex.printStackTrace(console.getWriter());
-            throw new AuthenticationException("Authentication server replied wrongly.");
-        }
-        
-        //Login Krothium
-        /*
         try {
             response = Utils.sendPost(refreshURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
         } catch (IOException ex) {
@@ -267,7 +242,7 @@ public class Authentication {
             authenticated = false;
             removeUser(selectedAccount);
             throwError(r);
-        }*/
+        }
     }
 
     private void throwError(JSONObject message) throws AuthenticationException{

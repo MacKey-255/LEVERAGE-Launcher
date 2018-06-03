@@ -118,3 +118,5 @@ Extra Data deleted successfully
 Resource Pack deleted successfully
 Saves deleted successfully
 Shaders Pack deleted successfully
+Launcher Optimize:
+Account
