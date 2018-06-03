@@ -249,7 +249,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteCrash" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteCrash" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -261,7 +261,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteSave" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteSave" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -273,7 +273,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteConfig" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteConfig" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -285,7 +285,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteExtra" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteExtra" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -297,7 +297,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteShader" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteShader" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -309,7 +309,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="deleteResources" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteResources" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
@@ -321,7 +321,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                            </children>
