@@ -4,7 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 /**
- * @author DarkLBP
+ * @author MacKey - Modificated
+ * @author DarkLBP - Created
  *         website https://krothium.com
  */
 public class Starter extends Application {

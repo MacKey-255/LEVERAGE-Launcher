@@ -70,7 +70,7 @@ public class MainFX {
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, includeCape, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
             nameLabel, profileVersionLabel, skinLabel, capeLabel, modelLabel, iconLabel, helpButton, gameVersion,
-            authenticationLabel, authServer;
+            authenticationLabel, authServer, poweredLabel;
     @FXML private Button playButton, deleteButton, changeIcon, deleteSkin, deleteCape, logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
             selectCape, exportLogs, downloadServer, deleteCache, deleteLogs, deleteCrash,
@@ -126,6 +126,7 @@ public class MainFX {
 
         //Update version label
         versionLabel.setText(Kernel.KERNEL_BUILD_NAME);
+        poweredLabel.setText(Kernel.KERNEL_CREATOR_NAME);
 
         //Load news slideshow
         slideshowBox.setVisible(false);

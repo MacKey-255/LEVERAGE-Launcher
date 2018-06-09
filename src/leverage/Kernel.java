@@ -54,7 +54,8 @@ public final class Kernel {
     private final Map<String, Image> iconCache = new HashMap<>();
 
     private final Image profileIcons;
-    public static final String KERNEL_BUILD_NAME = "1.2.4";
+    public static final String KERNEL_BUILD_NAME = "1.0.1";
+    public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
