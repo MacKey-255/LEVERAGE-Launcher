@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_minecraft-launcher-leverage" default="compile.module.minecraft-launcher-leverage">
+  <dirname property="module.minecraft-launcher-leverage.basedir" file="${ant.file.module_minecraft-launcher-leverage}"/>
+  
+  <property name="module.jdk.home.minecraft-launcher-leverage" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.minecraft-launcher-leverage" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.minecraft-launcher-leverage" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.minecraft-launcher-leverage" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="minecraft-launcher-leverage.output.dir" value="${module.minecraft-launcher-leverage.basedir}/out/production/Minecraft-Launcher-LEVERAGE"/>
+  <property name="minecraft-launcher-leverage.testoutput.dir" value="${module.minecraft-launcher-leverage.basedir}/out/test/Minecraft-Launcher-LEVERAGE"/>
+  
+  <path id="minecraft-launcher-leverage.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="minecraft-launcher-leverage.module.production.classpath">
+    <path refid="${module.jdk.classpath.minecraft-launcher-leverage}"/>
+    <path refid="library.gson-2.8.0.classpath"/>
+    <path refid="library.commons-codec-1.10.classpath"/>
+    <path refid="library.authlib-1.5.25.classpath"/>
+    <path refid="library.guava-21.0.classpath"/>
+    <path refid="library.log4j-api-2.8.1.classpath"/>
+  </path>
+  
+  <path id="minecraft-launcher-leverage.runtime.production.module.classpath">
+    <pathelement location="${minecraft-launcher-leverage.output.dir}"/>
+    <path refid="library.gson-2.8.0.classpath"/>
+    <path refid="library.commons-codec-1.10.classpath"/>
+    <path refid="library.authlib-1.5.25.classpath"/>
+    <path refid="library.guava-21.0.classpath"/>
+    <path refid="library.log4j-api-2.8.1.classpath"/>
+  </path>
+  
+  <path id="minecraft-launcher-leverage.module.classpath">
+    <path refid="${module.jdk.classpath.minecraft-launcher-leverage}"/>
+    <pathelement location="${minecraft-launcher-leverage.output.dir}"/>
+    <path refid="library.gson-2.8.0.classpath"/>
+    <path refid="library.commons-codec-1.10.classpath"/>
+    <path refid="library.authlib-1.5.25.classpath"/>
+    <path refid="library.guava-21.0.classpath"/>
+    <path refid="library.log4j-api-2.8.1.classpath"/>
+  </path>
+  
+  <path id="minecraft-launcher-leverage.runtime.module.classpath">
+    <pathelement location="${minecraft-launcher-leverage.testoutput.dir}"/>
+    <pathelement location="${minecraft-launcher-leverage.output.dir}"/>
+    <path refid="library.gson-2.8.0.classpath"/>
+    <path refid="library.commons-codec-1.10.classpath"/>
+    <path refid="library.authlib-1.5.25.classpath"/>
+    <path refid="library.guava-21.0.classpath"/>
+    <path refid="library.log4j-api-2.8.1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.minecraft-launcher-leverage">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.minecraft-launcher-leverage">
+    <patternset refid="excluded.from.module.minecraft-launcher-leverage"/>
+  </patternset>
+  
+  <path id="minecraft-launcher-leverage.module.sourcepath">
+    <dirset dir="${module.minecraft-launcher-leverage.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.minecraft-launcher-leverage" depends="compile.module.minecraft-launcher-leverage.production,compile.module.minecraft-launcher-leverage.tests" description="Compile module Minecraft-Launcher-LEVERAGE"/>
+  
+  <target name="compile.module.minecraft-launcher-leverage.production" depends="register.custom.compilers" description="Compile module Minecraft-Launcher-LEVERAGE; production classes">
+    <mkdir dir="${minecraft-launcher-leverage.output.dir}"/>
+    <javac2 destdir="${minecraft-launcher-leverage.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.minecraft-launcher-leverage}/javac">
+      <compilerarg line="${compiler.args.minecraft-launcher-leverage}"/>
+      <bootclasspath refid="minecraft-launcher-leverage.module.bootclasspath"/>
+      <classpath refid="minecraft-launcher-leverage.module.production.classpath"/>
+      <src refid="minecraft-launcher-leverage.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.minecraft-launcher-leverage"/>
+    </javac2>
+    
+    <copy todir="${minecraft-launcher-leverage.output.dir}">
+      <fileset dir="${module.minecraft-launcher-leverage.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.minecraft-launcher-leverage.tests" depends="register.custom.compilers,compile.module.minecraft-launcher-leverage.production" description="compile module Minecraft-Launcher-LEVERAGE; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.minecraft-launcher-leverage" description="cleanup module">
+    <delete dir="${minecraft-launcher-leverage.output.dir}"/>
+    <delete dir="${minecraft-launcher-leverage.testoutput.dir}"/>
+  </target>
+</project>
