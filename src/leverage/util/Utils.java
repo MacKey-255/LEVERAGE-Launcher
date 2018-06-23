@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -304,6 +305,23 @@ public final class Utils {
     public static String getUUID(String playername) {
         UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + playername).getBytes());
         return uuid.toString();
+    }
+
+    /**
+     * Get Volumen String for Volumen Double
+     * @return Volumen
+     */
+    public String calculateVolumen(double vol) {
+        DecimalFormat df = new DecimalFormat("#.00");
+
+        if(vol>1024000000)
+            return df.format(vol/1024000000) + " GB";
+        else if(vol>1024000)
+            return df.format(vol/1024000) + " MB";
+        else if(vol>1024)
+            return df.format(vol/1024) + " Kb";
+        else
+            return df.format(vol) + " Bytes";
     }
 
     /**

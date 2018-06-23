@@ -66,11 +66,11 @@ public class MainFX {
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, includeCape, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
-            nameLabel, profileVersionLabel, skinLabel, capeLabel, modelLabel, iconLabel, helpButton, gameVersion,
+            nameLabel, profileVersionLabel, skinLabel, /*capeLabel,*/ modelLabel, iconLabel, helpButton, gameVersion,
             authenticationLabel, authServer, poweredLabel;
-    @FXML private Button playButton, deleteButton, changeIcon, deleteSkin, deleteCape, logoutButton,
+    @FXML private Button playButton, deleteButton, changeIcon, /*deleteSkin, deleteCape,*/ logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
-            selectCape, exportLogs, downloadServer, deleteCache, deleteLogs, deleteCrash,
+            /*selectCape,*/ exportLogs, downloadServer, deleteCache, deleteLogs, deleteCrash,
             deleteSave, deleteConfig, deleteExtra, deleteShader, deleteResources, profilePopupButton;
     @FXML private Tab loginTab, newsTab, optimizeTab, skinsTab,
             settingsTab, launchOptionsTab, profileEditorTab;
@@ -128,9 +128,10 @@ public class MainFX {
         //Load news slideshow
         slideshowBox.setVisible(false);
         slideshowBox.setManaged(false);
-        newsTitle.setText("Loading news...");
-        newsText.setText("Please wait a moment...");
+        newsTitle.setText("Cargando Noticias...");
+        newsText.setText("Por favor espere un Momento..");
         loadSlideshow();
+        setSkinLabelName();
 
         //Refresh session
         refreshSession();
@@ -217,7 +218,7 @@ public class MainFX {
      * Load language list
      */
     private void loadLanguages() {
-        console.print("Loading languages...");
+        console.print("Cargando Lenguajes...");
         HashMap<String, String> supportedLocales = settings.getSupportedLocales();
         ObservableList<Label> languageListItems = FXCollections.observableArrayList();
         for (String key : supportedLocales.keySet()) {
@@ -227,7 +228,7 @@ public class MainFX {
             languageListItems.add(l);
         }
         languagesList.setItems(languageListItems);
-        console.print("Languages loaded.");
+        console.print("Lenguajes Cargados.");
     }
 
     /**
@@ -289,7 +290,7 @@ public class MainFX {
         exportLogs.setText(Language.get(27));
         downloadServer.setText(Language.get(28));
         skinLabel.setText(Language.get(29));
-        capeLabel.setText(Language.get(30));
+        //capeLabel.setText(Language.get(30));
         launcherSettings.setText(Language.get(45));
         keepLauncherOpen.setText(Language.get(46));
         outputLog.setText(Language.get(47));
@@ -308,12 +309,11 @@ public class MainFX {
         existingLabel.setText(Language.get(85));
         switchAccountButton.setText(Language.get(86));
         selectSkin.setText(Language.get(87));
-        selectCape.setText(Language.get(87));
-        deleteSkin.setText(Language.get(88));
-        deleteCape.setText(Language.get(88));
+        //selectCape.setText(Language.get(87));
+        //deleteSkin.setText(Language.get(88));
+        //deleteCape.setText(Language.get(88));
         modelLabel.setText(Language.get(89));
         skinClassic.setText(Language.get(90));
-        skinSlim.setText(Language.get(91));
         iconLabel.setText(Language.get(92));
         includeCape.setText(Language.get(93));
         deleteCache.setText(Language.get(94));
@@ -338,92 +338,65 @@ public class MainFX {
      * Loads the skin preview for the logged user
      */
     private void loadTextures() {
-        console.print("Loading textures Module...");
+        console.print("Cargando Modulo de Texturas...");
         if (loadingTextures) {
             return;
         }
         selectSkin.setDisable(true);
-        selectCape.setDisable(true);
-        deleteSkin.setDisable(true);
-        deleteCape.setDisable(true);
+        //selectCape.setDisable(true);
+        //deleteSkin.setDisable(true);
+        //deleteCape.setDisable(true);
         includeCape.setDisable(true);
+
+        alex = new Image("/leverage/gui/textures/alex.png");
+        steve = new Image("/leverage/gui/textures/steve.png");
+        cape = null;
+
         if (Kernel.USE_LOCAL) {
             return;
         }
-        console.print("Loading textures Skins...");
+        console.print("Cargando Texturas...");
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    console.print("Loading textures...");
+                    console.print("Cargando Texturas de Skins...");
                     loadingTextures = true;
                     if (alex == null || steve == null) {
                         //Load placeholder skins
-                        console.print("Loading textures Skins...");
                         alex = new Image("/leverage/gui/textures/alex.png");
                         steve = new Image("/leverage/gui/textures/steve.png");
                     }
                     User selected = kernel.getAuthentication().getSelectedUser();
-                    String domain;
                     if (selected.getType() == UserType.OFFLINE) {
-                        domain = "sessionserver.mojang.com/session/minecraft/profile/";
                         skinActions.setVisible(false);
                         skinActions.setManaged(false);
                     } else {
-                        domain = "mc.krothium.com/profiles/";
                         skinActions.setVisible(true);
                         skinActions.setManaged(true);
                     }
-                    String profileURL = "https://" + domain + selected.getSelectedProfile() + "?unsigned=true";
-                    JSONObject root = new JSONObject(Utils.readURL(profileURL));
-                    JSONArray properties = root.getJSONArray("properties");
-                    for (int i = 0; i < properties.length(); i++) {
-                        JSONObject property = properties.getJSONObject(i);
-                        if ("textures".equalsIgnoreCase(property.getString("name"))) {
-                            JSONObject data = new JSONObject(Utils.fromBase64(property.getString("value")));
-                            JSONObject textures = data.getJSONObject("textures");
-                            skin = null;
-                            cape = null;
-                            boolean slim = false;
-                            if (textures.has("SKIN")) {
-                                JSONObject skinData = textures.getJSONObject("SKIN");
-                                if (skinData.has("metadata")) {
-                                    if ("slim".equalsIgnoreCase(skinData.getJSONObject("metadata").getString("model"))) {
-                                        slim = true;
-                                    }
-                                }
-                                InputStream stream = Utils.readCachedStream(textures.getJSONObject("SKIN").getString("url"));
-                                skin = new Image(stream);
-                                stream.close();
-                            }
-                            if (skin == null || skin.getHeight() == 0 && !slim) {
-                                skin = steve;
-                            } else if (skin.getHeight() == 0) {
-                                skin = alex;
-                            } else {
-                                deleteSkin.setDisable(false);
-                            }
-                            if (textures.has("CAPE")) {
-                                InputStream stream = Utils.readCachedStream(textures.getJSONObject("CAPE").getString("url"));
-                                cape = new Image(stream);
-                                stream.close();
-                                includeCape.setDisable(false);
-                                deleteCape.setDisable(false);
-                            }
-                            if (slim) {
-                                skinSlim.setSelected(true);
-                            } else {
-                                skinClassic.setSelected(true);
-                            }
-                            texturesLoaded = true;
-                            console.print("Textures loaded.");
-                            MainFX.this.updatePreview();
-                        }
-                    }
+                    String skinPath = Urls.skinsPathProfileId(selected.getUsername().replace("leverage://", "").toLowerCase());
+                    InputStream stream = Utils.readCachedStream(skinPath);
+                    skin = new Image(stream);
+                    stream.close();
+                    if (skin == null || skin.getHeight() == 0) {
+                        skin = steve;
+                    } else if (skin.getHeight() == 0) {
+                        skin = alex;
+                    }/* else {
+                        deleteSkin.setDisable(false);
+                    }*/
+                    alex = skin;
+
+                    skinSlim.setSelected(true);
+                    texturesLoaded = true;
+                    console.print("Texturas Cargadas.");
+                    MainFX.this.updatePreview();
+
                     selectSkin.setDisable(false);
-                    selectCape.setDisable(false);
+                    //selectCape.setDisable(false);
                 } catch (Exception ex) {
-                    console.print("Failed to parse remote profile textures.");
+                    console.print("Fallido la carga de Skin del Servidor.");
                     MainFX.this.toggleSkinType();
                     ex.printStackTrace(console.getWriter());
                 }
@@ -449,14 +422,13 @@ public class MainFX {
      * Changes the skin type
      */
     @FXML public final void toggleSkinType() {
-        if (deleteSkin.isDisabled()) {
-            if (skinClassic.isSelected()) {
+        //if (deleteSkin.isDisabled()) {
+            if (skinClassic.isSelected())
                 skin = steve;
-            } else {
+            else
                 skin = alex;
-            }
             updatePreview();
-        }
+        //}
     }
 
     /**
@@ -591,7 +563,7 @@ public class MainFX {
         final File selected = selectFile(Language.get(44), "*.png", "open");
         if (selected != null) {
             selectSkin.setDisable(true);
-            deleteSkin.setDisable(true);
+            //deleteSkin.setDisable(true);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -604,7 +576,7 @@ public class MainFX {
 
     /**
      * Changes the cape of the user
-     */
+     *//*
     @FXML private void changeCape() {
         final File selected = selectFile(Language.get(25), "*.png", "open");
         if (selected != null) {
@@ -619,16 +591,16 @@ public class MainFX {
             t.start();
         }
 
-    }
+    }*/
 
     /**
      * Deletes the skin of the user
-     */
+     *//*
     @FXML private void deleteSkin() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(31));
         if (result == 1){
             selectSkin.setDisable(true);
-            deleteSkin.setDisable(true);
+            //deleteSkin.setDisable(true);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -637,11 +609,11 @@ public class MainFX {
             });
             t.start();
         }
-    }
+    }*/
 
     /**
      * Deletes the cape of the user
-     */
+     *//*
     @FXML private void deleteCape() {
         int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(36));
         if (result == 1){
@@ -655,18 +627,18 @@ public class MainFX {
             });
             t.start();
         }
-    }
+    }*/
 
     /**
      * Loads the news slideshow
      */
     private void loadSlideshow() {
-        console.print("Loading news slideshow...");
+        console.print("Cargando Slides de Noticias...");
         try {
             String newsURL = Urls.newsUrl;
             String response = Utils.readURL(newsURL);
             if (response.isEmpty()) {
-                console.print("News data returned empty response.");
+                console.print("El Servidor no ha devuelto nunguna Noticia.");
                 return;
             }
             JSONObject root = new JSONObject(response);
@@ -690,7 +662,7 @@ public class MainFX {
         } catch (Exception ex) {
             newsTitle.setText(Language.get(80));
             newsText.setText(Language.get(101));
-            console.print("Couldn't parse news data.");
+            console.print("No se ha podido Cargar los Datos de las Noticias.");
             ex.printStackTrace(console.getWriter());
             return;
         }
@@ -791,7 +763,7 @@ public class MainFX {
      * Loads profiles list items
      */
     private void loadProfileList() {
-        console.print("Loading profile list...");
+        console.print("Cargando Lista de Perfiles...");
         ObservableList<Label> profileListItems = getProfileList();
 
         //Add "Add New Profile" item
@@ -805,11 +777,11 @@ public class MainFX {
      * Loads profiles popup list items
      */
     private void loadProfileListPopup() {
-        console.print("Loading profile list popup...");
+        console.print("Cargando Lista de Perfiles popup...");
         ObservableList<Label> profileListItems = getProfileList();
         profilePopupList.setItems(profileListItems);
         profileListPopupLoaded = true;
-        console.print("Profile list popup loaded.");
+        console.print("Lista de Perfiles popup Cargado.");
     }
 
     /**
@@ -910,7 +882,7 @@ public class MainFX {
      * Loads the profile icons
      */
     private void loadIcons() {
-        console.print("Loading icons...");
+        console.print("Cargando Iconos...");
         ObservableList<ImageView> icons = FXCollections.observableArrayList();
         Set<String> keys = kernel.getIcons().keySet();
         for (String key : keys) {
@@ -923,7 +895,7 @@ public class MainFX {
             }
         }
         iconList.setItems(icons);
-        console.print("Icons loaded.");
+        console.print("Iconos Cargados.");
     }
 
     /**
@@ -1458,7 +1430,7 @@ public class MainFX {
      * Loads the list of version for the profile editor
      */
     private void loadVersionList() {
-        console.print("Loading version list...");
+        console.print("Cargando Lista de Versiones...");
         ObservableList<VersionMeta> vers = FXCollections.observableArrayList();
         VersionMeta latestVersion = new VersionMeta(Language.get(59), null, null);
         vers.add(latestVersion);
@@ -1678,7 +1650,7 @@ public class MainFX {
                 Authentication auth = kernel.getAuthentication();
                 String user;
                 if (authLeverage.isSelected()) {
-                    user = "krothium://" + username.getText();
+                    user = "leverage://" + username.getText();
                     auth.authenticate(user, password.getText());
                 } else {
                     user = username.getText();
@@ -1716,7 +1688,7 @@ public class MainFX {
         } catch (AuthenticationException ex) {
             if (u.getType() == UserType.LEVERAGE) {
                 authLeverage.setSelected(true);
-                username.setText(u.getUsername().replace("krothium://", ""));
+                username.setText(u.getUsername().replace("leverage://", ""));
             } else {
                 authOffline.setSelected(true);
                 username.setText(u.getUsername());
@@ -2049,6 +2021,24 @@ public class MainFX {
                 authServer.setText("(LEVERAGE)");
             } else {
                 authServer.setText("(OFFLINE)");
+            }
+        }
+    }
+
+    public void setSkinLabelName() {
+        console.print("Comprobando Skins en el Servidor");
+        User user = existingUsers.getValue();
+        if (user != null) {
+            if (user.getType() == UserType.LEVERAGE) {
+                try {
+                    String skinPath = Urls.skinsPathProfileId(user.getUsername().replace("leverage://", "").toLowerCase());
+                    InputStream stream = Utils.readCachedStream(skinPath);
+                    stream.close();
+                    skinSlim.setText(Language.get(123));
+                } catch (IOException e) {
+                    console.print(e.getMessage());
+                    skinSlim.setText(Language.get(91));
+                }
             }
         }
     }

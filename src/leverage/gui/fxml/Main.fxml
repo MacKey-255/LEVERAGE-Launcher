@@ -429,44 +429,6 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </Button>
-                              <Button fx:id="deleteSkin" layoutX="10.0" layoutY="151.0" mnemonicParsing="false" onMouseClicked="#deleteSkin" prefHeight="40.0" prefWidth="180.0" text="DELETE">
-                                 <styleClass>
-                                    <String fx:value="text-5" />
-                                    <String fx:value="color-warn" />
-                                 </styleClass>
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Button>
-                              <Label fx:id="capeLabel" layoutX="10.0" layoutY="125.0" prefHeight="26.0" prefWidth="166.0" styleClass="text-3" text="CAPE">
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <Button fx:id="selectCape" layoutX="10.0" layoutY="151.0" mnemonicParsing="false" onMouseClicked="#changeCape" prefHeight="40.0" prefWidth="180.0" text="SELECT">
-                                 <styleClass>
-                                    <String fx:value="text-5" />
-                                    <String fx:value="color-alt" />
-                                 </styleClass>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Button>
-                              <Button fx:id="deleteCape" layoutX="10.0" layoutY="200.0" mnemonicParsing="false" onMouseClicked="#deleteCape" prefHeight="40.0" prefWidth="180.0" text="DELETE">
-                                 <styleClass>
-                                    <String fx:value="text-5" />
-                                    <String fx:value="color-warn" />
-                                 </styleClass>
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Button>
                            </children>
                         </VBox>
                      </children>

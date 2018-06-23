@@ -81,14 +81,14 @@ public final class Kernel {
         console.print("Java Architecture: " + System.getProperty("sun.arch.data.model"));
         try {
             Class.forName("javafx.fxml.FXMLLoader");
-            console.print("JavaFX loaded.");
+            console.print("JavaFX Cargado.");
         } catch (ClassNotFoundException e) {
             File jfxrt = new File(System.getProperty("java.home"), "lib/jfxrt.jar");
             if (jfxrt.isFile()) {
                 console.print("Attempting to load JavaFX manually...");
                 try {
                     if (addToSystemClassLoader(jfxrt)) {
-                        console.print("JavaFX loaded manually.");
+                        console.print("JavaFX Cargado Manualmente.");
                     } else {
                         console.print("Found JavaFX but it couldn't be loaded!");
                         warnJavaFX();

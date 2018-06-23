@@ -89,7 +89,7 @@ public class Authentication {
      * @throws AuthenticationException If authentication failed
      */
     public final void authenticate(String username, String password) throws AuthenticationException {
-        console.print("AUTHENTICATION");
+        console.print("Autenticando Usuario ...");
         JSONObject request = new JSONObject();
         JSONObject agent = new JSONObject();
         UserType type;
@@ -97,9 +97,9 @@ public class Authentication {
         agent.put("version", 1);
         request.put("agent", agent);
         String tmpUser;
-        if (username.startsWith("krothium://")) {
+        if (username.startsWith("leverage://")) {
             type = UserType.LEVERAGE;
-            tmpUser = username.replace("krothium://", "");
+            tmpUser = username.replace("leverage://", "");
         } else {
             type = UserType.OFFLINE;
             tmpUser = username;
@@ -180,7 +180,7 @@ public class Authentication {
      * @throws AuthenticationException If the refresh failed
      */
     public final void refresh() throws AuthenticationException, JSONException{
-        console.print("REFRESCAR");
+        console.print("Refrescando Usuarios Logeados");
         if (selectedAccount == null) {
             throw new AuthenticationException("No user is selected.");
         }
@@ -271,7 +271,7 @@ public class Authentication {
      * Loads the users from launcher_profile.json
      */
     public final void fetchUsers() {
-        console.print("Loading user data.");
+        console.print("Cargando Datos del Usuario.");
         JSONObject root = kernel.getLauncherProfiles();
         if (root != null) {
             String selectedUser = null;
@@ -301,7 +301,7 @@ public class Authentication {
                     JSONObject user = users.getJSONObject(userID);
                     if (user.has("accessToken") && user.has("username") && user.has("profiles")) {
                         String username = user.getString("username");
-                        UserType userType = username.startsWith("krothium://") ? UserType.LEVERAGE : UserType.OFFLINE;
+                        UserType userType = username.startsWith("leverage://") ? UserType.LEVERAGE : UserType.OFFLINE;
                         JSONObject profiles = user.getJSONObject("profiles");
                         Set profileSet = profiles.keySet();
                         if (profileSet.size() > 0) {

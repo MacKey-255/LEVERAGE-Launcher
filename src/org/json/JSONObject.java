@@ -84,7 +84,7 @@ import java.util.Set;
  * the JSON syntax rules. The constructors are more forgiving in the texts they
  * will accept:
  * <ul>
- * <li>An extra <code>,</code>&nbsp;<small>(comma)</small> may appear just
+ * <li>An client <code>,</code>&nbsp;<small>(comma)</small> may appear just
  * before the closing brace.</li>
  * <li>Strings may be quoted with <code>'</code>&nbsp;<small>(single
  * quote)</small>.</li>

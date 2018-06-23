@@ -7,8 +7,13 @@ public class Urls {
     public static final String newsUrl = "http://127.0.0.1/authenticate/news.json";
     public static final String register = leverage + "/register/";
     public static final String forgotPassword = leverage;
+    public static final String skinsPath = leverage + "/skins/";
 
     public static final String urlDataProfileId(String id) {
         return leverage + "/users.php?profileID=" + id;
+    }
+
+    public static final String skinsPathProfileId(String name) {
+        return leverage + "/skins/" + name + ".png";
     }
 }

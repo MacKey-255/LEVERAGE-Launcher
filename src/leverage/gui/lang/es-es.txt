@@ -25,7 +25,7 @@ Cambiar
 Archivo PNG de Capa (128KB MAX)
 Último Lanzamiento de Minecraft
 Exportar Registros
-Descargar Servidor
+Descargar Clientes
 SKIN
 CAPA
 ¿Estás seguro de que quieres eliminar tu skin?
@@ -120,3 +120,4 @@ Salvas eliminadas correctamente
 Paquetes de Sombras eliminados correctamente
 Optimizar Launcher:
 Cuentas
+Tu Skin

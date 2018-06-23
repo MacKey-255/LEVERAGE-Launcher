@@ -64,7 +64,7 @@ import java.util.Map;
  * JSON syntax rules. The constructors are more forgiving in the texts they will
  * accept:
  * <ul>
- * <li>An extra <code>,</code>&nbsp;<small>(comma)</small> may appear just
+ * <li>An client <code>,</code>&nbsp;<small>(comma)</small> may appear just
  * before the closing bracket.</li>
  * <li>The <code>null</code> value will be inserted when there is <code>,</code>
  * &nbsp;<small>(comma)</small> elision.</li>
