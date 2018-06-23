@@ -1,4 +1,4 @@
-package leverage.client.download;
+package leverage.client;
 
 import java.net.URL;
 import java.util.ArrayList;

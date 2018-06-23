@@ -16,4 +16,24 @@ public class Urls {
     public static final String skinsPathProfileId(String name) {
         return leverage + "/skins/" + name + ".png";
     }
+
+    public static final String libraryPath(String library) {
+        return leverage + "/libraries/" + library;
+    }
+
+    public static final String versionsPath(String version) {
+        return leverage + "/versions/" + version;
+    }
+
+    public static final String modsPath(String mod) {
+        return leverage + "/mods/" + mod;
+    }
+
+    public static final String assetsPath(String assets) {
+        return leverage + "/assets/" + assets;
+    }
+
+    public static final String resourcePackPath(String pack) {
+        return leverage + "/resources/" + pack;
+    }
 }

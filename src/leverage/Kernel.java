@@ -72,6 +72,7 @@ public final class Kernel {
         APPLICATION_CACHE.mkdir();
         APPLICATION_LOGS.mkdir();
         console = new Console();
+        console.print("-------------------------------------------------");
         console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium");
         console.print("OS: " + System.getProperty("os.name"));
         console.print("OS Version: " + System.getProperty("os.version"));
@@ -79,6 +80,7 @@ public final class Kernel {
         console.print("Java Version: " + System.getProperty("java.version"));
         console.print("Java Vendor: " + System.getProperty("java.vendor"));
         console.print("Java Architecture: " + System.getProperty("sun.arch.data.model"));
+        console.print("-------------------------------------------------");
         try {
             Class.forName("javafx.fxml.FXMLLoader");
             console.print("JavaFX Cargado.");
@@ -103,19 +105,19 @@ public final class Kernel {
                 warnJavaFX();
             }
         }
-        console.print("Reading launcher profiles...");
+        console.print("Leyendo Perfiles del Launcher...");
         try {
             if (APPLICATION_CONFIG.isFile()) {
                 String data = new String(Files.readAllBytes(APPLICATION_CONFIG.toPath()), StandardCharsets.UTF_8);
                 launcherProfiles = new JSONObject(data);
             } else {
-                console.print("Launcher profiles file does not exists.");
+                console.print("El Archivo con Perfiles del Launcher no existe.");
             }
         } catch (MalformedURLException | JSONException e) {
-            console.print("Malformed launcher profiles file.");
+            console.print("El Archivo con Perfiles del Launcher esta dañado.");
             e.printStackTrace(console.getWriter());
         } catch (IOException ex) {
-            console.print("Failed to read launcher profiles file.");
+            console.print("Fallida la lectura del Archivo con Perfiles del Launcher.");
             ex.printStackTrace(console.getWriter());
         }
 
@@ -149,7 +151,7 @@ public final class Kernel {
             webBrowser.initialize(stage, browser);
 
         } catch (IOException e) {
-            console.print("Failed to initialize web browser.");
+            console.print("Ha fallado la inicializacion del Buscador Web.");
             e.printStackTrace(console.getWriter());
             exitSafely();
         }
@@ -176,7 +178,7 @@ public final class Kernel {
             mainForm.initialize(this, stage, main, browser);
             stage.show();
         } catch (IOException e) {
-            console.print("Failed to initialize main interface.");
+            console.print("Ha fallado la inicializacion de la Interfaz Principal.");
             e.printStackTrace(console.getWriter());
             exitSafely();
         }
@@ -215,7 +217,7 @@ public final class Kernel {
      * Saves the profiles
      */
     public void saveProfiles() {
-        console.print("Saving profiles...");
+        console.print("Salvando Perfiles...");
         JSONObject output = new JSONObject();
         JSONObject profilesJSON = profiles.toJSON();
         JSONObject authdata = authentication.toJSON();
@@ -236,9 +238,9 @@ public final class Kernel {
         launcherVersion.put("profilesFormat", KERNEL_PROFILES_FORMAT);
         output.put("launcherVersion", launcherVersion);
         if (!Utils.writeToFile(output.toString(2), APPLICATION_CONFIG)) {
-            console.print("Failed to save the profiles file!");
+            console.print("Ha Fallado la Salva de Perfiles!");
         } else {
-            console.print("Profiles saved.");
+            console.print("Perfiles Guardados.");
         }
     }
 
@@ -274,7 +276,7 @@ public final class Kernel {
      * Saves the profiles and shuts down the launcher
      */
     public void exitSafely() {
-        console.print("Shutting down launcher...");
+        console.print("Cerrando launcher...");
         console.close();
         saveProfiles();
         System.exit(0);

@@ -3,6 +3,7 @@ package leverage.game.version.library;
 import leverage.OSArch;
 import leverage.OS;
 import leverage.game.download.Downloadable;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +24,7 @@ public final class Library {
         if (lib.has("name")) {
             name = lib.getString("name");
         } else {
-            throw new Exception("Invalid name for a library.");
+            throw new Exception("Nombre de la Libreria Invalido.");
         }
         if (lib.has("url")) {
             url = lib.getString("url");
@@ -132,7 +133,8 @@ public final class Library {
         } else {
             if (isCompatible()) {
                 if (isNative() && natives.containsKey(Utils.getPlatform())) {
-                    String url = "https://libraries.minecraft.net/" + Utils.getArtifactPath(name, "jar").replace(".jar", '-' + getNativeTag() + ".jar");
+                    //String url = "https://libraries.minecraft.net/" + Utils.getArtifactPath(name, "jar").replace(".jar", '-' + getNativeTag() + ".jar");
+                    String url = Urls.libraryPath(Utils.getArtifactPath(name, "jar").replace(".jar", '-' + getNativeTag() + ".jar"));
                     Downloadable d = new Downloadable(url, 0, relativeNativePath, null, null);
                     downloads.put("classifier", d);
                 } else if (hasURL()) {
@@ -140,7 +142,8 @@ public final class Library {
                     Downloadable d = new Downloadable(url, 0, relativePath, null, null);
                     downloads.put("artifact", d);
                 } else {
-                    String url = "https://libraries.minecraft.net/" + Utils.getArtifactPath(name, "jar");
+                    //String url = "https://libraries.minecraft.net/" + Utils.getArtifactPath(name, "jar");
+                    String url = Urls.libraryPath(Utils.getArtifactPath(name, "jar"));
                     Downloadable d = new Downloadable(url, 0, relativePath, null, null);
                     downloads.put("artifact", d);
                 }

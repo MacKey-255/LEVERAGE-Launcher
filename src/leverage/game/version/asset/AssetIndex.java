@@ -1,5 +1,7 @@
 package leverage.game.version.asset;
 
+import leverage.util.Urls;
+
 public class AssetIndex {
     private final String id;
     private String sha1;
@@ -7,12 +9,13 @@ public class AssetIndex {
 
     public AssetIndex(String id) {
         this.id = id == null ? "legacy" : id;
-        url = "https://s3.amazonaws.com/Minecraft.Download/indexes/" + this.id + ".json";
+        url = Urls.assetsPath("indexes/" + this.id + ".json"); // "https://s3.amazonaws.com/Minecraft.Download/;
     }
 
-    public AssetIndex(String id, String url, String sha1) {
-        this.id = id;
-        this.url = url;
+    //public AssetIndex(String id, String url, String sha1) {
+    public AssetIndex(String id, String sha1) {
+        this.id = id == null ? "legacy" : id;
+        this.url = Urls.assetsPath("indexes/" + this.id + ".json"); // "https://s3.amazonaws.com/Minecraft.Download/;
         this.sha1 = sha1;
     }
 

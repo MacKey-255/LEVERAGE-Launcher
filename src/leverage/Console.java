@@ -16,6 +16,7 @@ public class Console {
     private final File log;
 
     public Console() {
+        System.out.println("Iniciando Consola del Launcher...");
         File[] logFiles = Kernel.APPLICATION_LOGS.listFiles();
         if (logFiles != null && logFiles.length > 0) {
             final int KEEP_OLD_LOGS = 10;
@@ -23,18 +24,18 @@ public class Console {
             int count = 0;
             for (File f : logFiles) {
                 String name = f.getName();
-                if (name.startsWith("krothium-unclosed")) {
+                if (name.startsWith("leverage-unclosed")) {
                     if (f.delete()) {
-                        System.out.println("Successfully deleted unclosed log file: " + name);
+                        System.out.println("Se ha borrado con exito el archivo desbloqueado de Logs: " + name);
                     } else {
-                        System.out.println("Failed to delete unclosed log file: " + name);
+                        System.out.println("Ha fallado la eliminacion del archivo desbloqueado de Logs: " + name);
                     }
-                } else if (name.startsWith("krothium")) {
+                } else if (name.startsWith("leverage")) {
                     if (count == KEEP_OLD_LOGS - 1) {
                         if (f.delete()) {
-                            System.out.println("Successfully deleted old log file: " + name);
+                            System.out.println("Se ha borrado con exito el antiguo archivo de Logs:  " + name);
                         } else {
-                            System.out.println("Failed to delete old log file: " + name);
+                            System.out.println("Fallido la Eliminacion del Archivo de Logs: " + name);
                         }
                     } else {
                         count++;
@@ -42,7 +43,7 @@ public class Console {
                 }
             }
         }
-        this.log = new File(Kernel.APPLICATION_LOGS, "krothium-unclosed-" + System.currentTimeMillis() + ".log");
+        this.log = new File(Kernel.APPLICATION_LOGS, "leverage-unclosed-" + System.currentTimeMillis() + ".log");
         try {
             this.writer = new PrintWriter(this.log){
                 @Override

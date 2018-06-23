@@ -27,7 +27,7 @@ public class Settings {
      * Loads the settings from launcher_profiles.json
      */
     public void loadSettings() {
-        console.print("Loading settings...");
+        console.print("Cargando Configuraciones...");
         JSONObject root = this.kernel.getLauncherProfiles();
         if (root != null) {
             if (root.has("settings")) {
@@ -64,14 +64,14 @@ public class Settings {
                         launcherHeight = 700;
                     }
                 } catch (JSONException ex) {
-                    console.print("Failed to load settings.");
+                    console.print("Ha fallado la carga de las Configuraciones.");
                     ex.printStackTrace(console.getWriter());
                 }
             } else {
                 setDefaults();
             }
         } else {
-            console.print("Not settings to be loaded.");
+            console.print("No pudo Cargar las Configuraciones.");
             setDefaults();
         }
     }
@@ -117,11 +117,11 @@ public class Settings {
             } else {
                 locale = s;
             }
-            console.print("Switched language to " + this.locale);
+            console.print("El lenguaje ha cambiado a " + this.locale);
             try {
                 Language.loadLang(locale);
             } catch (IOException e) {
-                console.print("Failed to load language file.");
+                console.print("Ha fallado la carga de los Archivos de Lenguaje.");
                 e.printStackTrace(console.getWriter());
             }
         }

@@ -37,10 +37,10 @@ public class Authentication {
         if (userDatabase.contains(u)) {
             userDatabase.remove(u);
             userDatabase.add(u);
-            console.print("User " + u.getUserID() + " updated.");
+            console.print("Usuario " + u.getUserID() + " actualizado.");
         } else {
             userDatabase.add(u);
-            console.print("User " + u.getUserID() + " loaded.");
+            console.print("Usuario " + u.getUserID() + " cargado.");
         }
 
     }
@@ -51,13 +51,13 @@ public class Authentication {
      */
     public void removeUser(User u) {
         if (userDatabase.contains(u)) {
-            console.print("User " + u.getUserID() + " deleted.");
+            console.print("Usuario " + u.getUserID() + " borrado.");
             userDatabase.remove(u);
             if (u.equals(selectedAccount)) {
                 setSelectedUser(null);
             }
         } else {
-            console.print("userID " + u.getUserID() + " is not registered.");
+            console.print("ID Usuario " + u.getUserID() + " no esta registrado.");
         }
     }
 
@@ -75,9 +75,9 @@ public class Authentication {
      */
     public void setSelectedUser(User user) {
         if (user != null) {
-            console.print("User " + user.getUserID() + " is now selected.");
+            console.print("Usuario " + user.getUserID() + " esta seleccionado ahora.");
         } else if (selectedAccount != null) {
-            console.print(selectedAccount.getUserID() + " is not longer selected.");
+            console.print(selectedAccount.getUserID() + " no esta seleccionado.");
         }
         selectedAccount = user;
     }
@@ -117,7 +117,7 @@ public class Authentication {
         String response;
         String authURL;
         if (type == UserType.OFFLINE) {
-            console.print("OFFLINE");
+            console.print("Autenticacion en modo OFFLINE");
             String uuid = Utils.getUUID(username);
             ArrayList<UserProfile> userProfiles = new ArrayList<>();
             UserProfile up = new UserProfile(uuid, username);
@@ -128,6 +128,7 @@ public class Authentication {
             authenticated = true;
             addUser(u);
         } else {
+            console.print("Autenticacion en modo LEVERAGE");
             authURL = Urls.authPath;
             try {
                 response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
@@ -141,7 +142,6 @@ public class Authentication {
             }
             JSONObject r;
             try {
-                console.print(response);
                 r = new JSONObject(response);
             } catch (JSONException ex) {
                 throw new AuthenticationException("Failed to read authentication response.");

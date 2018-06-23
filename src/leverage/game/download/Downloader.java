@@ -2,6 +2,7 @@ package leverage.game.download;
 
 import leverage.Console;
 import leverage.Kernel;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import leverage.exceptions.DownloaderException;
 import leverage.game.profile.Profile;
@@ -47,9 +48,9 @@ public class Downloader {
         total = 0;
         int tries;
 
-        console.print("Download work has started.");
+        console.print("Trabajando en la Descarga.");
         if (Kernel.USE_LOCAL) {
-            console.print("You are in offline mode.");
+            console.print("Estas en modo Offline.");
             downloading = false;
             return;
         }
@@ -71,9 +72,9 @@ public class Downloader {
         }
         if (verID == null) {
             downloading = false;
-            throw new DownloaderException("Version ID is null.");
+            throw new DownloaderException("Version ID es nula.");
         }
-        console.print("Using version ID: " + verID);
+        console.print("Usando version ID: " + verID);
         Version v = versions.getVersion(verID);
         if (v == null) {
             downloading = false;
@@ -84,17 +85,18 @@ public class Downloader {
         Set<Downloadable> urls = new HashSet<>();
 
         //Fetch assets
-        console.print("Fetching asset urls..");
+        console.print("Entregando urls de Assets...");
         AssetIndex index = v.getAssetIndex();
         File indexJSON = new File(Kernel.APPLICATION_WORKING_DIR, "assets" + File.separator + "indexes" + File.separator + index.getID() + ".json");
         tries = 0;
         if (!Utils.verifyChecksum(indexJSON, index.getSHA1(), "SHA-1")) {
             while (tries < DOWNLOAD_TRIES) {
                 try {
+                    console.print(index.getURL());
                     Utils.downloadFile(index.getURL(), indexJSON);
                     break;
                 } catch (IOException ex) {
-                    console.print("Failed to download file " + indexJSON.getName() + " (try " + tries + ')');
+                    console.print("Fallida la Descargan del Archivo " + indexJSON.getName() + " (Intentar " + tries + ')');
                     ex.printStackTrace(console.getWriter());
                     tries++;
                 }
@@ -120,7 +122,8 @@ public class Downloader {
                     JSONObject o = objects.getJSONObject(key);
                     String hash = o.getString("hash");
                     long size = o.getLong("size");
-                    String downloadURL = "http://resources.download.minecraft.net/" + hash.substring(0, 2) + '/' + hash;
+                    //String downloadURL = "http://resources.download.minecraft.net/" + hash.substring(0, 2) + '/' + hash;
+                    String downloadURL = Urls.assetsPath("objects/" + hash.substring(0, 2) + '/' + hash);
                     File relPath = new File(objectsRoot, hash.substring(0, 2) + File.separator + hash);
                     File fullPath = new File(Kernel.APPLICATION_WORKING_DIR + File.separator + relPath);
                     if (!processedHashes.contains(hash)) {
@@ -140,7 +143,7 @@ public class Downloader {
         }
 
         //Fetch version
-        console.print("Fetching version urls..");
+        console.print("Entregando urls de Versiones..");
         Map<String, Downloadable> downloads = v.getDownloads();
         if (downloads.containsKey("client")) {
             Downloadable d = downloads.get("client");
@@ -177,7 +180,8 @@ public class Downloader {
             File relPath = v.getRelativeJar();
             console.print("Found legacy version " + jar);
             if (!relPath.exists()) {
-                Downloadable d = new Downloadable("https://s3.amazonaws.com/Minecraft.Download/versions/" + jar + "/" + jar + ".jar", -1, v.getRelativeJar(), null, null);
+                // "https://s3.amazonaws.com/Minecraft.Download/versions/" + jar + "/" + jar + ".jar"
+                Downloadable d = new Downloadable(Urls.versionsPath(jar + "/" + jar + ".jar"), -1, v.getRelativeJar(), null, null);
                 urls.add(d);
             } else {
                 console.print("Legacy version file found. Assuming is valid.");
@@ -253,15 +257,15 @@ public class Downloader {
                 } else {
                     currentFile = path.toString();
                 }
-                console.print("Downloading " + currentFile + " from " + url);
+                console.print("Descargando " + currentFile + " desde " + url);
                 if (dw.getSize() == 0) {
-                    console.print(dw.getURL() + " has no expected size.");
+                    console.print(dw.getURL() + " tamaño del fichero no experado.");
                     try {
                         URLConnection con = url.openConnection();
                         long length = con.getContentLength();
                         total += length;
                     } catch (IOException ex) {
-                        console.print("Failed to determine size from " + dw.getURL());
+                        console.print("Fallida la determinacion del tamaño de " + dw.getURL());
                     }
                 }
                 while (tries < DOWNLOAD_TRIES) {
@@ -277,17 +281,17 @@ public class Downloader {
                         }
                         break;
                     } catch (IOException ex) {
-                        console.print("Failed to download file " + currentFile + " (try " + tries + ')');
+                        console.print("Fallida la Descargan del Archivo " + currentFile + " (Intentar " + tries + ')');
                         ex.printStackTrace(console.getWriter());
                         downloaded -= totalRead;
                         tries++;
                     }
                 }
                 if (tries == DOWNLOAD_TRIES) {
-                    console.print("Failed to download file " + path.getName() + " from " + url);
+                    console.print("Fallida la Descargan del Archivo " + path.getName() + " desde " + url);
                 }
             } catch (MalformedURLException e) {
-                console.print("Invalid URL " + dw.getURL());
+                console.print("URL Invalida " + dw.getURL());
                 e.printStackTrace(console.getWriter());
             }
         }

@@ -27,7 +27,7 @@ public final class Version {
     public Version(String durl, Kernel k) throws Exception {
         Console console = k.getConsole();
         jsonURL = durl;
-        console.print("Getting version info from " + durl);
+        console.print("Tomando informacion de: " + durl);
         JSONObject version = new JSONObject(Utils.readURL(durl));
         if (version.has("id")) {
             id = version.getString("id");
@@ -73,7 +73,8 @@ public final class Version {
             if (aIndex.has("sha1")) {
                 sha1 = aIndex.getString("sha1");
             }
-            assetIndex = new AssetIndex(id, url, sha1);
+            //assetIndex = new AssetIndex(id, url, sha1);
+            assetIndex = new AssetIndex(id, sha1);
         }
         if (assetIndex == null) {
             if (version.has("assets")) {

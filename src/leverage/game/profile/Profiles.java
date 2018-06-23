@@ -37,10 +37,10 @@ public class Profiles {
     public void addProfile(Profile p) {
         if (!profiles.contains(p)) {
             profiles.add(p);
-            console.print("Profile " + p + " added");
+            console.print("Perfil " + p + " añadido");
             return;
         }
-        console.print("Profile " + p + " already exists!");
+        console.print("Perfil " + p + " ya existe!");
     }
 
     /**
@@ -51,9 +51,9 @@ public class Profiles {
     public final boolean deleteProfile(Profile p) {
         if (profiles.contains(p)) {
             if (selected != null && selected.equals(p)) {
-                console.print("Profile " + p + " is selected and is going to be removed.");
+                console.print("Perfil " + p + "  esta seleccionado y sera borrado.");
                 profiles.remove(p);
-                console.print("Profile " + p + " deleted.");
+                console.print("Perfil " + p + " borrado.");
                 if (!profiles.isEmpty()) {
                     setSelectedProfile(profiles.first());
                 } else {
@@ -61,11 +61,11 @@ public class Profiles {
                 }
             } else {
                 profiles.remove(p);
-                console.print("Profile " + p + " deleted.");
+                console.print("Perfil " + p + " borrado.");
             }
             return true;
         }
-        console.print("Profile " + p + " doesn't exist.");
+        console.print("Perfil " + p + " no existe.");
         return false;
     }
 
@@ -73,7 +73,7 @@ public class Profiles {
      * Loads the profiles from the launcher_profiles.json
      */
     public final void fetchProfiles() {
-        console.print("Fetching profiles.");
+        console.print("Entregando Perfiles.");
         Timestamp latestUsedMillis = new Timestamp(-1);
         JSONObject root = kernel.getLauncherProfiles();
         if (root != null) {
@@ -133,7 +133,7 @@ public class Profiles {
                             icon = o.has("icon") ? o.getString("icon") : null;
                         } catch (IllegalArgumentException ex) {
                             icon = null;
-                            console.print("Invalid profile icon for profile " + key);
+                            console.print("Icono de Perfil invalido " + key);
                         }
                     } else {
                         name = null;
@@ -152,7 +152,7 @@ public class Profiles {
                             resolution.put("width", res.getInt("width"));
                             resolution.put("height", res.getInt("height"));
                         } else {
-                            console.print("Profile " + name != null ? name : "UNKNOWN" + " has an invalid resolution.");
+                            console.print("Perfil " + name != null ? name : "Desconocido" + " tiene una resoluacion invalida.");
                         }
                     }
                     Profile p = new Profile(key, name, type, created, lastUsed, version, gameDir, javaDir, javaArgs, resolution, icon, latestRelease, latestSnapshot);
@@ -202,15 +202,15 @@ public class Profiles {
                         setSelectedProfile(latestUsedID);
                     }
                 } else {
-                    console.print("No profile is selected! Using first loaded (" + first + ')');
+                    console.print("El Perfil no esta seleccionado! Usado por primera vez cargado (" + first + ')');
                     setSelectedProfile(first);
                 }
             } catch (JSONException ex) {
-                console.print("Failed to fetch profiles.");
+                console.print("Fallido la entrega de Perfiles.");
                 ex.printStackTrace(console.getWriter());
             }
         } else {
-            console.print("No profiles to be loaded. Generating defaults.");
+            console.print("No se ha podido cargar los Perfiles. Generando por Defecto.");
             if (releaseProfile == null) {
                 releaseProfile = new Profile(ProfileType.RELEASE);
                 addProfile(releaseProfile);
@@ -262,7 +262,7 @@ public class Profiles {
     public void setSelectedProfile(Profile p) {
         p.setLastUsed(new Timestamp(System.currentTimeMillis()));
         selected = p;
-        console.print("Profile " + p + " has been selected.");
+        console.print("Perfil " + p + " fue seleccionado.");
     }
 
     /**

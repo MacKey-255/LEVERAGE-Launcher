@@ -680,7 +680,7 @@ public class MainFX {
             newsTitle.setText(Language.get(102));
             newsText.setText(Language.get(103));
         }
-        console.print("News slideshow loaded.");
+        console.print("Slides de Noticias cargado.");
     }
 
     /**
@@ -1673,7 +1673,7 @@ public class MainFX {
      * Refreshes latest session
      */
     private void refreshSession() {
-        console.print("Refreshing session...");
+        console.print("Refrescando Session...");
         Authentication a = kernel.getAuthentication();
         User u = a.getSelectedUser();
         try {
@@ -1681,9 +1681,9 @@ public class MainFX {
                 a.refresh();
                 texturesLoaded = false;
                 kernel.saveProfiles();
-                console.print("Session refreshed.");
+                console.print("Session refrescada.");
             } else {
-                console.print("No user is selected.");
+                console.print("No hay un usuario seleccionado.");
             }
         } catch (AuthenticationException ex) {
             if (u.getType() == UserType.LEVERAGE) {
@@ -1693,7 +1693,7 @@ public class MainFX {
                 authOffline.setSelected(true);
                 username.setText(u.getUsername());
             }
-            console.print("Couldn't refresh your session.");
+            console.print("No se pudo refrescar la Session.");
         } finally {
             if (a.isAuthenticated()) {
                 showLoginPrompt(false);
