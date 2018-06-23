@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -294,6 +295,15 @@ public final class Utils {
         } else {
             return readText(con.getErrorStream());
         }
+    }
+
+    /**
+    * Get UUID for Player Username
+    * @return UUID
+    */
+    public static String getUUID(String playername) {
+        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + playername).getBytes());
+        return uuid.toString();
     }
 
     /**

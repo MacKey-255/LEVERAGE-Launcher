@@ -72,7 +72,7 @@ public final class Kernel {
         APPLICATION_CACHE.mkdir();
         APPLICATION_LOGS.mkdir();
         console = new Console();
-        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " by MacKey Basado en Krothium");
+        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium");
         console.print("OS: " + System.getProperty("os.name"));
         console.print("OS Version: " + System.getProperty("os.version"));
         console.print("OS Architecture: " + System.getProperty("os.arch"));

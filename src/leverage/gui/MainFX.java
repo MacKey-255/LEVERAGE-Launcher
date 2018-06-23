@@ -1,6 +1,5 @@
 package leverage.gui;
 
-import com.mojang.util.UUIDTypeAdapter;
 import leverage.Settings;
 import leverage.Kernel;
 import leverage.Console;
@@ -46,18 +45,16 @@ import leverage.game.version.VersionType;
 import leverage.game.version.Versions;
 import leverage.game.version.asset.TexturePreview;
 import leverage.gui.lang.Language;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -90,7 +87,7 @@ public class MainFX {
     @FXML private ComboBox<VersionMeta> versionList;
     @FXML private StackPane versionBlock, javaArgsBlock, javaExecBlock, iconBlock;
     @FXML private ImageView profileIcon, slideshow, skinPreview;
-    @FXML private RadioButton skinClassic, skinSlim, authKrothium, authMojang;
+    @FXML private RadioButton skinClassic, skinSlim, authLeverage, authOffline;
     @FXML private Hyperlink forgotPasswordLink;
 
     private Kernel kernel;
@@ -133,7 +130,7 @@ public class MainFX {
         slideshowBox.setManaged(false);
         newsTitle.setText("Loading news...");
         newsText.setText("Please wait a moment...");
-        //loadSlideshow();
+        loadSlideshow();
 
         //Refresh session
         refreshSession();
@@ -238,9 +235,9 @@ public class MainFX {
      */
     private void fetchAds() {
         User user = kernel.getAuthentication().getSelectedUser();
-        if (user.getType() != UserType.MOJANG) {
+        if (user.getType() != UserType.OFFLINE) {
             String profileID = user.getSelectedProfile();
-            String adsCheck = "https://mc.krothium.com/ads.php?profileID=" + profileID;
+            String adsCheck = Urls.urlDataProfileId(profileID);
             String response = Utils.readURL(adsCheck);
             if (!response.isEmpty()) {
                 String[] chunks = response.split(":");
@@ -353,6 +350,7 @@ public class MainFX {
         if (Kernel.USE_LOCAL) {
             return;
         }
+        console.print("Loading textures Skins...");
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -367,7 +365,7 @@ public class MainFX {
                     }
                     User selected = kernel.getAuthentication().getSelectedUser();
                     String domain;
-                    if (selected.getType() == UserType.MOJANG) {
+                    if (selected.getType() == UserType.OFFLINE) {
                         domain = "sessionserver.mojang.com/session/minecraft/profile/";
                         skinActions.setVisible(false);
                         skinActions.setManaged(false);
@@ -665,7 +663,7 @@ public class MainFX {
     private void loadSlideshow() {
         console.print("Loading news slideshow...");
         try {
-            String newsURL = "https://launchermeta.mojang.com/mc/news.json";
+            String newsURL = Urls.newsUrl;
             String response = Utils.readURL(newsURL);
             if (response.isEmpty()) {
                 console.print("News data returned empty response.");
@@ -683,9 +681,8 @@ public class MainFX {
                         break;
                     }
                 }
-                if (isDemo) {
+                if (isDemo)
                     continue;
-                }
                 JSONObject content = entry.getJSONObject("content").getJSONObject("en-us");
                 Slide s = new Slide(content.getString("action"), content.getString("image"), content.getString("title"), content.getString("text"));
                 slides.add(s);
@@ -1680,7 +1677,7 @@ public class MainFX {
             try {
                 Authentication auth = kernel.getAuthentication();
                 String user;
-                if (authKrothium.isSelected()) {
+                if (authLeverage.isSelected()) {
                     user = "krothium://" + username.getText();
                     auth.authenticate(user, password.getText());
                 } else {
@@ -1717,11 +1714,11 @@ public class MainFX {
                 console.print("No user is selected.");
             }
         } catch (AuthenticationException ex) {
-            if (u.getType() == UserType.KROTHIUM) {
-                authKrothium.setSelected(true);
+            if (u.getType() == UserType.LEVERAGE) {
+                authLeverage.setSelected(true);
                 username.setText(u.getUsername().replace("krothium://", ""));
             } else {
-                authMojang.setSelected(true);
+                authOffline.setSelected(true);
                 username.setText(u.getUsername());
             }
             console.print("Couldn't refresh your session.");
@@ -1772,10 +1769,8 @@ public class MainFX {
      * Opens the register page
      */
     @FXML public final void register() {
-        if (authKrothium.isSelected()) {
-            kernel.getHostServices().showDocument("https://krothium.com/register");
-        } else {
-            kernel.getHostServices().showDocument("https://minecraft.net/");
+        if (authLeverage.isSelected()) {
+            kernel.getHostServices().showDocument(Urls.register);
         }
     }
 
@@ -2050,7 +2045,7 @@ public class MainFX {
     @FXML public void updateAuthServer() {
         User user = existingUsers.getValue();
         if (user != null) {
-            if (user.getType() == UserType.KROTHIUM) {
+            if (user.getType() == UserType.LEVERAGE) {
                 authServer.setText("(LEVERAGE)");
             } else {
                 authServer.setText("(OFFLINE)");
@@ -2085,10 +2080,9 @@ public class MainFX {
      * Opens the password recovery webpage
      */
     @FXML private void forgotPassword() {
-        if (authKrothium.isSelected()) {
-            kernel.getHostServices().showDocument("https://127.0.0.1");
-        } else {
-            kernel.getHostServices().showDocument("https://127.0.0.1");
+        if (authLeverage.isSelected()) {
+            kernel.getHostServices().showDocument(Urls.forgotPassword);
         }
+        return;
     }
 }

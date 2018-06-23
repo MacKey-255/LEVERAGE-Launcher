@@ -21,7 +21,6 @@ import leverage.game.version.Versions;
 import leverage.game.version.asset.AssetIndex;
 import leverage.game.version.library.Library;
 import leverage.gui.OutputFX;
-import leverage.gui.lang.Language;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -118,7 +117,7 @@ public class GameLauncher {
         String separator = System.getProperty("path.separator");
         Authentication a = kernel.getAuthentication();
         User u = a.getSelectedUser();
-        if (u.getType() == UserType.KROTHIUM) {
+        if (u.getType() == UserType.LEVERAGE) {
             try {
                 File launchPath = new File(GameLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
                 libraries.append(launchPath.getAbsolutePath()).append(separator);
@@ -182,7 +181,7 @@ public class GameLauncher {
             assetsDir = assetsRoot;
         }
         gameArgs.add(libraries.toString());
-        if (u.getType() == UserType.KROTHIUM) {
+        if (u.getType() == UserType.LEVERAGE) {
             gameArgs.add("leverage.game.GameStarter");
         }
         gameArgs.add(ver.getMainClass());

@@ -2,6 +2,7 @@ package leverage.auth;
 
 import leverage.Console;
 import leverage.Kernel;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import leverage.auth.user.User;
 import leverage.auth.user.UserProfile;
@@ -22,15 +23,10 @@ public class Authentication {
     private boolean authenticated;
     private String clientToken = UUID.randomUUID().toString();
     private User selectedAccount;
-    private final String authenticatePath ,refreshPath;
-    private final String mojangDomain = "127.0.0.1";//"authserver.mojang.com";
-    private final String krothiumDomain = "127.0.0.1";//"mc.krothium.com";
 
     public Authentication(Kernel k) {
         kernel = k;
         console = k.getConsole();
-        authenticatePath = "/authenticate/";
-        refreshPath = "/refresh/";
     }
 
     /**
@@ -93,7 +89,7 @@ public class Authentication {
      * @throws AuthenticationException If authentication failed
      */
     public final void authenticate(String username, String password) throws AuthenticationException {
-        console.print("AUTHENTICACION");
+        console.print("AUTHENTICATION");
         JSONObject request = new JSONObject();
         JSONObject agent = new JSONObject();
         UserType type;
@@ -102,10 +98,10 @@ public class Authentication {
         request.put("agent", agent);
         String tmpUser;
         if (username.startsWith("krothium://")) {
-            type = UserType.KROTHIUM;
+            type = UserType.LEVERAGE;
             tmpUser = username.replace("krothium://", "");
         } else {
-            type = UserType.MOJANG;
+            type = UserType.OFFLINE;
             tmpUser = username;
         }
         request.put("username", tmpUser);
@@ -113,26 +109,26 @@ public class Authentication {
         if (clientToken != null) {
             request.put("clientToken", clientToken);
         }
+        request.put("accessToken", Utils.getUUID(tmpUser));
         request.put("requestUser", true);
         Map<String, String> postParams = new HashMap<>();
         postParams.put("Content-Type", "application/json; charset=utf-8");
         postParams.put("Content-Length", String.valueOf(request.toString().length()));
         String response;
         String authURL;
-        if (type == UserType.MOJANG) {
-            console.print("MOJANG");
-            UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes());
+        if (type == UserType.OFFLINE) {
+            console.print("OFFLINE");
+            String uuid = Utils.getUUID(username);
             ArrayList<UserProfile> userProfiles = new ArrayList<>();
-            UserProfile up = new UserProfile(uuid.toString(), username);
+            UserProfile up = new UserProfile(uuid, username);
             userProfiles.add(up);
 
-            User u = new User(uuid.toString(), clientToken, username, type, userProfiles, uuid.toString());
+            User u = new User(uuid, clientToken, username, type, userProfiles, uuid);
             selectedAccount = u;
             authenticated = true;
             addUser(u);
         } else {
-            authURL = "https://" + krothiumDomain + authenticatePath;
-
+            authURL = Urls.authPath;
             try {
                 response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
             } catch (IOException ex) {
@@ -145,6 +141,7 @@ public class Authentication {
             }
             JSONObject r;
             try {
+                console.print(response);
                 r = new JSONObject(response);
             } catch (JSONException ex) {
                 throw new AuthenticationException("Failed to read authentication response.");
@@ -201,14 +198,13 @@ public class Authentication {
         postParams.put("Content-Length", String.valueOf(request.toString().length()));
         String response;
         String refreshURL;
-        if (u.getType() == UserType.MOJANG) {
-            console.print("MOJANG2");
+        if (u.getType() == UserType.OFFLINE) {
             Kernel.USE_LOCAL = true;
             authenticated = true;
             console.print("Authenticated locally.");
             return;
         } else {
-            refreshURL = "https://" + krothiumDomain + refreshPath;
+            refreshURL = Urls.refreshPath;
         }
         try {
             response = Utils.sendPost(refreshURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
@@ -305,7 +301,7 @@ public class Authentication {
                     JSONObject user = users.getJSONObject(userID);
                     if (user.has("accessToken") && user.has("username") && user.has("profiles")) {
                         String username = user.getString("username");
-                        UserType userType = username.startsWith("krothium://") ? UserType.KROTHIUM : UserType.MOJANG;
+                        UserType userType = username.startsWith("krothium://") ? UserType.LEVERAGE : UserType.OFFLINE;
                         JSONObject profiles = user.getJSONObject("profiles");
                         Set profileSet = profiles.keySet();
                         if (profileSet.size() > 0) {
