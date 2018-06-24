@@ -84,7 +84,7 @@ Download failed
 Failed to perform game download task! Check the logs for more information.
 Existing Users:
 Switch Account
-SELECT
+UPLOAD
 DELETE
 PLAYER MODEL
 Classic
@@ -121,3 +121,9 @@ Shaders Pack deleted successfully
 Launcher Optimize:
 Account
 Your Skin
+Control
+Mods
+Versions
+Forge
+Resources Pack
+RAM

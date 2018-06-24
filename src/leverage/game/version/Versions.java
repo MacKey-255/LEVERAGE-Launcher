@@ -3,6 +3,7 @@ package leverage.game.version;
 import leverage.Console;
 import leverage.Kernel;
 import leverage.util.Utils;
+import leverage.util.Urls;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +67,7 @@ public class Versions {
                 return null;
             }
         }
-        console.print("Version id " + vm.getID() + " not found.");
+        console.print("Version id " + vm.getID() + " no encontrada.");
         return null;
     }
 
@@ -75,10 +76,9 @@ public class Versions {
      */
     public final void fetchVersions() {
         String lr = "", ls = "";
-        console.print("Fetching remote version list.");
+        console.print("Buscando Listado de Versiones remotas.");
         try {
-            String versionManifest = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
-            String response = "";//Utils.readURL(versionManifest);
+            String response = Utils.readURL(Urls.versionManifest);
             if (!response.isEmpty()) {
                 JSONObject root = new JSONObject(response);
                 if (root.has("latest")) {
@@ -110,11 +110,11 @@ public class Versions {
                             type = VersionType.valueOf(ver.getString("type").toUpperCase(Locale.ENGLISH));
                         } catch (IllegalArgumentException ex) {
                             type = VersionType.RELEASE;
-                            console.print("Invalid type for version " + id);
+                            console.print("Tipo de version invalida: " + id);
                         }
                     } else {
                         type = VersionType.RELEASE;
-                        console.print("Remote version " + id + " has no version type. Will be loaded as a RELEASE.");
+                        console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
                     }
                     VersionMeta vm = new VersionMeta(id, url, type);
                     if (lr.equalsIgnoreCase(id)) {
@@ -125,15 +125,15 @@ public class Versions {
                     }
                     versions.add(vm);
                 }
-                console.print("Remote version list loaded.");
+                console.print("Listado Remoto de Versiones Cargado.");
             } else {
-                console.print("Remote version list returned empty response.");
+                console.print("Listado Remoto de Versiones esta vacio.");
             }
         } catch (JSONException ex) {
-            console.print("Failed to fetch remote version list.");
+            console.print("Ha fallado la busqueda del Listado Remoto de Versiones.");
             ex.printStackTrace(console.getWriter());
         }
-        console.print("Fetching local version list versions.");
+        console.print("Buscando Listado de Versiones Locales.");
         VersionMeta lastRelease = null, lastSnapshot = null;
         String latestRelease = "", latestSnapshot = "";
         File versionsDir = new File(Kernel.APPLICATION_WORKING_DIR, "versions");
@@ -159,11 +159,11 @@ public class Versions {
                                         type = VersionType.valueOf(ver.getString("type").toUpperCase(Locale.ENGLISH));
                                     } catch (IllegalArgumentException ex) {
                                         type = VersionType.RELEASE;
-                                        console.print("Invalid type for version " + id);
+                                        console.print("Tipo de version invalida: " + id);
                                     }
                                 } else {
                                     type = VersionType.RELEASE;
-                                    console.print("Local version " + id + " has no version type. Will be loaded as a RELEASE.");
+                                    console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
                                 }
                                 VersionMeta vm = new VersionMeta(id, url, type);
                                 versions.add(vm);
@@ -187,9 +187,9 @@ public class Versions {
             if (latestSnap == null && lastSnapshot != null) {
                 latestSnap = lastSnapshot;
             }
-            console.print("Local version list loaded.");
+            console.print("Listado de Versiones Locales cargado.");
         } catch (JSONException | IOException ex) {
-            console.print("Failed to fetch local version list.");
+            console.print("Ha fallado la busqueda de Versiones Locales.");
             ex.printStackTrace(console.getWriter());
         }
     }

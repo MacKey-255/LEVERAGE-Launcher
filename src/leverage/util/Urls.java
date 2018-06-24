@@ -8,9 +8,20 @@ public class Urls {
     public static final String register = leverage + "/register/";
     public static final String forgotPassword = leverage;
     public static final String skinsPath = leverage + "/skins/";
+    public static final String CHANGESKIN_URL = "https://mc.krothium.com/changeskin";
+    public static final String CHANGECAPE_URL = "https://mc.krothium.com/changecape";
+    public static final String versionManifest = leverage + "/version_manifest.json";
+
+    //URLS ANTICHEAT SYSTEM
+    public static final String comfirmIP = leverage;
+    public static final String listData = leverage;
 
     public static final String urlDataProfileId(String id) {
         return leverage + "/users.php?profileID=" + id;
+    }
+
+    public static final String listDataPath(String server) {
+        return leverage + "/list/" + server + ".php";
     }
 
     public static final String skinsPathProfileId(String name) {

@@ -201,7 +201,7 @@ public class Authentication {
         if (u.getType() == UserType.OFFLINE) {
             Kernel.USE_LOCAL = true;
             authenticated = true;
-            console.print("Authenticated locally.");
+            console.print("Autenticado Localmente.");
             return;
         } else {
             refreshURL = Urls.refreshPath;
@@ -211,7 +211,7 @@ public class Authentication {
         } catch (IOException ex) {
             Kernel.USE_LOCAL = true;
             authenticated = true;
-            console.print("Authenticated locally.");
+            console.print("Autenticado Localmente.");
             return;
         }
         if (response.isEmpty()) {

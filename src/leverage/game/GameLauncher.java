@@ -47,10 +47,10 @@ public class GameLauncher {
      * @throws GameLauncherException If an error has been thrown
      */
     public final void launch(final MainFX mainFX) throws GameLauncherException {
-        console.print("Game launch work has started.");
+        console.print("El Lanzamiento del Juego ha Empenzando.");
         Profile p = kernel.getProfiles().getSelectedProfile();
         if (isRunning()) {
-            throw new GameLauncherException("Game is already started!");
+            throw new GameLauncherException("El juego ya estaba ejecutado!");
         }
         Versions versions = kernel.getVersions();
         VersionMeta verID;
@@ -66,14 +66,14 @@ public class GameLauncher {
                 break;
         }
         if (verID == null) {
-            throw new GameLauncherException("Version ID is null.");
+            throw new GameLauncherException("ID Version es nulo.");
         }
         Version ver = versions.getVersion(verID);
         if (ver == null) {
-            throw new GameLauncherException("Version info could not be obtained.");
+            throw new GameLauncherException("Informacion de Version no obtenida.");
         }
         File workingDir = Kernel.APPLICATION_WORKING_DIR;
-        console.print("Deleting old natives.");
+        console.print("Eliminandos Nativos Antiguoss.");
         File nativesRoot = new File(workingDir + File.separator + "versions" + File.separator + ver.getID());
         if (nativesRoot.isDirectory()) {
             File[] files = nativesRoot.listFiles();
@@ -89,9 +89,9 @@ public class GameLauncher {
         if (!nativesDir.isDirectory()) {
             nativesDir.mkdirs();
         }
-        console.print("Launching Minecraft " + ver.getID() + " on " + workingDir.getAbsolutePath());
-        console.print("Using natives dir: " + nativesDir);
-        console.print("Extracting natives.");
+        console.print("Lanzando Minecraft " + ver.getID() + " on " + workingDir.getAbsolutePath());
+        console.print("Usando Directorio Nativo: " + nativesDir);
+        console.print("Extrañendo Nativos.");
         List<String> gameArgs = new ArrayList<>();
         if (p.hasJavaDir()) {
             gameArgs.add(p.getJavaDir().getAbsolutePath());
@@ -122,7 +122,7 @@ public class GameLauncher {
                 File launchPath = new File(GameLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
                 libraries.append(launchPath.getAbsolutePath()).append(separator);
             } catch (URISyntaxException ex) {
-                console.print("Failed to load GameStarter.");
+                console.print("Fallida la Carga del GameStarter.");
             }
         }
         for (Library lib : libs) {
@@ -135,7 +135,7 @@ public class GameLauncher {
                     FileInputStream input = new FileInputStream(completePath);
                     Utils.decompressZIP(input, nativesDir, lib.getExtractExclusions());
                 } catch (IOException ex) {
-                    console.print("Failed to extract native: " + lib.getName());
+                    console.print("Fallida la extraccion del Nativo: " + lib.getName());
                     ex.printStackTrace(console.getWriter());
                 }
             } else {
@@ -143,7 +143,7 @@ public class GameLauncher {
                 libraries.append(completePath.getAbsolutePath()).append(separator);
             }
         }
-        console.print("Preparing game args.");
+        console.print("Preparando Argumentos del Juego.");
         File verPath = new File(Kernel.APPLICATION_WORKING_DIR + File.separator + ver.getRelativeJar());
         libraries.append(verPath.getAbsolutePath());
         File assetsDir;
@@ -154,7 +154,7 @@ public class GameLauncher {
             if (!assetsDir.isDirectory()) {
                 assetsDir.mkdirs();
             }
-            console.print("Building virtual asset folder.");
+            console.print("Construyendo Carpeta Virtual de Assets.");
             File indexJSON = new File(assetsRoot, "indexes" + File.separator + index.getID() + ".json");
             try {
                 JSONObject o = new JSONObject(new String(Files.readAllBytes(indexJSON.toPath()), "ISO-8859-1"));
@@ -174,7 +174,7 @@ public class GameLauncher {
                     }
                 }
             } catch (Exception ex) {
-                console.print("Failed to create virtual asset folder.");
+                console.print("Ha fallado la Construccion de la Carpeta Virtual de Assets.");
                 ex.printStackTrace(console.getWriter());
             }
         } else {
@@ -262,7 +262,7 @@ public class GameLauncher {
                             parent = loader.load();
                         } catch (IOException e) {
                             parent = null;
-                            console.print("Failed to initialize Output GUI!");
+                            console.print("Fallido la Inicializacion del Output GUI!");
                             e.printStackTrace(console.getWriter());
                         }
                         Stage stage = new Stage();
@@ -299,11 +299,11 @@ public class GameLauncher {
                         boolean error;
                         if (GameLauncher.this.process.exitValue() != 0) {
                             error = true;
-                            GameLauncher.this.console.print("Game stopped unexpectedly.");
+                            GameLauncher.this.console.print("Juego parado inesperadamente.");
                         } else {
                             error = false;
                         }
-                        GameLauncher.this.console.print("Deleteting natives dir.");
+                        GameLauncher.this.console.print("Borrando Directorio de Nativos.");
                         Utils.deleteDirectory(nativesDir);
                         timer.cancel();
                         timer.purge();
@@ -314,7 +314,7 @@ public class GameLauncher {
             timer.schedule(process_status, 0, 25);
         } catch (IOException ex) {
             ex.printStackTrace(console.getWriter());
-            throw new GameLauncherException("Game returned an error code.");
+            throw new GameLauncherException("El juego ha devielto un error de Codigo..");
         }
     }
 
@@ -329,7 +329,7 @@ public class GameLauncher {
                 console.print(lineRead);
             }
         } catch (IOException ex) {
-            console.print("Failed to read stream.");
+            console.print("Fallida la lectura del Stream.");
             ex.printStackTrace(console.getWriter());
         }
     }

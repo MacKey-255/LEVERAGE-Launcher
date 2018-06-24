@@ -96,7 +96,7 @@ public class Downloader {
                     Utils.downloadFile(index.getURL(), indexJSON);
                     break;
                 } catch (IOException ex) {
-                    console.print("Fallida la Descargan del Archivo " + indexJSON.getName() + " (Intentar " + tries + ')');
+                    console.print("Fallida la Descargan del Archivo " + indexJSON.getName() + " (Intento " + tries + ')');
                     ex.printStackTrace(console.getWriter());
                     tries++;
                 }
@@ -159,7 +159,7 @@ public class Downloader {
                         Utils.downloadFile(v.getJSONURL(), jsonFile);
                         break;
                     } catch (IOException ex) {
-                        console.print("Failed to download file " + jsonFile.getName() + " (try " + tries + ')');
+                        console.print("Failed to download file " + jsonFile.getName() + " (Intento: " + tries + ')');
                         ex.printStackTrace(console.getWriter());
                         tries++;
                     }
@@ -173,7 +173,7 @@ public class Downloader {
                     validated += jarSize;
                 }
             } else {
-                console.print("Incompatible version downloadable.");
+                console.print("Version Descargada Incompatible.");
             }
         } else if (v.hasJar()) {
             String jar = v.getJar();

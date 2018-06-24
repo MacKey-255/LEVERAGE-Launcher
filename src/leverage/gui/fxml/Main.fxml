@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onMouseClicked="#checkPopups" prefHeight="765.0" prefWidth="850.0" stylesheets="@../Main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leverage.gui.MainFX">
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onMouseClicked="#checkPopups" prefHeight="840.0" prefWidth="850.0" stylesheets="@../Main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leverage.gui.MainFX">
    <children>
       <StackPane id="topBar" maxHeight="35.0" minHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
          <children>
@@ -97,7 +115,7 @@
                         <String fx:value="text-4" />
                      </styleClass>
                   </Label>
-                  <Label fx:id="control" onMouseClicked="#switchTab" text="Control">
+                  <Label fx:id="controlLabel" onMouseClicked="#switchTab" text="Control">
                      <padding>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                      </padding>
@@ -240,79 +258,94 @@
                               <Insets bottom="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Button fx:id="deleteLogs" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteLogs" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteCrash" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteCrash" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteSave" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteSave" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteConfig" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteConfig" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteExtra" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteExtra" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteShader" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteShader" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
-                           <styleClass>
-                              <String fx:value="color-alt" />
-                              <String fx:value="text-5" />
-                           </styleClass>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="deleteResources" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteResources" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                              <HBox alignment="TOP_CENTER" spacing="10.0">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER">
+                                       <children>
+                                    <Button fx:id="deleteConfig" mnemonicParsing="false" onMouseClicked="#deleteConfig" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                    <Button fx:id="deleteCrash" mnemonicParsing="false" onMouseClicked="#deleteCrash" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                    <Button fx:id="deleteShader" mnemonicParsing="false" onMouseClicked="#deleteShader" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER">
+                                       <children>
+                                    <Button fx:id="deleteLogs" mnemonicParsing="false" onMouseClicked="#deleteLogs" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                    <Button fx:id="deleteSave" mnemonicParsing="false" onMouseClicked="#deleteSave" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                    <Button fx:id="deleteExtra" mnemonicParsing="false" onMouseClicked="#deleteExtra" prefHeight="45.0" prefWidth="250.0" text="Delete Cache">
+                                       <styleClass>
+                                          <String fx:value="color-alt" />
+                                          <String fx:value="text-5" />
+                                       </styleClass>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Button>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                        <Button fx:id="deleteResources" layoutX="310.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#deleteResources" prefHeight="45.0" prefWidth="330.0" text="Delete Cache">
                            <styleClass>
                               <String fx:value="color-alt" />
                               <String fx:value="text-5" />
@@ -330,6 +363,65 @@
             </VBox>
          </content>
          </Tab>
+            <Tab fx:id="controlTab" text="Control Tab">
+               <content>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox alignment="TOP_CENTER" prefHeight="49.0" prefWidth="950.0" spacing="10.0">
+                           <children>
+                              <Button fx:id="controlMods" mnemonicParsing="false" onMouseClicked="#switchControlTab" prefHeight="39.0" prefWidth="190.0" text="Delete Cache">
+                                 <styleClass>
+                                    <String fx:value="color-alt" />
+                                    <String fx:value="text-5" />
+                                 </styleClass>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                              <Button fx:id="controlVersion" layoutX="340.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#switchControlTab" prefHeight="39.0" prefWidth="190.0" text="Delete Cache">
+                                 <styleClass>
+                                    <String fx:value="color-alt" />
+                                    <String fx:value="text-5" />
+                                 </styleClass>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                              <Button fx:id="controlForge" layoutX="435.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#switchControlTab" prefHeight="39.0" prefWidth="190.0" text="Delete Cache">
+                                 <styleClass>
+                                    <String fx:value="color-alt" />
+                                    <String fx:value="text-5" />
+                                 </styleClass>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                              <Button fx:id="controlResource" layoutX="530.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#switchControlTab" prefHeight="39.0" prefWidth="190.0" text="Delete Cache">
+                                 <styleClass>
+                                    <String fx:value="color-alt" />
+                                    <String fx:value="text-5" />
+                                 </styleClass>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                           </children>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </HBox>
+                        <ListView fx:id="controlList" maxHeight="600.0" maxWidth="700.0" onMouseClicked="#loadEditor" prefHeight="294.0" prefWidth="700.0" styleClass="text-5" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets bottom="50.0" top="10.0" />
+                           </VBox.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ListView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
           <Tab fx:id="skinsTab" text="Skins Tab">
          <content>
             <VBox prefHeight="200.0" prefWidth="100.0">
@@ -398,7 +490,7 @@
                                  <toggleGroup>
                                     <ToggleGroup fx:id="skinType" />
                                  </toggleGroup></RadioButton>
-                              <RadioButton fx:id="skinSlim" mnemonicParsing="false" onMouseClicked="#toggleSkinType" prefHeight="30.0" prefWidth="267.0" styleClass="text-5" text="Slim" toggleGroup="$skinType" />
+                              <RadioButton fx:id="skinSlim" mnemonicParsing="false" onMouseClicked="#toggleSkinType" prefHeight="30.0" prefWidth="267.0" styleClass="text-5" text="Skins" toggleGroup="$skinType" />
                               <Label fx:id="skinLabel" layoutX="10.0" layoutY="10.0" prefHeight="26.0" prefWidth="166.0" styleClass="text-3" text="SKIN">
                                  <VBox.margin>
                                     <Insets top="5.0" />
@@ -643,12 +735,12 @@
                         </StackPane>
                         <HBox alignment="CENTER_LEFT" maxWidth="700.0" prefHeight="30.0" prefWidth="700.0">
                            <children>
-                              <RadioButton fx:id="authLeverage" mnemonicParsing="false" selected="true" styleClass="text-5" text="LEVERAGE">
+                              <RadioButton fx:id="authLeverage" mnemonicParsing="false" onMouseClicked="#hideShowPasswordField" selected="true" styleClass="text-5" text="LEVERAGE">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="authType" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="authOffline" mnemonicParsing="false" styleClass="text-5" text="OFFLINE" toggleGroup="$authType">
+                              <RadioButton fx:id="authOffline" mnemonicParsing="false" onMouseClicked="#hideShowPasswordField" styleClass="text-5" text="OFFLINE" toggleGroup="$authType">
                                  <HBox.margin>
                                     <Insets left="15.0" />
                                  </HBox.margin>
@@ -727,19 +819,25 @@
                         <StackPane fx:id="versionBlock" layoutX="160.0" layoutY="10.0" maxHeight="45.0" maxWidth="750.0" prefHeight="45.0" prefWidth="950.0">
                            <children>
                               <Label fx:id="profileVersionLabel" styleClass="text-5" text="Version" StackPane.alignment="CENTER_LEFT" />
-                              <ComboBox fx:id="versionList" maxWidth="270.0" prefHeight="33.0" prefWidth="50.0" styleClass="text-6" StackPane.alignment="CENTER_RIGHT">
+                              <ComboBox fx:id="versionList" maxWidth="450.0" prefHeight="33.0" prefWidth="651.0" styleClass="text-6" StackPane.alignment="CENTER_RIGHT">
                                  <StackPane.margin>
-                                    <Insets right="180.0" />
+                                    <Insets />
                                  </StackPane.margin></ComboBox>
-                              <Button fx:id="downloadServer" mnemonicParsing="false" onMouseClicked="#downloadServer" prefHeight="34.0" prefWidth="175.0" text="Download Server" StackPane.alignment="CENTER_RIGHT">
-                                 <styleClass>
-                                    <String fx:value="color-alt" />
-                                    <String fx:value="text-6" />
-                                 </styleClass>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Button>
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="ramBlock" alignment="TOP_CENTER" layoutX="60.0" layoutY="105.0" maxHeight="45.0" maxWidth="750.0" prefHeight="45.0" prefWidth="950.0">
+                           <children>
+                              <Label fx:id="profileRamLabel" styleClass="text-5" text="RAM" StackPane.alignment="CENTER_LEFT" />
+                              <Slider fx:id="profileRam" blockIncrement="1024.0" majorTickUnit="1024.0" max="8192.0" maxWidth="380.0" min="1024.0" minorTickCount="1" onDragDetected="#sliderChanged" onMouseClicked="#sliderChanged" onMouseDragged="#sliderChanged" onMouseMoved="#sliderChanged" onScroll="#sliderChanged" onTouchMoved="#sliderChanged" prefHeight="33.0" prefWidth="483.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1024.0" StackPane.alignment="CENTER_RIGHT">
+                                 <StackPane.margin>
+                                    <Insets right="70.0" />
+                                 </StackPane.margin>
+                              </Slider>
+                              <Label fx:id="profileRamAssignateLabel" layoutX="10.0" layoutY="25.0" styleClass="text-5" text="asignate" StackPane.alignment="CENTER_RIGHT">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                              </Label>
                            </children>
                         </StackPane>
                         <StackPane layoutX="160.0" layoutY="55.0" maxHeight="45.0" maxWidth="750.0" prefHeight="45.0" prefWidth="950.0">

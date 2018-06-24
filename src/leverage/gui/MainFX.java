@@ -32,6 +32,7 @@ import leverage.Settings;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
+import leverage.client.AntiCheat;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -61,31 +62,33 @@ import java.util.zip.ZipOutputStream;
 
 public class MainFX {
 
-    @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
+    @FXML private Label progressText, newsLabel, optimizeLabel, controlLabel, skinsLabel, settingsLabel, launchOptionsLabel,
             keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, includeCape, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
             nameLabel, profileVersionLabel, skinLabel, /*capeLabel,*/ modelLabel, iconLabel, helpButton, gameVersion,
-            authenticationLabel, authServer, poweredLabel;
+            authenticationLabel, authServer, poweredLabel, profileRamLabel, profileRamAssignateLabel;
     @FXML private Button playButton, deleteButton, changeIcon, /*deleteSkin, deleteCape,*/ logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
-            /*selectCape,*/ exportLogs, downloadServer, deleteCache, deleteLogs, deleteCrash,
-            deleteSave, deleteConfig, deleteExtra, deleteShader, deleteResources, profilePopupButton;
-    @FXML private Tab loginTab, newsTab, optimizeTab, skinsTab,
+            /*selectCape,*/ exportLogs, /*downloadServer,*/ deleteCache, deleteLogs, deleteCrash,
+            deleteSave, deleteConfig, deleteExtra, deleteShader, deleteResources, controlMods, controlVersion,
+                    controlForge, controlResource, profilePopupButton;
+    @FXML private Tab loginTab, newsTab, optimizeTab, controlTab, skinsTab,
             settingsTab, launchOptionsTab, profileEditorTab;
     @FXML private ProgressBar progressBar;
     @FXML private TabPane contentPane;
-    @FXML private ListView<Label> languagesList, profileList, profilePopupList;
+    @FXML private ListView<Label> languagesList, controlList, profileList, profilePopupList;
     @FXML private ListView<ImageView> iconList;
     @FXML private VBox progressPane, existingPanel, playPane, skinActions, newsContainer;
     @FXML private HBox tabMenu, slideshowBox;
     @FXML private TextField username, profileName,javaExec, gameDir, javaArgs,
             resH, resW;
     @FXML private PasswordField password;
+    @FXML private Slider profileRam;
     @FXML private ComboBox<User> existingUsers;
     @FXML private ComboBox<VersionMeta> versionList;
-    @FXML private StackPane versionBlock, javaArgsBlock, javaExecBlock, iconBlock;
+    @FXML private StackPane versionBlock, javaArgsBlock, javaExecBlock, iconBlock, ramBlock;
     @FXML private ImageView profileIcon, slideshow, skinPreview;
     @FXML private RadioButton skinClassic, skinSlim, authLeverage, authOffline;
     @FXML private Hyperlink forgotPasswordLink;
@@ -102,7 +105,7 @@ public class MainFX {
     private Image skin, cape, alex, steve;
     private boolean texturesLoaded;
     private String urlPrefix = "";
-    private boolean iconListLoaded, versionListLoaded, languageListLoaded, loadingTextures, profileListLoaded,
+    private boolean iconListLoaded, versionListLoaded, languageListLoaded, loadingTextures, controlListLoaded, profileListLoaded,
             profileListPopupLoaded;
 
     /**
@@ -131,7 +134,6 @@ public class MainFX {
         newsTitle.setText("Cargando Noticias...");
         newsText.setText("Por favor espere un Momento..");
         loadSlideshow();
-        setSkinLabelName();
 
         //Refresh session
         refreshSession();
@@ -242,20 +244,17 @@ public class MainFX {
             String response = Utils.readURL(adsCheck);
             if (!response.isEmpty()) {
                 String[] chunks = response.split(":");
-                String firstChunk = Utils.fromBase64(chunks[0]);
-                urlPrefix = firstChunk == null ? "" : firstChunk;
-                if (chunks.length == 2) {
-                    String secondChunk = Utils.fromBase64(response.split(":")[1]);
-                    String adsURL = secondChunk == null ? "" : secondChunk;
-                    kernel.getBrowser().loadWebsite(adsURL);
-                    kernel.getBrowser().show(mainScene);
+                if(chunks[0].equals("BAN") || chunks[0].equals("NICKBAN") || chunks[0].equals("IP")) {
+                    console.print(chunks[1]);
+                    kernel.showAlert(Alert.AlertType.ERROR, null, chunks[1]);
+                    this.gameEnded(false);
                 }
-                console.print("Ads loaded.");
+                console.print("Anuncios Cargados.");
             } else {
-                console.print("Ads info not available.");
+                console.print("No existe Informacion en los Anuncios.");
             }
         } else {
-            console.print("Ads not available for Mojang user.");
+            console.print("Anuncios no disponibles.");
         }
     }
 
@@ -267,6 +266,7 @@ public class MainFX {
         logoutButton.setText(Language.get(3));
         newsLabel.setText(Language.get(4));
         optimizeLabel.setText(Language.get(106));
+        controlLabel.setText(Language.get(124));
         launcherOptimize.setText(Language.get(121));
         skinsLabel.setText(Language.get(5));
         settingsLabel.setText(Language.get(6));
@@ -288,8 +288,9 @@ public class MainFX {
         registerButton.setText(Language.get(21));
         changeIcon.setText(Language.get(24));
         exportLogs.setText(Language.get(27));
-        downloadServer.setText(Language.get(28));
+        //downloadServer.setText(Language.get(28));
         skinLabel.setText(Language.get(29));
+        profileRamLabel.setText(Language.get(129));
         //capeLabel.setText(Language.get(30));
         launcherSettings.setText(Language.get(45));
         keepLauncherOpen.setText(Language.get(46));
@@ -312,6 +313,7 @@ public class MainFX {
         //selectCape.setText(Language.get(87));
         //deleteSkin.setText(Language.get(88));
         //deleteCape.setText(Language.get(88));
+        skinSlim.setText(Language.get(123));
         modelLabel.setText(Language.get(89));
         skinClassic.setText(Language.get(90));
         iconLabel.setText(Language.get(92));
@@ -324,9 +326,14 @@ public class MainFX {
         deleteExtra.setText(Language.get(110));
         deleteShader.setText(Language.get(113));
         deleteResources.setText(Language.get(111));
+        controlMods.setText(Language.get(125));
+        controlVersion.setText(Language.get(126));
+        controlForge.setText(Language.get(127));
+        controlResource.setText(Language.get(128));
         forgotPasswordLink.setText(Language.get(97));
         profileName.setPromptText(Language.get(98));
         authenticationLabel.setText(Language.get(99));
+        profileRamAssignateLabel.setText(String.valueOf((int) profileRam.getValue()) + " MB");
         if (slides.isEmpty()) {
             newsTitle.setText(Language.get(102));
             newsText.setText(Language.get(103));
@@ -351,10 +358,17 @@ public class MainFX {
         alex = new Image("/leverage/gui/textures/alex.png");
         steve = new Image("/leverage/gui/textures/steve.png");
         cape = null;
+        User selected = kernel.getAuthentication().getSelectedUser();
 
-        if (Kernel.USE_LOCAL) {
-            return;
+        if (selected.getType() == UserType.OFFLINE) {
+            console.print("Cargando Texturas...");
+            skinActions.setVisible(false);
+            skinActions.setManaged(false);
+            MainFX.this.toggleSkinType();
+            console.print("Texturas Cargadas.");
+            return ;
         }
+
         console.print("Cargando Texturas...");
         Thread t = new Thread(new Runnable() {
             @Override
@@ -367,18 +381,12 @@ public class MainFX {
                         alex = new Image("/leverage/gui/textures/alex.png");
                         steve = new Image("/leverage/gui/textures/steve.png");
                     }
-                    User selected = kernel.getAuthentication().getSelectedUser();
-                    if (selected.getType() == UserType.OFFLINE) {
-                        skinActions.setVisible(false);
-                        skinActions.setManaged(false);
-                    } else {
-                        skinActions.setVisible(true);
-                        skinActions.setManaged(true);
-                    }
+
+                    skinActions.setVisible(true);
+                    skinActions.setManaged(true);
+
                     String skinPath = Urls.skinsPathProfileId(selected.getUsername().replace("leverage://", "").toLowerCase());
-                    InputStream stream = Utils.readCachedStream(skinPath);
-                    skin = new Image(stream);
-                    stream.close();
+                    skin = new Image(Utils.readCachedStream(skinPath));
                     if (skin == null || skin.getHeight() == 0) {
                         skin = steve;
                     } else if (skin.getHeight() == 0) {
@@ -456,14 +464,13 @@ public class MainFX {
      * @param file File to be submited. Null if it's a deletion.
      */
     private void submitChange(String target, File file) {
-        String CHANGESKIN_URL = "https://mc.krothium.com/changeskin";
-        String CHANGECAPE_URL = "https://mc.krothium.com/changecape";
-        String url = target.equals("skin") ? CHANGESKIN_URL : CHANGECAPE_URL;
+        String url = target.equals("skin") ? Urls.CHANGESKIN_URL : Urls.CHANGECAPE_URL;
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", kernel.getAuthentication().getSelectedUser().getAccessToken());
         params.put("Client-Token", kernel.getAuthentication().getClientToken());
         byte[] data = null;
         if (file != null) {
+            console.print(file.length() + " - Tamaño del Skins Subido");
             if (file.length() > 131072) {
                 if (target.equals("skin")) {
                     console.print("Skin file exceeds 128KB file size limit.");
@@ -774,6 +781,20 @@ public class MainFX {
     }
 
     /**
+     * Loads Control list items
+     */
+    private void loadControlList() {
+        console.print("Cargando Lista de Objetos...");
+        ObservableList<Label> controlListItems = getProfileList();
+
+        //Add "Add New Profile" item
+        controlListItems.add(0, new Label(Language.get(51), new ImageView(new Image("/leverage/gui/textures/add.png"))));
+        controlList.setItems(controlListItems);
+        controlListLoaded = true;
+        console.print("Profile list loaded.");
+    }
+
+    /**
      * Loads profiles popup list items
      */
     private void loadProfileListPopup() {
@@ -956,6 +977,7 @@ public class MainFX {
         progressBar.setProgress(0);
         progressText.setText("");
         final Downloader d = kernel.getDownloader();
+        final AntiCheat anti = kernel.getAntiCheat();
         final GameLauncher gl = kernel.getGameLauncher();
 
         //Keep track of the progress
@@ -1173,6 +1195,8 @@ public class MainFX {
             newsLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == optimizeTab) {
             optimizeLabel.getStyleClass().remove("selectedItem");
+        } else if (oldTab == controlTab) {
+            controlLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == skinsTab) {
             skinsLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == settingsTab) {
@@ -1194,6 +1218,9 @@ public class MainFX {
         if (source == newsLabel) {
             newsLabel.getStyleClass().add("selectedItem");
             selection.select(newsTab);
+        } else if (source == controlLabel) {
+            controlLabel.getStyleClass().add("selectedItem");
+            selection.select(controlTab);
         } else if (source == optimizeLabel) {
             optimizeLabel.getStyleClass().add("selectedItem");
             selection.select(optimizeTab);
@@ -1300,6 +1327,8 @@ public class MainFX {
                 javaExecBlock.setManaged(true);
                 javaArgsBlock.setVisible(true);
                 javaArgsBlock.setManaged(true);
+                ramBlock.setVisible(false);
+                ramBlock.setManaged(false);
                 toggleEditorOption(javaExecLabel, false);
                 javaExec.setText(Utils.getJavaDir());
                 toggleEditorOption(javaArgsLabel, false);
@@ -1316,6 +1345,8 @@ public class MainFX {
                 javaExecBlock.setManaged(false);
                 javaArgsBlock.setVisible(false);
                 javaArgsBlock.setManaged(false);
+                ramBlock.setVisible(true);
+                ramBlock.setManaged(true);
             }
             toggleEditorOption(resolutionLabel, false);
             resW.setText(String.valueOf(854));
@@ -1340,6 +1371,8 @@ public class MainFX {
                     versionBlock.setManaged(false);
                     iconBlock.setVisible(false);
                     iconBlock.setManaged(false);
+                    ramBlock.setVisible(false);
+                    ramBlock.setVisible(false);
                 } else {
                     if (p.hasIcon()) {
                         profileIcon.setImage(kernel.getProfileIcon(p.getIcon()));
@@ -1358,6 +1391,8 @@ public class MainFX {
                     versionBlock.setManaged(true);
                     iconBlock.setVisible(true);
                     iconBlock.setManaged(true);
+                    ramBlock.setVisible(true);
+                    ramBlock.setVisible(true);
                     if (p.hasVersion()) {
                         if (p.isLatestRelease()) {
                             versionList.getSelectionModel().select(0);
@@ -1393,7 +1428,9 @@ public class MainFX {
                     javaExecBlock.setVisible(true);
                     javaExecBlock.setManaged(true);
                     javaArgsBlock.setVisible(true);
-                    javaArgsBlock.setManaged(true);
+                    javaArgsBlock.setManaged(true);;
+                    ramBlock.setVisible(false);
+                    ramBlock.setVisible(false);
                     if (p.hasJavaDir()){
                         toggleEditorOption(javaExecLabel, true);
                         javaExec.setText(p.getJavaDir().getAbsolutePath());
@@ -1404,6 +1441,7 @@ public class MainFX {
                     if (p.hasJavaArgs()) {
                         toggleEditorOption(javaArgsLabel, true);
                         javaArgs.setText(p.getJavaArgs());
+                        String[] value = p.getJavaArgs().replace("-Xmx", "").split("M");
                     } else {
                         toggleEditorOption(javaArgsLabel, false);
                         StringBuilder jA = new StringBuilder(15);
@@ -1419,7 +1457,9 @@ public class MainFX {
                     javaExecBlock.setVisible(false);
                     javaExecBlock.setManaged(false);
                     javaArgsBlock.setVisible(false);
-                    javaArgsBlock.setManaged(false);
+                    javaArgsBlock.setManaged(false);;
+                    ramBlock.setVisible(true);
+                    ramBlock.setVisible(true);
                 }
             }
         }
@@ -1491,6 +1531,11 @@ public class MainFX {
                 target.setIcon(profileIcon.getId());
             } catch (IllegalArgumentException ex) {
                 target.setIcon(null);
+            }
+
+            if (!settings.getEnableAdvanced()) {
+                int value = (int) profileRam.getValue());
+                target.setJavaArgs("-Xmx"+ value +"M -Xmn128M");
             }
         }
         if (!resW.isDisabled()) {
@@ -1643,7 +1688,7 @@ public class MainFX {
     public final void authenticate() {
         if (username.getText().isEmpty()) {
             kernel.showAlert(Alert.AlertType.WARNING, null, Language.get(17));
-        } else if (password.getText().isEmpty()) {
+        } else if (password.getText().isEmpty() && authLeverage.isSelected()) {
             kernel.showAlert(Alert.AlertType.WARNING, null, Language.get(23));
         } else {
             try {
@@ -1654,7 +1699,7 @@ public class MainFX {
                     auth.authenticate(user, password.getText());
                 } else {
                     user = username.getText();
-                    auth.authenticate(user, password.getText());
+                    auth.authenticate(user, null);
                 }
                 kernel.saveProfiles();
                 username.setText("");
@@ -1858,6 +1903,34 @@ public class MainFX {
     }
 
     /**
+     * Hide/Show Password Field in Login
+     */
+    @FXML private void hideShowPasswordField() {
+        if(authLeverage.isSelected()) {
+            passwordLabel.setVisible(true);
+            password.setVisible(true);
+        } else {
+            passwordLabel.setVisible(false);
+            password.setVisible(false);
+        }
+    }
+
+    /**
+     * Change Name Ram Assignate Slider
+     */
+    @FXML private void sliderChanged() {
+        int value = (int) profileRam.getValue();
+        profileRamAssignateLabel.setText(String.valueOf(value) + " MB");
+    }
+
+    /**
+     * Switch List in ControlTab
+     */
+    @FXML private void switchControlTab() {
+        System.out.println("TOKE");
+    }
+
+    /**
      * Removes the launcher cache
      */
     @FXML private void deleteCache() {
@@ -1971,14 +2044,6 @@ public class MainFX {
             kernel.showAlert(Alert.AlertType.INFORMATION, null, Language.get(117));
         }
     }
-    
-    /**
-     * Opens the URL of the selected version server in the default user web browser
-     */
-    @FXML private void downloadServer() {
-        VersionMeta selectedItem = versionList.getSelectionModel().getSelectedItem();
-        kernel.getHostServices().showDocument(urlPrefix + "https://s3.amazonaws.com/Minecraft.Download/versions/" + selectedItem.getID() + "/minecraft_server." + selectedItem.getID() + ".jar");
-    }
 
     /**
      * Selects a game directory for the profile editor
@@ -2021,24 +2086,6 @@ public class MainFX {
                 authServer.setText("(LEVERAGE)");
             } else {
                 authServer.setText("(OFFLINE)");
-            }
-        }
-    }
-
-    public void setSkinLabelName() {
-        console.print("Comprobando Skins en el Servidor");
-        User user = existingUsers.getValue();
-        if (user != null) {
-            if (user.getType() == UserType.LEVERAGE) {
-                try {
-                    String skinPath = Urls.skinsPathProfileId(user.getUsername().replace("leverage://", "").toLowerCase());
-                    InputStream stream = Utils.readCachedStream(skinPath);
-                    stream.close();
-                    skinSlim.setText(Language.get(123));
-                } catch (IOException e) {
-                    console.print(e.getMessage());
-                    skinSlim.setText(Language.get(91));
-                }
             }
         }
     }

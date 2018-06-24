@@ -32,13 +32,13 @@ public final class Version {
         if (version.has("id")) {
             id = version.getString("id");
         } else {
-            throw new Exception("Invalid version id.");
+            throw new Exception("ID Version invalida.");
         }
         if (version.has("type")) {
             type = VersionType.valueOf(version.getString("type").toUpperCase(Locale.ENGLISH));
         } else {
             type = VersionType.RELEASE;
-            console.print("Remote version " + id + " has no version type. Will be loaded as a RELEASE.");
+            console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
         }
         if (version.has("mainClass")) {
             mainClass = version.getString("mainClass");

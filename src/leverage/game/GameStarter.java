@@ -8,11 +8,11 @@ import java.net.URL;
 public class GameStarter {
 
     public static void main(String[] args) {
-        System.out.println("GameStarter launcher with " + args.length + " arguments.");
+        System.out.println("GameStarter lanzandose con " + args.length + " argumetnos.");
         URL.setURLStreamHandlerFactory(new URLHandler());
-        System.out.println("Loaded URL Handler.");
+        System.out.println("Cargando URL Handler.");
         if (args.length == 0) {
-            System.err.println("Invalid number of arguments.");
+            System.err.println("Numero invalido en los Argumentos.");
             System.exit(-1);
         }
         String mainClass = args[0];
@@ -23,7 +23,7 @@ public class GameStarter {
             Method method = gameClass.getMethod("main", String[].class);
             method.invoke(null, (Object) gameArgs);
         } catch (Exception ex) {
-            System.out.println("Failed to start the game.");
+            System.out.println("Ha fallado el Inicio del Juego.");
             ex.printStackTrace();
             System.exit(-1);
         }

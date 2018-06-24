@@ -84,7 +84,7 @@ Descarga fallida
 ¡Fallo al ejecutar la tarea de descarga del juego! Comprueba los registros para más información.
 Usuarios Existentes:
 Cambiar Cuenta
-SELECCIONAR
+SUBIR
 ELIMINAR
 MODELO DEL JUGADOR
 Clásico
@@ -121,3 +121,9 @@ Paquetes de Sombras eliminados correctamente
 Optimizar Launcher:
 Cuentas
 Tu Skin
+Control
+Mods
+Versiones
+Forge
+Paquetes de Recursos
+Memoria Asignada
