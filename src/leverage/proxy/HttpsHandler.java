@@ -1,11 +1,6 @@
 package leverage.proxy;
 
-import leverage.proxy.matchers.HasJoinedMatcher;
-import leverage.proxy.matchers.BlockedServersMatcher;
-import leverage.proxy.matchers.ProfileMatcher;
-import leverage.proxy.matchers.RealmsMatcher;
-import leverage.proxy.matchers.JoinMatcher;
-import leverage.proxy.matchers.URLMatcher;
+import leverage.proxy.matchers.*;
 import sun.net.www.protocol.https.Handler;
 
 import java.io.IOException;

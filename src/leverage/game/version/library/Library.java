@@ -1,7 +1,7 @@
 package leverage.game.version.library;
 
-import leverage.OSArch;
 import leverage.OS;
+import leverage.OSArch;
 import leverage.game.download.Downloadable;
 import leverage.util.Urls;
 import leverage.util.Utils;

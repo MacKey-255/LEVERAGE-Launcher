@@ -1,9 +1,5 @@
 package leverage.gui;
 
-import leverage.Settings;
-import leverage.Kernel;
-import leverage.Console;
-import leverage.OSArch;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,6 +25,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import leverage.Console;
+import leverage.Kernel;
+import leverage.OSArch;
+import leverage.Settings;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;

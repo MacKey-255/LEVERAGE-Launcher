@@ -2,10 +2,10 @@ package leverage.game.version;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.util.Utils;
 import leverage.game.download.Downloadable;
 import leverage.game.version.asset.AssetIndex;
 import leverage.game.version.library.Library;
+import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

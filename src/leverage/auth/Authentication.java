@@ -2,12 +2,12 @@ package leverage.auth;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.util.Urls;
-import leverage.util.Utils;
 import leverage.auth.user.User;
 import leverage.auth.user.UserProfile;
 import leverage.auth.user.UserType;
 import leverage.exceptions.AuthenticationException;
+import leverage.util.Urls;
+import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

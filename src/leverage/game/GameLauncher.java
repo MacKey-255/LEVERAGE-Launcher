@@ -8,8 +8,6 @@ import javafx.stage.Stage;
 import leverage.Console;
 import leverage.Kernel;
 import leverage.OSArch;
-import leverage.gui.MainFX;
-import leverage.util.Utils;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
@@ -20,7 +18,9 @@ import leverage.game.version.VersionMeta;
 import leverage.game.version.Versions;
 import leverage.game.version.asset.AssetIndex;
 import leverage.game.version.library.Library;
+import leverage.gui.MainFX;
 import leverage.gui.OutputFX;
+import leverage.util.Utils;
 import org.json.JSONObject;
 
 import java.io.*;

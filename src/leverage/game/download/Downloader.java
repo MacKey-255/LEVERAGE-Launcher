@@ -2,8 +2,6 @@ package leverage.game.download;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.util.Urls;
-import leverage.util.Utils;
 import leverage.exceptions.DownloaderException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
@@ -11,6 +9,8 @@ import leverage.game.version.VersionMeta;
 import leverage.game.version.Versions;
 import leverage.game.version.asset.AssetIndex;
 import leverage.game.version.library.Library;
+import leverage.util.Urls;
+import leverage.util.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
