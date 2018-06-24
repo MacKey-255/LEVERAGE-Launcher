@@ -777,9 +777,8 @@ public class MainFX {
         profileListItems.add(0, new Label(Language.get(51), new ImageView(new Image("/leverage/gui/textures/add.png"))));
         profileList.setItems(profileListItems);
         profileListLoaded = true;
-        console.print("Profile list loaded.");
+        console.print("Lista de Perfiles Cargada.");
     }
-
     /**
      * Loads Control list items
      */
@@ -788,10 +787,9 @@ public class MainFX {
         ObservableList<Label> controlListItems = getProfileList();
 
         //Add "Add New Profile" item
-        controlListItems.add(0, new Label(Language.get(51), new ImageView(new Image("/leverage/gui/textures/add.png"))));
         controlList.setItems(controlListItems);
         controlListLoaded = true;
-        console.print("Profile list loaded.");
+        console.print("Lista de Objetos Cargada.");
     }
 
     /**
@@ -1221,6 +1219,8 @@ public class MainFX {
         } else if (source == controlLabel) {
             controlLabel.getStyleClass().add("selectedItem");
             selection.select(controlTab);
+            if(!controlListLoaded)
+                loadControlList();
         } else if (source == optimizeLabel) {
             optimizeLabel.getStyleClass().add("selectedItem");
             selection.select(optimizeTab);
@@ -1441,7 +1441,6 @@ public class MainFX {
                     if (p.hasJavaArgs()) {
                         toggleEditorOption(javaArgsLabel, true);
                         javaArgs.setText(p.getJavaArgs());
-                        String[] value = p.getJavaArgs().replace("-Xmx", "").split("M");
                     } else {
                         toggleEditorOption(javaArgsLabel, false);
                         StringBuilder jA = new StringBuilder(15);
@@ -1460,6 +1459,21 @@ public class MainFX {
                     javaArgsBlock.setManaged(false);;
                     ramBlock.setVisible(true);
                     ramBlock.setVisible(true);
+
+                    try {
+                        String[] value = p.getJavaArgs().replace("-Xmx", "").split("M");
+                        if (value[0].toCharArray().length > 4) {
+                            value = p.getJavaArgs().replace("-Xmx", "").split("G");
+                            Double result = Double.valueOf(value[0] + "000") + Double.valueOf(value[0]) * 24;
+                            profileRam.setValue(result);
+                            profileRamAssignateLabel.setText(String.valueOf(result).replace(".0", "") + " MB");
+                        } else {
+                            profileRam.setValue(Double.valueOf(value[0]));
+                            profileRamAssignateLabel.setText(value[0] + " MB");
+                        }
+                    } catch (Exception ex){
+                        console.print("No hay RAM Asignada. Asignacion Automatica...");
+                    }
                 }
             }
         }
@@ -1534,7 +1548,7 @@ public class MainFX {
             }
 
             if (!settings.getEnableAdvanced()) {
-                int value = (int) profileRam.getValue());
+                int value = (int) profileRam.getValue();
                 target.setJavaArgs("-Xmx"+ value +"M -Xmn128M");
             }
         }
@@ -1927,6 +1941,7 @@ public class MainFX {
      * Switch List in ControlTab
      */
     @FXML private void switchControlTab() {
+        //Action Bottom Control
         System.out.println("TOKE");
     }
 

@@ -61,10 +61,11 @@ public final class Kernel {
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
-    private static final File APPLICATION_CONFIG = new File(APPLICATION_WORKING_DIR, "launcher_profiles.json");
-    public static final File APPLICATION_LOGS = new File(APPLICATION_WORKING_DIR, "logs");
-    public static final File APPLICATION_CACHE = new File(APPLICATION_WORKING_DIR, "cache");
     public static final File APPLICATION_LIBS = new File(APPLICATION_WORKING_DIR, "launcher-libraries");
+    private static final File APPLICATION_CONFIG = new File(APPLICATION_LIBS, "launcher_profiles.json");
+    private static final File APPLICATION_SERVERS = new File(APPLICATION_LIBS, "data_list.json");
+    public static final File APPLICATION_LOGS = new File(APPLICATION_LIBS, "logs");
+    public static final File APPLICATION_CACHE = new File(APPLICATION_LIBS, "cache");
     public static Image APPLICATION_ICON;
     public static boolean USE_LOCAL;
 
@@ -72,11 +73,12 @@ public final class Kernel {
         if (!APPLICATION_WORKING_DIR.isDirectory()) {
             APPLICATION_WORKING_DIR.mkdirs();
         }
+        APPLICATION_LIBS.mkdir();
         APPLICATION_CACHE.mkdir();
         APPLICATION_LOGS.mkdir();
         console = new Console();
         console.print("-------------------------------------------------");
-        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium");
+        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium - Launcher");
         console.print("OS: " + System.getProperty("os.name"));
         console.print("OS Version: " + System.getProperty("os.version"));
         console.print("OS Architecture: " + System.getProperty("os.arch"));
