@@ -3,6 +3,7 @@ package leverage.util;
 import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
+import leverage.client.components.Mod;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -14,10 +15,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -226,6 +228,55 @@ public final class Utils {
         } catch (IOException | NoSuchAlgorithmException ex) {
             return null;
         }
+    }
+
+    /**
+     * Reader a List Mods
+     * @param m The Mods Dir
+     * @return A List Mods
+     *//*
+    public static List<Mod> getListMods(File m) {
+        List<Mod> list = new ArrayList<>();
+        try {
+            if (m.isDirectory()) {
+                File[] h = m.listFiles();
+                for (int i=0; i < h.length; i++) {
+                    this.getListMods(h[i]);
+                }
+                dir.delete();
+            } else {
+                list.add(new Mod(id, name, url, nameJar, version));
+            }
+        } catch (Exception e) {
+            System.err.println("Error Leyendo Mods");
+        }
+        return list;
+    }*/
+
+    /**
+     * Reader a List Mods
+     * @param m The Mods Dir
+     * @return A List Mods
+     */
+    public static Mod getMod(File file) {
+        String id = null, name = null, version = null;
+        String url = file.getAbsolutePath();
+        String nameJar = file.getName();
+
+        System.out.println("NAME JAR: "+nameJar);
+
+        //Extract Data Jar
+        try {
+            JarFile jar = new JarFile(url);
+            Manifest m = jar.getManifest();
+            Attributes a = m.getMainAttributes();
+
+            System.out.println(a.getValue("Manifest-Version").toString());
+        } catch (IOException ex) {
+            System.err.println("ERROR: "+ex.getMessage());
+        }
+
+        return new Mod(id, name, url, nameJar, version);
     }
 
     /**

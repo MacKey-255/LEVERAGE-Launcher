@@ -18,7 +18,7 @@ public class Mod {
         this.url = url;
         this.nameJar = nameJar;
         this.version = version;
-        relativeJar = new File("mods" + File.separator + url + ".jar");
+        relativeJar = new File(url);
         this.diskSpace = relativeJar.length();
     }
 

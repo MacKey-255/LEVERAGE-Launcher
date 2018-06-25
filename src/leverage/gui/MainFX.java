@@ -9,6 +9,7 @@ import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,6 +34,7 @@ import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
+import leverage.client.components.Mod;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -51,10 +53,12 @@ import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -641,6 +645,8 @@ public class MainFX {
      */
     private void loadSlideshow() {
         console.print("Cargando Slides de Noticias...");
+
+
         try {
             String newsURL = Urls.newsUrl;
             String response = Utils.readURL(newsURL);
@@ -784,7 +790,47 @@ public class MainFX {
      */
     private void loadControlList() {
         console.print("Cargando Lista de Objetos...");
-        ObservableList<Label> controlListItems = getProfileList();
+
+        ObservableList<Label> controlListItems = FXCollections.observableArrayList();
+        Label l;
+        ImageView iv;
+        String text, icon, version;
+
+        try {
+            String response = Utils.readURL(Urls.modsList);
+            if (response.isEmpty()) {
+                console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
+                return;
+            }
+            JSONArray entries = new JSONArray(response);
+            for (int i = 0; i < entries.length(); i++) {
+                JSONObject entry = entries.getJSONObject(i);
+
+                text = entry.keys().next();
+                JSONObject mod = entry.getJSONObject(text);
+                icon = Urls.mods + text.toLowerCase() + "/" + mod.getString("nameIcon");
+                version = mod.getString("version");
+
+                iv = new ImageView(new Image(icon));
+                iv.setFitWidth(48);
+                iv.setFitHeight(48);
+                l = new Label(" " + text, iv);
+                l.setText(l.getText() + '\n' + " Version: " +  version);
+
+                if (text.equals(text)) {
+                    Mod m = Utils.getMod(new File("/home/mackey/.minecraft/mods/[1.12.2]appliedenergistics2-rv5-stable-11.jar"));
+                    l.getStyleClass().add("selectedProfile");
+                }
+
+                controlListItems.add(l);
+            }
+        } catch (Exception ex) {
+            newsTitle.setText(Language.get(80));
+            newsText.setText(Language.get(101));
+            console.print("No se ha podido Cargar los Datos de las Noticias.");
+            ex.printStackTrace(console.getWriter());
+            return;
+        }
 
         //Add "Add New Profile" item
         controlList.setItems(controlListItems);
@@ -1026,7 +1072,7 @@ public class MainFX {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                MainFX.this.stage.close();
+                                MainFX.this.stage.hide();
                             }
                         });
                     }
@@ -1051,6 +1097,7 @@ public class MainFX {
                 }
             }
         });
+        console.print("Ejecutando Minecraft");
         runThread.start();
     }
 
@@ -1066,8 +1113,24 @@ public class MainFX {
                     kernel.showAlert(Alert.AlertType.ERROR, Language.get(16), Language.get(15));
                 }
                 if (!settings.getKeepLauncherOpen()) {
-                    kernel.exitSafely();
+                    //kernel.exitSafely();
                 }
+                playButton.setDisable(false);
+                profilePopupButton.setDisable(false);
+                if (Kernel.USE_LOCAL) {
+                    playButton.setText(Language.get(79));
+                } else {
+                    playButton.setText(Language.get(12));
+                }
+            }
+        });
+    }
+
+    public final void show() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                MainFX.this.stage.show();
                 playButton.setDisable(false);
                 profilePopupButton.setDisable(false);
                 if (Kernel.USE_LOCAL) {

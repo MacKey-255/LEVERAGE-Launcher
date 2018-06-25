@@ -185,7 +185,7 @@ public class GameLauncher {
             gameArgs.add("leverage.game.GameStarter");
         }
         gameArgs.add(ver.getMainClass());
-        console.print("Full game launcher parameters: ");
+        console.print("Estan Listos todos los Parametros del Juego");
         String[] versionArgs = ver.getMinecraftArguments().split(" ");
         for (int i = 0; i < versionArgs.length; i++) {
             if (versionArgs[i].startsWith("$")) {
@@ -307,6 +307,7 @@ public class GameLauncher {
                         Utils.deleteDirectory(nativesDir);
                         timer.cancel();
                         timer.purge();
+                        mainFX.show();
                         mainFX.gameEnded(error);
                     }
                 }

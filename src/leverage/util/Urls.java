@@ -12,6 +12,9 @@ public class Urls {
     public static final String CHANGECAPE_URL = "https://mc.krothium.com/changecape";
     public static final String versionManifest = leverage + "/version_manifest.json";
 
+    public static final String mods = "http://127.0.0.1/mods/1.12.2/";
+    public static final String modsList = "http://127.0.0.1/mods/1.12.2/mod_list.json";
+
     //URLS ANTICHEAT SYSTEM
     public static final String comfirmIP = leverage;
     public static final String listData = leverage;
