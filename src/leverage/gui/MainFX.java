@@ -73,7 +73,7 @@ public class MainFX {
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
-            nameLabel, profileVersionLabel, iconLabel, helpButton, gameVersion,
+            nameLabel, profileVersionLabel, iconLabel, helpButton, gameVersion, playersServer,
             authenticationLabel, authServer, poweredLabel, profileRamLabel, profileRamAssignateLabel;
     @FXML private Button playButton, deleteButton, changeIcon, logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
@@ -140,6 +140,7 @@ public class MainFX {
         newsTitle.setText("Cargando Noticias...");
         newsText.setText("Por favor espere un Momento..");
         loadSlideshow();
+        onlineList();
 
         // Refrescando Login
         refreshSession();
@@ -327,6 +328,7 @@ public class MainFX {
         forgotPasswordLink.setText(Language.get(97));
         profileName.setPromptText(Language.get(98));
         authenticationLabel.setText(Language.get(99));
+        onlineList();
         profileRamAssignateLabel.setText(String.valueOf((int) profileRam.getValue()) + " MB");
         if (slides.isEmpty()) {
             newsTitle.setText(Language.get(102));
@@ -550,6 +552,22 @@ public class MainFX {
             newsText.setText(Language.get(103));
         }
         console.print("Slides de Noticias cargado.");
+    }
+
+    public void onlineList() {
+        String response = Utils.readURL(Urls.onlineData);
+        if (!response.isEmpty()) {
+            console.print("Cargando listado de Usuarios Conectados al Servidor.");
+            JSONObject object = new JSONObject(response);
+            String text = object.getInt("online") + " / " + object.getInt("total") + " " + Language.get(135);
+            // Mostrar Onlines
+            playersServer.setText(text);
+
+        } else {
+            console.print("No hay Usuarios conectados..");
+            String text = Language.get(133) + Language.get(134);
+            playersServer.setText(text);
+        }
     }
 
     /**
@@ -1080,6 +1098,7 @@ public class MainFX {
      */
     @FXML public final void switchTab(Event e) {
         switchTab(e.getSource());
+        onlineList();
     }
 
     /**
@@ -1613,6 +1632,7 @@ public class MainFX {
                 password.setText("");
                 showLoginPrompt(false);
                 fetchAds();
+                onlineList();
                 texturesLoaded = false;
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
@@ -1654,6 +1674,7 @@ public class MainFX {
                 showLoginPrompt(true);
             }
         }
+        onlineList();
     }
 
     /**
@@ -1673,6 +1694,7 @@ public class MainFX {
             kernel.showAlert(Alert.AlertType.ERROR, Language.get(62), ex.getMessage());
             updateExistingUsers();
         }
+        onlineList();
     }
 
     /**
@@ -1687,6 +1709,7 @@ public class MainFX {
             kernel.saveProfiles();
             updateExistingUsers();
         }
+        onlineList();
     }
 
     /**
@@ -1710,6 +1733,13 @@ public class MainFX {
      */
     @FXML public final void openNews() {
         kernel.getHostServices().showDocument(Urls.leverage);
+    }
+
+    /**
+     * Opens the list Server page
+     */
+    @FXML public final void openListServer() {
+        kernel.getHostServices().showDocument(Urls.listOnline);
     }
 
     /**

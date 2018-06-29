@@ -21,6 +21,7 @@ public final class Version {
     private final String jsonURL;
     private String mainClass, minecraftArguments, jar;
     private AssetIndex assetIndex;
+    private double diskSpace;
     private final File relativeJar;
     private final File relativeJSON;
 
@@ -159,6 +160,7 @@ public final class Version {
         }
         relativeJar = new File("versions" + File.separator + idToUse + File.separator + idToUse + ".jar");
         relativeJSON = new File("versions" + File.separator + id + File.separator + id + ".json");
+        diskSpace = relativeJar.length();
     }
 
     public File getRelativeJar() {
@@ -223,6 +225,10 @@ public final class Version {
 
     public String getJar() {
         return jar;
+    }
+
+    public double getDiskSpace() {
+        return diskSpace;
     }
 
     @Override

@@ -130,3 +130,6 @@ RAM
 Game not Installed
 Error
 The Game Updated, please re-open Game
+0 / 0
+OFFLINE
+ONLINE

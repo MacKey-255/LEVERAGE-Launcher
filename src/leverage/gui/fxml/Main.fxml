@@ -41,6 +41,19 @@
                   <String fx:value="highlight" />
                </styleClass>
             </Label>
+            <Label fx:id="playersServer" alignment="CENTER" onMouseClicked="#openListServer" text="0 / 20 OFFLINE">
+               <padding>
+                  <Insets right="5.0" />
+               </padding>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <styleClass>
+                  <String fx:value="text-5" />
+                  <String fx:value="color-alt" />
+                  <String fx:value="highlight" />
+               </styleClass>
+            </Label>
             <HBox alignment="CENTER_RIGHT" maxWidth="282.0" prefHeight="35.0" prefWidth="282.0" StackPane.alignment="CENTER_RIGHT">
                <children>
                   <Label fx:id="accountButton" contentDisplay="RIGHT" onMouseClicked="#showAccountOptions" text="Account">

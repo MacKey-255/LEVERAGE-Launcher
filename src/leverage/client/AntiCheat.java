@@ -2,9 +2,9 @@ package leverage.client;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.client.components.Forge;
 import leverage.client.components.Mod;
 import leverage.client.components.ResourcePack;
+import leverage.game.profile.Profile;
 import leverage.game.version.Version;
 import leverage.util.Utils;
 import org.json.JSONArray;
@@ -17,7 +17,6 @@ public class AntiCheat {
     private Kernel kernel;
     private Console console;
     private List<Mod> mods;
-    private Forge forge;
     private Version version;
     private List<ResourcePack> packs;
 
@@ -34,7 +33,7 @@ public class AntiCheat {
         console.print("Cargando Mods Locales.");
         mods = kernel.loadMods();
 
-        console.print("Cargando Mods Locales.");
+        console.print("Cargando ResourcePack Locales.");
         mods = kernel.loadMods();
     }
 
@@ -65,5 +64,7 @@ public class AntiCheat {
         // Comparar Cliente y Servidor
         this.generateList();
         this.writeJSON();
+
+        Profile p = kernel.getProfiles().getSelectedProfile();
     }
 }

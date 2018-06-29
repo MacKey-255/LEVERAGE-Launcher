@@ -1,6 +1,7 @@
 package leverage.client.components;
 
 import leverage.client.extra.StatusType;
+import leverage.game.version.Version;
 
 import java.util.List;
 
@@ -14,9 +15,8 @@ public class Server {
 
     private List<Mod> modslist;
     private Version version;
-    private Forge forge;
 
-    public Server(StatusType status, String name, String url, int players, int maxPlayers, List<Mod> modslist, Version version, Forge forge) {
+    public Server(StatusType status, String name, String url, int players, int maxPlayers, List<Mod> modslist, Version version) {
         this.status = status;
         this.name = name;
         this.url = url;
@@ -25,10 +25,9 @@ public class Server {
 
         this.modslist = modslist;
         this.version = version;
-        this.forge = forge;
     }
 
-    public Server(StatusType status, String name, String url, int players, int maxPlayers, Version version, Forge forge) {
+    public Server(StatusType status, String name, String url, int players, int maxPlayers, Version version) {
         this.status = status;
         this.name = name;
         this.url = url;
@@ -36,10 +35,9 @@ public class Server {
         this.maxPlayers = maxPlayers;
 
         this.version = version;
-        this.forge = forge;
     }
 
-    public Server(String name, String url, List<Mod> modslist, Version version, Forge forge) {
+    public Server(String name, String url, List<Mod> modslist, Version version) {
         this.status = StatusType.OFFLINE;
         this.name = name;
         this.url = url;
@@ -48,7 +46,6 @@ public class Server {
 
         this.modslist = modslist;
         this.version = version;
-        this.forge = forge;
     }
 
     public StatusType getStatus() {
@@ -77,9 +74,5 @@ public class Server {
 
     public Version getVersion() {
         return version;
-    }
-
-    public Forge getForge() {
-        return forge;
     }
 }

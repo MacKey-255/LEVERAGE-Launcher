@@ -72,7 +72,7 @@ public class Versions {
     }
 
     /**
-     * Loads versions from servers or from local versions
+     * Cargar Versiones del Servidor o Locales
      */
     public final void fetchVersions() {
         String lr = "", ls = "";

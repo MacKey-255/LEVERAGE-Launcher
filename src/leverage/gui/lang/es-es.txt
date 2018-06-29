@@ -130,3 +130,6 @@ Memoria Asignada
 Juego no Instalado
 Error
 El Juego se ha Actualizado, abralo nuevamente
+0 / 0
+Fuera de Linea
+En Linea

@@ -13,6 +13,8 @@ public class Urls {
     public static final String CHANGESKIN_URL = leverage + "/upload.php";
     public static final String versionManifest = leverage + "/version_manifest.json";
     public static final String help = leverage + "/help";
+    public static final String onlineData = leverage + "/online.json";
+    public static final String listOnline = leverage + "/online/";
     public static final String update = leverage + "/update.json";
 
     public static final String mods = leverage + "/mods/1.12.2/";
