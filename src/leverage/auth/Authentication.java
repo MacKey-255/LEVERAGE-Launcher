@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
+// Sistema de Autenticacoin
+
 public class Authentication {
     private final Console console;
     private final Set<User> userDatabase = new HashSet<>();
@@ -30,7 +32,7 @@ public class Authentication {
     }
 
     /**
-     * Adds a user to the database
+     * Añade Usuario a la Configuracion
      * @param u The user to be added
      */
     private void addUser(User u) {
@@ -46,7 +48,7 @@ public class Authentication {
     }
 
     /**
-     * Removes a user for the database
+     * Remover Usuario a la Configuracion
      * @param u The User to be removed
      */
     public void removeUser(User u) {
@@ -57,12 +59,12 @@ public class Authentication {
                 setSelectedUser(null);
             }
         } else {
-            console.print("ID Usuario " + u.getUserID() + " no esta registrado.");
+            console.print("Usuario " + u.getUserID() + " no esta registrado.");
         }
     }
 
     /**
-     * Returns the selected user. Might be null
+     * Devuele Usuaro Seleccionado
      * @return The selected user or null if no user is selected.
      */
     public final User getSelectedUser() {
@@ -70,26 +72,27 @@ public class Authentication {
     }
 
     /**
-     * Sets the selected user
+     * Selector de Usuarios
      * @param user The user to be selected
      */
     public void setSelectedUser(User user) {
         if (user != null) {
             console.print("Usuario " + user.getUserID() + " esta seleccionado ahora.");
         } else if (selectedAccount != null) {
-            console.print(selectedAccount.getUserID() + " no esta seleccionado.");
+            console.print("Usuario " + selectedAccount.getUserID() + " no esta seleccionado.");
         }
         selectedAccount = user;
     }
 
     /**
-     * Performs an authenticate request to the server
+     * Sistema de Autenticacion
      * @param username The username
      * @param password The password
      * @throws AuthenticationException If authentication failed
      */
     public final void authenticate(String username, String password) throws AuthenticationException {
         console.print("Autenticando Usuario ...");
+        // Inicializando Variables de Datos
         JSONObject request = new JSONObject();
         JSONObject agent = new JSONObject();
         UserType type;
@@ -97,6 +100,8 @@ public class Authentication {
         agent.put("version", 1);
         request.put("agent", agent);
         String tmpUser;
+
+        //Identificacion del Tipo de Logeo
         if (username.startsWith("leverage://")) {
             type = UserType.LEVERAGE;
             tmpUser = username.replace("leverage://", "");
@@ -104,6 +109,8 @@ public class Authentication {
             type = UserType.OFFLINE;
             tmpUser = username;
         }
+
+        // Cargando Informacion para Enviar al Servidor
         request.put("username", tmpUser);
         request.put("password", password);
         if (clientToken != null) {
@@ -116,6 +123,8 @@ public class Authentication {
         postParams.put("Content-Length", String.valueOf(request.toString().length()));
         String response;
         String authURL;
+
+        // Autenticacion en Modo OFFLINE
         if (type == UserType.OFFLINE) {
             console.print("Autenticacion en modo OFFLINE");
             String uuid = Utils.getUUID(username);
@@ -124,13 +133,16 @@ public class Authentication {
             userProfiles.add(up);
 
             User u = new User(uuid, clientToken, username, type, userProfiles, uuid);
+            Kernel.USE_LOCAL = true;
             selectedAccount = u;
             authenticated = true;
             addUser(u);
         } else {
+            // Autenticacion en Modo LEVERAGE
             console.print("Autenticacion en modo LEVERAGE");
             authURL = Urls.authPath;
             try {
+                // Enviar Informacion en modo POST
                 response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
             } catch (IOException ex) {
                 console.print("Failed to send request to authentication server");
@@ -148,6 +160,7 @@ public class Authentication {
             }
             if (!r.has("error")) {
                 try {
+                    // Leyendo Respuesta del Servidor
                     String accessToken = r.getString("accessToken");
                     String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
                     String userID = r.getJSONObject("user").getString("id");
@@ -159,6 +172,8 @@ public class Authentication {
                         UserProfile up = new UserProfile(prof.getString("id"), prof.getString("name"));
                         userProfiles.add(up);
                     }
+
+                    //Añadiendo Usuario Autenticado
                     User u = new User(userID, accessToken, username, type, userProfiles, selectedProfile);
                     selectedAccount = u;
                     authenticated = true;
@@ -176,7 +191,7 @@ public class Authentication {
     }
 
     /**
-     * Performs a refresh request to the server
+     * Refresca la Autenticacion, verificando si el Usuario ya esta Registrado
      * @throws AuthenticationException If the refresh failed
      */
     public final void refresh() throws AuthenticationException, JSONException{
@@ -184,6 +199,8 @@ public class Authentication {
         if (selectedAccount == null) {
             throw new AuthenticationException("No user is selected.");
         }
+
+        //Cargando Informacion de Logeo
         JSONObject request = new JSONObject();
         JSONObject agent = new JSONObject();
         User u = selectedAccount;
@@ -198,15 +215,19 @@ public class Authentication {
         postParams.put("Content-Length", String.valueOf(request.toString().length()));
         String response;
         String refreshURL;
+
+        // Identificando Usuario OFFLINE
         if (u.getType() == UserType.OFFLINE) {
             Kernel.USE_LOCAL = true;
             authenticated = true;
             console.print("Autenticado Localmente.");
             return;
         } else {
+            // Seleccionando URL para Refrescar la Autenticacion
             refreshURL = Urls.refreshPath;
         }
         try {
+            // Enviar Informacion en modo POST
             response = Utils.sendPost(refreshURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
         } catch (IOException ex) {
             Kernel.USE_LOCAL = true;
@@ -225,6 +246,7 @@ public class Authentication {
         }
         if (!r.has("error")) {
             try {
+                //Revizar Informacion Recibida
                 clientToken = r.getString("clientToken");
                 u.setAccessToken(r.getString("accessToken"));
                 String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
@@ -241,6 +263,7 @@ public class Authentication {
         }
     }
 
+    // Muestra Mensajes de Error de la Pagina al Usuario
     private void throwError(JSONObject message) throws AuthenticationException{
         if (message.has("errorMessage")) {
             throw new AuthenticationException(message.getString("errorMessage"));
@@ -252,7 +275,7 @@ public class Authentication {
     }
 
     /**
-     * Checks if someone is authenticated
+     * Chequea si el Usuario esta Autenticado
      * @return A boolean that indicates if is authenticated
      */
     public final boolean isAuthenticated() {
@@ -268,7 +291,7 @@ public class Authentication {
     }
 
     /**
-     * Loads the users from launcher_profile.json
+     * Cargar Usuarios desde launcher_profile.json
      */
     public final void fetchUsers() {
         console.print("Cargando Datos del Usuario.");
@@ -328,12 +351,12 @@ public class Authentication {
                 }
             }
         } else {
-            console.print("No users to be loaded.");
+            console.print("El Usuario no ha podido ser Cargado.");
         }
     }
 
     /**
-     * Returns the user database
+     * Devuelve los Usuarios en la Configuracion
      * @return The user database
      */
     public final Set<User> getUsers() {
@@ -341,7 +364,7 @@ public class Authentication {
     }
 
     /**
-     * Converts the user database to JSON
+     * Convierte los Usuarios de la Configuracion a JSON
      * @return The user database in json format
      */
     public final JSONObject toJSON() {

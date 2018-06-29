@@ -9,6 +9,9 @@ public class DownloadManager {
     List<String> urls;
     List<String> destine;
 
+    //INACTIVO
+
+
     public DownloadManager() {
         this.urls = new ArrayList<>();
         this.destine = new ArrayList<>();
@@ -42,5 +45,9 @@ public class DownloadManager {
             return null;
 
         return verifiedUrl;
+    }
+
+    public void autoUpdateLauncher() {
+
     }
 }

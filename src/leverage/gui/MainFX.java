@@ -66,25 +66,26 @@ import java.util.zip.ZipOutputStream;
 
 public class MainFX {
 
-    @FXML private Label progressText, newsLabel, optimizeLabel, controlLabel, skinsLabel, settingsLabel, launchOptionsLabel,
+    // Listado de Componentes en el FXML
+
+    @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
             keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
-            rotateLeft, includeCape, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
-            nameLabel, profileVersionLabel, skinLabel, /*capeLabel,*/ modelLabel, iconLabel, helpButton, gameVersion,
+            rotateLeft, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
+            nameLabel, profileVersionLabel, iconLabel, helpButton, gameVersion,
             authenticationLabel, authServer, poweredLabel, profileRamLabel, profileRamAssignateLabel;
-    @FXML private Button playButton, deleteButton, changeIcon, /*deleteSkin, deleteCape,*/ logoutButton,
+    @FXML private Button playButton, deleteButton, changeIcon, logoutButton,
             loginButton, registerButton, loginExisting, cancelButton, saveButton, selectSkin,
-            /*selectCape,*/ exportLogs, /*downloadServer,*/ deleteCache, deleteLogs, deleteCrash,
-            deleteSave, deleteConfig, deleteExtra, deleteShader, deleteResources, controlMods, controlVersion,
-                    controlForge, controlResource, profilePopupButton;
-    @FXML private Tab loginTab, newsTab, optimizeTab, controlTab, skinsTab,
+            exportLogs, deleteCache, deleteLogs, deleteCrash, deleteSave, deleteConfig, deleteExtra,
+            deleteShader, deleteResources, profilePopupButton;
+    @FXML private Tab loginTab, newsTab, optimizeTab, skinsTab,
             settingsTab, launchOptionsTab, profileEditorTab;
     @FXML private ProgressBar progressBar;
     @FXML private TabPane contentPane;
-    @FXML private ListView<Label> languagesList, controlList, profileList, profilePopupList;
+    @FXML private ListView<Label> languagesList, profileList, profilePopupList;
     @FXML private ListView<ImageView> iconList;
-    @FXML private VBox progressPane, existingPanel, playPane, skinActions, newsContainer;
+    @FXML private VBox progressPane, existingPanel, playPane, newsContainer;
     @FXML private HBox tabMenu, slideshowBox;
     @FXML private TextField username, profileName,javaExec, gameDir, javaArgs,
             resH, resW;
@@ -94,8 +95,10 @@ public class MainFX {
     @FXML private ComboBox<VersionMeta> versionList;
     @FXML private StackPane versionBlock, javaArgsBlock, javaExecBlock, iconBlock, ramBlock;
     @FXML private ImageView profileIcon, slideshow, skinPreview;
-    @FXML private RadioButton skinClassic, skinSlim, authLeverage, authOffline;
+    @FXML private RadioButton authLeverage, authOffline;
     @FXML private Hyperlink forgotPasswordLink;
+
+    //
 
     private Kernel kernel;
     private Console console;
@@ -108,8 +111,7 @@ public class MainFX {
     private final Image[] skinPreviews = new Image[4];
     private Image skin, cape, alex, steve;
     private boolean texturesLoaded;
-    private String urlPrefix = "";
-    private boolean iconListLoaded, versionListLoaded, languageListLoaded, loadingTextures, controlListLoaded, profileListLoaded,
+    private boolean iconListLoaded, versionListLoaded, languageListLoaded, loadingTextures, profileListLoaded,
             profileListPopupLoaded;
 
     /**
@@ -118,53 +120,53 @@ public class MainFX {
      * @param s The Stage instance
      */
     public final void initialize(Kernel k, Stage s, Scene scene, final Scene browser) {
-        //Require to exit using Platform.exit()
+        // Require to exit using Platform.exit()
         Platform.setImplicitExit(false);
 
-        //Set kernel and stage
+        // Configuracion Basica
         kernel = k;
         console = k.getConsole();
         settings = k.getSettings();
         stage = s;
         mainScene = scene;
 
-        //Update version label
+        // Asignando Version y Creador
         versionLabel.setText(Kernel.KERNEL_BUILD_NAME);
         poweredLabel.setText(Kernel.KERNEL_CREATOR_NAME);
 
-        //Load news slideshow
+        // Cargando Sistema de Noticias
         slideshowBox.setVisible(false);
         slideshowBox.setManaged(false);
         newsTitle.setText("Cargando Noticias...");
         newsText.setText("Por favor espere un Momento..");
         loadSlideshow();
 
-        //Refresh session
+        // Refrescando Login
         refreshSession();
 
-        //Prepare language list
+        // Preparando Lista de Lenguajes
         languageButton.setText(settings.getSupportedLocales().get(settings.getLocale()));
 
-        //Update settings labels
+        // Actualizando Configuraciones de Labels
         toggleLabel(keepLauncherOpen, settings.getKeepLauncherOpen());
         toggleLabel(outputLog, settings.getShowGameLog());
         toggleLabel(enableSnapshots, settings.getEnableSnapshots());
         toggleLabel(historicalVersions, settings.getEnableHistorical());
         toggleLabel(advancedSettings, settings.getEnableAdvanced());
 
-        //Prepare Spinners
+        // Preparando Seleccionador
         resW.setEditable(true);
         resH.setEditable(true);
 
-        //If offline mode make play button bigger for language support
+        // Verificar si el Usuario esta OFFLINE
         if (Kernel.USE_LOCAL) {
             playButton.setMinWidth(290);
         }
 
-        //Localize elements
+        // Cargar Elementos Graficos
         localizeElements();
 
-        //Validate selected profile
+        // Validar Perfil Seleccionado
         validateSelectedProfile();
 
         //Manual component resize binding to fix JavaFX maximize bug
@@ -221,7 +223,7 @@ public class MainFX {
     }
 
     /**
-     * Load language list
+     * Cargar Listado de Lenguajes
      */
     private void loadLanguages() {
         console.print("Cargando Lenguajes...");
@@ -238,7 +240,7 @@ public class MainFX {
     }
 
     /**
-     * Fetches any advertisement available for the logged user
+     * Cargar Anuncios de Advertencia al Usuario (Ej: Esta Baneado)
      */
     private void fetchAds() {
         User user = kernel.getAuthentication().getSelectedUser();
@@ -248,11 +250,14 @@ public class MainFX {
             String response = Utils.readURL(adsCheck);
             if (!response.isEmpty()) {
                 String[] chunks = response.split(":");
+                console.print(chunks[1]);
                 if(chunks[0].equals("BAN") || chunks[0].equals("NICKBAN") || chunks[0].equals("IP")) {
-                    console.print(chunks[1]);
+                    // Si es de Ban entonces Cierra el Launcher
                     kernel.showAlert(Alert.AlertType.ERROR, null, chunks[1]);
                     this.gameEnded(false);
                 }
+                // Mostrar Mensaje
+                kernel.showAlert(Alert.AlertType.WARNING, null, chunks[1]);
                 console.print("Anuncios Cargados.");
             } else {
                 console.print("No existe Informacion en los Anuncios.");
@@ -263,14 +268,13 @@ public class MainFX {
     }
 
     /**
-     * Updates all components text with its localized Strings
+     * Actualizar/Cargar Componentes Graficos
      */
     private void localizeElements() {
         helpButton.setText(Language.get(2));
         logoutButton.setText(Language.get(3));
         newsLabel.setText(Language.get(4));
         optimizeLabel.setText(Language.get(106));
-        controlLabel.setText(Language.get(124));
         launcherOptimize.setText(Language.get(121));
         skinsLabel.setText(Language.get(5));
         settingsLabel.setText(Language.get(6));
@@ -292,10 +296,7 @@ public class MainFX {
         registerButton.setText(Language.get(21));
         changeIcon.setText(Language.get(24));
         exportLogs.setText(Language.get(27));
-        //downloadServer.setText(Language.get(28));
-        skinLabel.setText(Language.get(29));
         profileRamLabel.setText(Language.get(129));
-        //capeLabel.setText(Language.get(30));
         launcherSettings.setText(Language.get(45));
         keepLauncherOpen.setText(Language.get(46));
         outputLog.setText(Language.get(47));
@@ -314,14 +315,7 @@ public class MainFX {
         existingLabel.setText(Language.get(85));
         switchAccountButton.setText(Language.get(86));
         selectSkin.setText(Language.get(87));
-        //selectCape.setText(Language.get(87));
-        //deleteSkin.setText(Language.get(88));
-        //deleteCape.setText(Language.get(88));
-        skinSlim.setText(Language.get(123));
-        modelLabel.setText(Language.get(89));
-        skinClassic.setText(Language.get(90));
         iconLabel.setText(Language.get(92));
-        includeCape.setText(Language.get(93));
         deleteCache.setText(Language.get(94));
         deleteLogs.setText(Language.get(107));
         deleteCrash.setText(Language.get(108));
@@ -330,10 +324,6 @@ public class MainFX {
         deleteExtra.setText(Language.get(110));
         deleteShader.setText(Language.get(113));
         deleteResources.setText(Language.get(111));
-        controlMods.setText(Language.get(125));
-        controlVersion.setText(Language.get(126));
-        controlForge.setText(Language.get(127));
-        controlResource.setText(Language.get(128));
         forgotPasswordLink.setText(Language.get(97));
         profileName.setPromptText(Language.get(98));
         authenticationLabel.setText(Language.get(99));
@@ -346,7 +336,7 @@ public class MainFX {
     }
 
     /**
-     * Loads the skin preview for the logged user
+     * Cargar Texturas del Skins del Usuario
      */
     private void loadTextures() {
         console.print("Cargando Modulo de Texturas...");
@@ -354,10 +344,6 @@ public class MainFX {
             return;
         }
         selectSkin.setDisable(true);
-        //selectCape.setDisable(true);
-        //deleteSkin.setDisable(true);
-        //deleteCape.setDisable(true);
-        includeCape.setDisable(true);
 
         alex = new Image("/leverage/gui/textures/alex.png");
         steve = new Image("/leverage/gui/textures/steve.png");
@@ -366,9 +352,8 @@ public class MainFX {
 
         if (selected.getType() == UserType.OFFLINE) {
             console.print("Cargando Texturas...");
-            skinActions.setVisible(false);
-            skinActions.setManaged(false);
-            MainFX.this.toggleSkinType();
+            skin = alex;
+            updatePreview();
             console.print("Texturas Cargadas.");
             return ;
         }
@@ -386,21 +371,15 @@ public class MainFX {
                         steve = new Image("/leverage/gui/textures/steve.png");
                     }
 
-                    skinActions.setVisible(true);
-                    skinActions.setManaged(true);
-
                     String skinPath = Urls.skinsPathProfileId(selected.getUsername().replace("leverage://", "").toLowerCase());
                     skin = new Image(Utils.readCachedStream(skinPath));
                     if (skin == null || skin.getHeight() == 0) {
                         skin = steve;
                     } else if (skin.getHeight() == 0) {
                         skin = alex;
-                    }/* else {
-                        deleteSkin.setDisable(false);
-                    }*/
+                    }
                     alex = skin;
 
-                    skinSlim.setSelected(true);
                     texturesLoaded = true;
                     console.print("Texturas Cargadas.");
                     MainFX.this.updatePreview();
@@ -409,7 +388,8 @@ public class MainFX {
                     //selectCape.setDisable(false);
                 } catch (Exception ex) {
                     console.print("Fallido la carga de Skin del Servidor.");
-                    MainFX.this.toggleSkinType();
+                    skin = alex;
+                    updatePreview();
                     ex.printStackTrace(console.getWriter());
                 }
                 loadingTextures = false;
@@ -419,56 +399,22 @@ public class MainFX {
     }
 
     /**
-     * Toggles the label of the toggle cape button
-     */
-    @FXML public final void toggleCapePreview() {
-        if (includeCape.getStyleClass().contains("toggle-enabled")) {
-            toggleLabel(includeCape, false);
-        } else {
-            toggleLabel(includeCape, true);
-        }
-        updatePreview();
-    }
-
-    /**
-     * Changes the skin type
-     */
-    @FXML public final void toggleSkinType() {
-        //if (deleteSkin.isDisabled()) {
-            if (skinClassic.isSelected())
-                skin = steve;
-            else
-                skin = alex;
-            updatePreview();
-        //}
-    }
-
-    /**
-     * Updates the skin preview
+     * Actualizar Vistas del Skins
      */
     private void updatePreview() {
-        boolean slim = skinSlim.isSelected();
-        if (includeCape.getStyleClass().contains("toggle-enabled")) {
-            skinPreviews[0] = TexturePreview.resampleImage(TexturePreview.generateFront(skin, cape, slim), 10);
-            skinPreviews[1] = TexturePreview.resampleImage(TexturePreview.generateRight(skin, cape), 10);
-            skinPreviews[2] = TexturePreview.resampleImage(TexturePreview.generateBack(skin, cape, slim), 10);
-            skinPreviews[3] = TexturePreview.resampleImage(TexturePreview.generateLeft(skin, cape), 10);
-        } else {
-            skinPreviews[0] = TexturePreview.resampleImage(TexturePreview.generateFront(skin, null, slim), 10);
-            skinPreviews[1] = TexturePreview.resampleImage(TexturePreview.generateRight(skin, null), 10);
-            skinPreviews[2] = TexturePreview.resampleImage(TexturePreview.generateBack(skin, null, slim), 10);
-            skinPreviews[3] = TexturePreview.resampleImage(TexturePreview.generateLeft(skin, null), 10);
-        }
+        skinPreviews[0] = TexturePreview.resampleImage(TexturePreview.generateFront(skin, null, true), 10);
+        skinPreviews[1] = TexturePreview.resampleImage(TexturePreview.generateRight(skin, null), 10);
+        skinPreviews[2] = TexturePreview.resampleImage(TexturePreview.generateBack(skin, null, true), 10);
+        skinPreviews[3] = TexturePreview.resampleImage(TexturePreview.generateLeft(skin, null), 10);
         skinPreview.setImage(skinPreviews[currentPreview]);
     }
 
     /**
-     * Submits a texure change
-     * @param target Skin or cape
+     * Subir de Skins
      * @param file File to be submited. Null if it's a deletion.
      */
-    private void submitChange(String target, File file) {
-        String url = target.equals("skin") ? Urls.CHANGESKIN_URL : Urls.CHANGECAPE_URL;
+    private void submitChange(File file) {
+        String url = Urls.CHANGESKIN_URL;
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", kernel.getAuthentication().getSelectedUser().getAccessToken());
         params.put("Client-Token", kernel.getAuthentication().getClientToken());
@@ -476,37 +422,21 @@ public class MainFX {
         if (file != null) {
             console.print(file.length() + " - Tamaño del Skins Subido");
             if (file.length() > 131072) {
-                if (target.equals("skin")) {
-                    console.print("Skin file exceeds 128KB file size limit.");
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(105));
-                        }
-                    });
-                } else {
-                    console.print("Cape file exceeds 128KB file size limit.");
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(104));
-                        }
-                    });
-                }
+                console.print("Skin file exceeds 128KB file size limit.");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(105));
+                    }
+                });
                 return;
             }
             try {
                 data = Files.readAllBytes(file.toPath());
-                if (target.equals("skin")) {
-                    if (skinSlim.isSelected()) {
-                        params.put("Skin-Type", "alex");
-                    } else {
-                        params.put("Skin-Type", "steve");
-                    }
-                }
+                params.put("Skin-Type", "alex");
                 params.put("Content-Type", "image/png");
             } catch (Exception ex) {
-                console.print("Failed read textures.");
+                console.print("Fallida la Lectura de Texturas.");
                 ex.printStackTrace(console.getWriter());
             }
         }
@@ -514,20 +444,12 @@ public class MainFX {
             String r = Utils.sendPost(url, data, params);
             String text;
             if (!"OK".equals(r)) {
-                if (target.equals("skin")) {
-                    if (file != null) {
-                        text = Language.get(42);
-                    } else {
-                        text = Language.get(33);
-                    }
+                if (file != null) {
+                    text = Language.get(42);
                 } else {
-                    if (file != null) {
-                        text = Language.get(43);
-                    } else {
-                        text = Language.get(38);
-                    }
+                    text = Language.get(33);
                 }
-                console.print("Failed to " + (file != null ? "change" : "delete") + " the " + target + ".");
+                console.print("Fallido " + (file != null ? "el cambio" : "la eliminacion") + " de Skins.");
                 console.print(r);
                 final String finalText = text;
                 Platform.runLater(new Runnable() {
@@ -538,21 +460,12 @@ public class MainFX {
                 });
                 return;
             }
-            if (target.equals("skin")) {
-                if (file != null) {
-                    text = Language.get(40);
-                } else {
-                    text = Language.get(34);
-                }
+            if (file != null) {
+                text = Language.get(40);
             } else {
-                if (file != null) {
-                    text = Language.get(41);
-                } else {
-                    text = Language.get(39);
-                }
+                text = Language.get(34);
             }
-            target = target.substring(0, 1).toUpperCase() + target.substring(1);
-            console.print(target + " " + (file != null ? "changed" : "deleted") + " successfully!");
+            console.print("Skin " + (file != null ? "cambiado" : "borrado") + " con exito!!");
             final String finalText = text;
             Platform.runLater(new Runnable() {
                 @Override
@@ -562,23 +475,22 @@ public class MainFX {
             });
             loadTextures();
         } catch (IOException ex) {
-            console.print("Failed to perform textures post.");
+            console.print("Fallido el Envio del Skins.");
             ex.printStackTrace(console.getWriter());
         }
     }
 
     /**
-     * Changes the skin of the user
+     * Accion para Subir Skins
      */
     @FXML private void changeSkin() {
         final File selected = selectFile(Language.get(44), "*.png", "open");
         if (selected != null) {
             selectSkin.setDisable(true);
-            //deleteSkin.setDisable(true);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    MainFX.this.submitChange("skin", selected);
+                    MainFX.this.submitChange(selected);
                 }
             });
             t.start();
@@ -586,66 +498,10 @@ public class MainFX {
     }
 
     /**
-     * Changes the cape of the user
-     *//*
-    @FXML private void changeCape() {
-        final File selected = selectFile(Language.get(25), "*.png", "open");
-        if (selected != null) {
-            selectCape.setDisable(true);
-            deleteCape.setDisable(true);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    MainFX.this.submitChange("cape", selected);
-                }
-            });
-            t.start();
-        }
-
-    }*/
-
-    /**
-     * Deletes the skin of the user
-     *//*
-    @FXML private void deleteSkin() {
-        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(31));
-        if (result == 1){
-            selectSkin.setDisable(true);
-            //deleteSkin.setDisable(true);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    MainFX.this.submitChange("skin", null);
-                }
-            });
-            t.start();
-        }
-    }*/
-
-    /**
-     * Deletes the cape of the user
-     *//*
-    @FXML private void deleteCape() {
-        int result = kernel.showAlert(Alert.AlertType.CONFIRMATION, null, Language.get(36));
-        if (result == 1){
-            selectCape.setDisable(true);
-            deleteCape.setDisable(true);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    MainFX.this.submitChange("cape", null);
-                }
-            });
-            t.start();
-        }
-    }*/
-
-    /**
-     * Loads the news slideshow
+     * Cargador de Noticias
      */
     private void loadSlideshow() {
         console.print("Cargando Slides de Noticias...");
-
 
         try {
             String newsURL = Urls.newsUrl;
@@ -744,7 +600,7 @@ public class MainFX {
             return;
         }
         Slide s = slides.get(currentSlide);
-        kernel.getHostServices().showDocument(urlPrefix + s.getAction());
+        kernel.getHostServices().showDocument(Urls.leverage);
     }
 
     /**
@@ -788,16 +644,11 @@ public class MainFX {
     /**
      * Loads Control list items
      */
-    private void loadControlList() {
-        console.print("Cargando Lista de Objetos...");
-
-        ObservableList<Label> controlListItems = FXCollections.observableArrayList();
-        Label l;
-        ImageView iv;
-        String text, icon, version;
+    private void loadModsList() {
+        console.print("Cargando Lista de Mods...");
 
         try {
-            String response = Utils.readURL(Urls.modsList);
+            String text, response = Utils.readURL(Urls.modsList);
             if (response.isEmpty()) {
                 console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
                 return;
@@ -808,21 +659,7 @@ public class MainFX {
 
                 text = entry.keys().next();
                 JSONObject mod = entry.getJSONObject(text);
-                icon = Urls.mods + text.toLowerCase() + "/" + mod.getString("nameIcon");
-                version = mod.getString("version");
 
-                iv = new ImageView(new Image(icon));
-                iv.setFitWidth(48);
-                iv.setFitHeight(48);
-                l = new Label(" " + text, iv);
-                l.setText(l.getText() + '\n' + " Version: " +  version);
-
-                if (text.equals(text)) {
-                    Mod m = Utils.getMod(new File("/home/mackey/.minecraft/mods/[1.12.2]appliedenergistics2-rv5-stable-11.jar"));
-                    l.getStyleClass().add("selectedProfile");
-                }
-
-                controlListItems.add(l);
             }
         } catch (Exception ex) {
             newsTitle.setText(Language.get(80));
@@ -832,10 +669,7 @@ public class MainFX {
             return;
         }
 
-        //Add "Add New Profile" item
-        controlList.setItems(controlListItems);
-        controlListLoaded = true;
-        console.print("Lista de Objetos Cargada.");
+        console.print("Lista de Mods Comprobada Cargada.");
     }
 
     /**
@@ -1023,6 +857,9 @@ public class MainFX {
         final Downloader d = kernel.getDownloader();
         final AntiCheat anti = kernel.getAntiCheat();
         final GameLauncher gl = kernel.getGameLauncher();
+
+        // Anticheat en Accion
+        anti.compare();
 
         //Keep track of the progress
         final TimerTask progressTask = new TimerTask() {
@@ -1256,8 +1093,6 @@ public class MainFX {
             newsLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == optimizeTab) {
             optimizeLabel.getStyleClass().remove("selectedItem");
-        } else if (oldTab == controlTab) {
-            controlLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == skinsTab) {
             skinsLabel.getStyleClass().remove("selectedItem");
         } else if (oldTab == settingsTab) {
@@ -1279,11 +1114,6 @@ public class MainFX {
         if (source == newsLabel) {
             newsLabel.getStyleClass().add("selectedItem");
             selection.select(newsTab);
-        } else if (source == controlLabel) {
-            controlLabel.getStyleClass().add("selectedItem");
-            selection.select(controlTab);
-            if(!controlListLoaded)
-                loadControlList();
         } else if (source == optimizeLabel) {
             optimizeLabel.getStyleClass().add("selectedItem");
             selection.select(optimizeTab);
@@ -1872,14 +1702,14 @@ public class MainFX {
      * Opens the help page
      */
     @FXML public final void openHelp() {
-        kernel.getHostServices().showDocument(urlPrefix + "https://krothium.com/forum/12-soporte/");
+        kernel.getHostServices().showDocument(Urls.help);
     }
 
     /**
      * Opens the news page
      */
     @FXML public final void openNews() {
-        kernel.getHostServices().showDocument(urlPrefix + "https://krothium.com/forum/3-noticias/");
+        kernel.getHostServices().showDocument(Urls.leverage);
     }
 
     /**

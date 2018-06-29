@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 public class Starter extends Application {
 
     public static void main(String[] args) {
+        //Lanzar metodo Start
         launch(args);
     }
 
@@ -21,6 +22,7 @@ public class Starter extends Application {
      */
     @Override
     public final void start(Stage primaryStage) {
+        //Crear Kernel
         new Kernel(primaryStage, getHostServices());
     }
 }

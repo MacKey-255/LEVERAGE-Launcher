@@ -1,10 +1,12 @@
 package leverage.proxy.matchers;
 
+import leverage.util.Urls;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SkinMatcher implements URLMatcher {
-    private final Pattern skinRegex = Pattern.compile("http://skins.minecraft.net/MinecraftSkins/(.+)\\.png");
+    private final Pattern skinRegex = Pattern.compile(Urls.skinsPath+"(.+)\\.png");
 
     @Override
     public final boolean match(String url) {
@@ -17,7 +19,8 @@ public class SkinMatcher implements URLMatcher {
         Matcher m = skinRegex.matcher(url);
         if (m.matches()) {
             String name = m.group(1);
-            return "http://skins.minecraft.net/MinecraftSkins/skins/" + name + ".png";
+            System.out.println(Urls.skinsPath + name + ".png");
+            return Urls.skinsPath + name + ".png";
         }
         return null;
     }

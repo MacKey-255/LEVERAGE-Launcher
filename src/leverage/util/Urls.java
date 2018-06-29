@@ -1,23 +1,28 @@
 package leverage.util;
 
+// Clas Administradora de URLS
+
 public class Urls {
-    public static final String leverage = "http://127.0.0.1";        //"mc.leverage.com";
+    public static final String leverage = "http://127.0.0.1";        // IP Fija de la Web de LEVERAGE;
     public static final String authPath = leverage + "/authenticate/";
     public static final String refreshPath = leverage + "/refresh/";
-    public static final String newsUrl = "http://127.0.0.1/authenticate/news.json";
+    public static final String newsUrl = leverage + "/authenticate/news.json";
     public static final String register = leverage + "/register/";
     public static final String forgotPassword = leverage;
     public static final String skinsPath = leverage + "/skins/";
-    public static final String CHANGESKIN_URL = "https://mc.krothium.com/changeskin";
-    public static final String CHANGECAPE_URL = "https://mc.krothium.com/changecape";
+    public static final String CHANGESKIN_URL = leverage + "/upload.php";
     public static final String versionManifest = leverage + "/version_manifest.json";
+    public static final String help = leverage + "/help";
+    public static final String update = leverage + "/update.json";
 
-    public static final String mods = "http://127.0.0.1/mods/1.12.2/";
-    public static final String modsList = "http://127.0.0.1/mods/1.12.2/mod_list.json";
+    public static final String mods = leverage + "/mods/1.12.2/";
+    public static final String modsList = leverage + "/mods/1.12.2/mod_list.json";
 
-    //URLS ANTICHEAT SYSTEM
+    // URLS para el Sistema AntiCheat
     public static final String comfirmIP = leverage;
     public static final String listData = leverage;
+
+    // URLS Modulares
 
     public static final String urlDataProfileId(String id) {
         return leverage + "/users.php?profileID=" + id;

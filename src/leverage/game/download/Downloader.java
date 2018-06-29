@@ -103,7 +103,7 @@ public class Downloader {
             }
         }
         if (tries == DOWNLOAD_TRIES) {
-            console.print("Failed to download asset index for version " + index.getID());
+            console.print("Fallida la Descargan de los Assets en la Version: " + index.getID());
         } else {
             //Load assets
             try {
@@ -112,7 +112,7 @@ public class Downloader {
                     root = new JSONObject(new String(Files.readAllBytes(indexJSON.toPath()), StandardCharsets.UTF_8));
                 } catch (JSONException | IOException ex) {
                     downloading = false;
-                    throw new DownloaderException("Failed to read asset index json file.");
+                    throw new DownloaderException("Fallida la lectura de los Archivos JSON de Assets.");
                 }
                 JSONObject objects = root.getJSONObject("objects");
                 Set<String> keys = objects.keySet();
@@ -228,12 +228,12 @@ public class Downloader {
                 }
             }
         }
-        console.print("Downloading required game files...");
+        console.print("Descargando Ficheros requeridos por el Juego...");
         if (urls.isEmpty()) {
-            console.print("Nothing to download.");
+            console.print("No se pudo descargar nada.");
         } else {
             //Download required files
-            downloadFiles(urls);
+            //downloadFiles(urls);
         }
         downloading = false;
     }

@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 
+//Clase que administra las Configuraciones del Servidor
+
 public class Settings {
     private final Kernel kernel;
     private final Console console;
@@ -19,12 +21,13 @@ public class Settings {
     public Settings(Kernel k) {
         kernel = k;
         console = kernel.getConsole();
+        // Agregar Lenguajes al Sistema
         supportedLocales.put("en-us", "English - United States");
-        supportedLocales.put("es-es", "Español - España");
+        supportedLocales.put("es-es", "Español - Cuba");
     }
 
     /**
-     * Loads the settings from launcher_profiles.json
+     * Carga las Configuracion de launcher_profiles.json
      */
     public void loadSettings() {
         console.print("Cargando Configuraciones...");
@@ -76,6 +79,8 @@ public class Settings {
         }
     }
 
+    // Asignacion de por Defecto
+
     private void setDefaults() {
         setLocale("es-es");
         launcherWidth = 850;
@@ -99,7 +104,7 @@ public class Settings {
     }
 
     /**
-     * Gets the current locale
+     * Devuelve el Idioma
      * @return The current locale
      */
     public String getLocale() {
@@ -107,7 +112,7 @@ public class Settings {
     }
 
     /**
-     * Changes the current locale
+     * Cambia el Idioma
      * @param s The locale to be selected
      */
     public void setLocale(String s) {
@@ -232,7 +237,7 @@ public class Settings {
     }
 
     /**
-     * Converts the settings to JSON
+     * Convierte las Configuraciones de esta clase en JSON
      * @return The json conversion of the settings
      */
     public final JSONObject toJSON() {

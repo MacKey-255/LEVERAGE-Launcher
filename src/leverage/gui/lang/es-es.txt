@@ -84,7 +84,7 @@ Descarga fallida
 ¡Fallo al ejecutar la tarea de descarga del juego! Comprueba los registros para más información.
 Usuarios Existentes:
 Cambiar Cuenta
-SUBIR
+SUBIR SKIN
 ELIMINAR
 MODELO DEL JUGADOR
 Clásico
@@ -127,3 +127,6 @@ Versiones
 Forge
 Paquetes de Recursos
 Memoria Asignada
+Juego no Instalado
+Error
+El Juego se ha Actualizado, abralo nuevamente

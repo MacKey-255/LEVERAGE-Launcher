@@ -72,7 +72,7 @@ public class Versions {
     }
 
     /**
-     * Loads versions from Mojang servers or from local versions
+     * Loads versions from servers or from local versions
      */
     public final void fetchVersions() {
         String lr = "", ls = "";

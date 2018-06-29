@@ -84,7 +84,7 @@ Download failed
 Failed to perform game download task! Check the logs for more information.
 Existing Users:
 Switch Account
-UPLOAD
+UPLOAD SKIN
 DELETE
 PLAYER MODEL
 Classic
@@ -127,3 +127,6 @@ Versions
 Forge
 Resources Pack
 RAM
+Game not Installed
+Error
+The Game Updated, please re-open Game

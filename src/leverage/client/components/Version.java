@@ -1,5 +1,7 @@
 package leverage.client.components;
 
+import leverage.Kernel;
+
 import java.io.File;
 
 public class Version {
@@ -12,8 +14,10 @@ public class Version {
     public Version(String name) {
         this.name = name;
         this.url = null;
-        relativeJar = new File("versions" + File.separator + name + File.separator + name + ".jar");
-        relativeJSON = new File("versions" + File.separator + name + File.separator + name + ".json");
+        relativeJar = new File(Kernel.APPLICATION_WORKING_DIR+ File.separator + "versions" + File.separator + name + File.separator + name + ".jar");
+        relativeJSON = new File(Kernel.APPLICATION_WORKING_DIR+ File.separator + "versions" + File.separator + name + File.separator + name + ".json");
+
+        System.out.println(relativeJar.getPath());
         this.diskSpace = relativeJar.length() + relativeJSON.length();
     }
 

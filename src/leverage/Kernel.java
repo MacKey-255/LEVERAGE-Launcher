@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
 import leverage.client.AntiCheat;
+import leverage.client.components.Mod;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
 import leverage.game.profile.Profiles;
@@ -22,11 +23,13 @@ import leverage.game.version.Versions;
 import leverage.gui.BrowserFX;
 import leverage.gui.MainFX;
 import leverage.gui.lang.Language;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -37,25 +40,33 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// Clase Controladora de Funciones Vitales
+
 public final class Kernel {
-    private final Console console;
-    private final Profiles profiles;
-    private final Versions versions;
-    private final Settings settings;
-    private final Downloader downloader;
-    private final AntiCheat antiCheat;
-    private final Authentication authentication;
-    private final GameLauncher gameLauncher;
-    private final HostServices hostServices;
+    //Variables de Clases Principales
+    private final Console console;                          // Consola del Sistema
+    private final Profiles profiles;                        // Listado de Perfiles
+    private final Versions versions;                        // Listado de Versiones del Juego
+    private final Settings settings;                        // Configuraciones (Idioma, archivo de Config)
+    private final Downloader downloader;                    // Sistema de Descarga Automatica
+    private final AntiCheat antiCheat;                      // Sistema Antiparches
+    private final Authentication authentication;            // Sistema de Autenticacion
+
+    private final GameLauncher gameLauncher;                // Sistema Lanzador del Juego (Abre el Juego)
+    private final HostServices hostServices;                // Permite abrir Navegador Web
     private BrowserFX webBrowser;
-    private JSONObject launcherProfiles;
-    private final Map<String, int[]> icons = new HashMap<>();
-    private final Map<String, Image> iconCache = new HashMap<>();
+
+    private JSONObject launcherProfiles;                    // Perfiles del Launcher en JSON
+    private final Map<String, int[]> icons = new HashMap<>();           // Iconos de los Perfiles
+    private final Map<String, Image> iconCache = new HashMap<>();       // Imagenes de esos Iconos
 
     private final Image profileIcons;
+
+    //Informacion del Launcher
     public static final String KERNEL_BUILD_NAME = "1.0.2";
     public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
@@ -63,22 +74,27 @@ public final class Kernel {
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
     public static final File APPLICATION_LIBS = new File(APPLICATION_WORKING_DIR, "launcher-libraries");
     private static final File APPLICATION_CONFIG = new File(APPLICATION_LIBS, "launcher_profiles.json");
-    private static final File APPLICATION_SERVERS = new File(APPLICATION_LIBS, "data_list.json");
     public static final File APPLICATION_LOGS = new File(APPLICATION_LIBS, "logs");
     public static final File APPLICATION_CACHE = new File(APPLICATION_LIBS, "cache");
     public static Image APPLICATION_ICON;
-    public static boolean USE_LOCAL;
+    public static boolean USE_LOCAL;                        // Usuario OFFLINE
 
     public Kernel(Stage stage, HostServices hs) {
-        if (!APPLICATION_WORKING_DIR.isDirectory()) {
-            APPLICATION_WORKING_DIR.mkdirs();
+
+        // Crear Directorios Necesarios
+        if (APPLICATION_WORKING_DIR.isDirectory()) {
+            if(!APPLICATION_LIBS.isDirectory())
+                APPLICATION_LIBS.mkdirs();
+            if(!APPLICATION_CACHE.isDirectory())
+                APPLICATION_CACHE.mkdir();
+            if(!APPLICATION_LOGS.isDirectory())
+                APPLICATION_LOGS.mkdir();
         }
-        APPLICATION_LIBS.mkdir();
-        APPLICATION_CACHE.mkdir();
-        APPLICATION_LOGS.mkdir();
+
+        //Inicializar Consola del Launcher
         console = new Console();
         console.print("-------------------------------------------------");
-        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium - Launcher");
+        console.print("LEVERAGE v" + KERNEL_BUILD_NAME + " By MacKey Basado en Krothium Launcher");
         console.print("OS: " + System.getProperty("os.name"));
         console.print("OS Version: " + System.getProperty("os.version"));
         console.print("OS Architecture: " + System.getProperty("os.arch"));
@@ -86,6 +102,8 @@ public final class Kernel {
         console.print("Java Vendor: " + System.getProperty("java.vendor"));
         console.print("Java Architecture: " + System.getProperty("sun.arch.data.model"));
         console.print("-------------------------------------------------");
+
+        //Inicializar JavaFX
         try {
             Class.forName("javafx.fxml.FXMLLoader");
             console.print("JavaFX Cargado.");
@@ -110,6 +128,8 @@ public final class Kernel {
                 warnJavaFX();
             }
         }
+
+        // Leer Perfiles en la Configuracion
         console.print("Leyendo Perfiles del Launcher...");
         try {
             if (APPLICATION_CONFIG.isFile()) {
@@ -126,14 +146,14 @@ public final class Kernel {
             ex.printStackTrace(console.getWriter());
         }
 
-        //Initialize constants
+        //Inicializar Constantes
         APPLICATION_ICON = new Image("/leverage/gui/textures/icon.png");
         profileIcons = new Image("/leverage/gui/textures/profile_icons.png");
 
-        //Prepare loader
+        //Preparando el Cargador
         FXMLLoader loader = new FXMLLoader();
 
-        //Load launcher data
+        //Cargando los Datos del Launcher
         profiles = new Profiles(this);
         versions = new Versions(this);
         settings = new Settings(this);
@@ -147,7 +167,7 @@ public final class Kernel {
         profiles.fetchProfiles();
         authentication.fetchUsers();
 
-        //Load web browser
+        //Cargando el Buscador Web
         Scene browser = null;
         try {
             loader.setLocation(getClass().getResource("/leverage/gui/fxml/Browser.fxml"));
@@ -162,7 +182,41 @@ public final class Kernel {
             exitSafely();
         }
 
-        //Load main form
+        // AutoUpdate
+        boolean update = false;
+        String url = null;
+
+        try {
+            String response = Utils.readURL(Urls.update);
+            if (response.isEmpty()) {
+                new Exception("No se ha podido Descargar la Actualizacion");
+            }
+            JSONObject entry = new JSONObject(response);
+            url = entry.getString("url");
+
+            if(!KERNEL_BUILD_NAME.equals(entry.getString("version")))
+                update = true;
+        } catch (Exception ex){}
+
+        if(update) {
+            System.out.println("Actualizando Minecraft");
+            try {
+                Utils.downloadFile(url, new File(APPLICATION_WORKING_DIR, "LEVERAGE-Launcher.jar"));
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+            showAlert(Alert.AlertType.INFORMATION, Language.get(4), Language.get(132));
+            exitSafely();
+        }
+
+        if (!APPLICATION_WORKING_DIR.isDirectory()) {
+            // Error Falta Instalar el Juego
+            showAlert(Alert.AlertType.ERROR, Language.get(131), Language.get(130));
+            getHostServices().showDocument(Urls.leverage);
+            exitSafely();
+        }
+
+        //Cargando Pantalla Principal de JavaFX
         try {
             loader.setLocation(getClass().getResource("/leverage/gui/fxml/Main.fxml"));
             loader.setRoot(null);
@@ -220,7 +274,14 @@ public final class Kernel {
     }
 
     /**
-     * Saves the profiles
+     * Cargar Mods del Cliente
+     */
+    public List<Mod> loadMods() {
+        return Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"));
+    }
+
+    /**
+     * Salvar los Pefiles en el Config
      */
     public void saveProfiles() {
         console.print("Salvando Perfiles...");
@@ -283,7 +344,7 @@ public final class Kernel {
     }
 
     /**
-     * Saves the profiles and shuts down the launcher
+     * Cerrando Launcher y Guardando Pwefiles
      */
     public void exitSafely() {
         console.print("Cerrando launcher...");
@@ -293,7 +354,7 @@ public final class Kernel {
     }
 
     /**
-     * Warns the user that JavaFX is not available
+     * Mensajes de Error al Usuario que Fallo la carga de JavaFX
      */
     private void warnJavaFX() {
         JOptionPane.showMessageDialog(null, Language.get(9), "Error", JOptionPane.ERROR_MESSAGE);
@@ -303,6 +364,10 @@ public final class Kernel {
     public BrowserFX getBrowser() {
         return webBrowser;
     }
+
+    /*
+    * Carga de Iconos de los Perfiles
+    */
 
     private void loadIcons() {
         icons.put("Leaves_Oak", new int[]{0, 0});
@@ -377,7 +442,7 @@ public final class Kernel {
         return icons;
     }
     /**
-     * Gets a profile icon from the icons map
+     * Devuelve un Icono de Perfile
      *
      * @param profileIcon The desired profile icon
      * @return The image with the profile icon
@@ -404,7 +469,7 @@ public final class Kernel {
     }
 
     /**
-     * Constructs an alert with the application icon
+     * Muetra Alertas en la Aplicacion
      *
      * @param type    The alert type
      * @param title   The header text

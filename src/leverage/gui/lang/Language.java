@@ -7,11 +7,13 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+//Clase Encargada de Extraer Datos del Archivo de Lenguaje
+
 public class Language {
     private static final ArrayList<String> langData =  new ArrayList<>();
 
     /**
-     * Loads a language file
+     * Cargando Archivo de Lenguajes
      * @param lang The language to be loaded
      * @throws IOException When data read fails
      */
@@ -30,7 +32,7 @@ public class Language {
     }
 
     /**
-     * Gets a specific localized line
+     * Extraer una Linea especifica del Archivo
      * @param line The target line
      * @return The requested localized line
      */

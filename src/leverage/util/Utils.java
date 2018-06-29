@@ -4,6 +4,9 @@ import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
 import leverage.client.components.Mod;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -12,14 +15,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+import java.util.jar.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -231,52 +232,118 @@ public final class Utils {
     }
 
     /**
-     * Reader a List Mods
-     * @param m The Mods Dir
+     * Return List JSONArray Mods List
+     * @param mods mods Mods List
      * @return A List Mods
-     *//*
-    public static List<Mod> getListMods(File m) {
-        List<Mod> list = new ArrayList<>();
-        try {
-            if (m.isDirectory()) {
-                File[] h = m.listFiles();
-                for (int i=0; i < h.length; i++) {
-                    this.getListMods(h[i]);
-                }
-                dir.delete();
-            } else {
-                list.add(new Mod(id, name, url, nameJar, version));
+     */
+    public static JSONArray getModsJSON(List<Mod> mods) {
+        JSONArray list = new JSONArray();
+            JSONObject mod, o;
+            for(int i=0; i<mods.size(); i++) {
+                mod = new JSONObject();
+                o = new JSONObject();
+
+                o.put("id", mods.get(i).getId());
+                o.put("nameJar", mods.get(i).getNameJar());
+                o.put("version", mods.get(i).getVersion());
+                o.put("diskSpace", mods.get(i).getdiskSpace());
+                o.put("vmc", mods.get(i).gerVMC());
+
+                mod.put(mods.get(i).getName(), o);
+
+                list.put(i, mod);
             }
-        } catch (Exception e) {
-            System.err.println("Error Leyendo Mods");
-        }
         return list;
-    }*/
+    }
 
     /**
      * Reader a List Mods
      * @param m The Mods Dir
      * @return A List Mods
      */
-    public static Mod getMod(File file) {
-        String id = null, name = null, version = null;
+    public static List<Mod> getListMods(File m) {
+        List<Mod> list = new ArrayList<>();
+        try {
+            if (m.isDirectory()) {
+                File[] h = m.listFiles();
+                for (int i=0; i < h.length; i++) {
+                    List<Mod> tmp = getListMods(h[i]);
+                    for(int j=0; j<tmp.size(); j++) {
+                        Mod mod = tmp.get(j);
+                        if(mod.getName() != null)
+                            list.add(tmp.get(j));
+                    }
+                }
+            } else {
+                Mod mod = getMod(m);
+                if(mod.getName() != null)
+                    list.add(mod);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Reader a Mod File
+     * @param file The Mod File
+     * @return A Mod
+     */
+    public static Mod getMod(File file) throws IOException {
+        String id = null, nam = null, version = null, vmc = null;
         String url = file.getAbsolutePath();
         String nameJar = file.getName();
 
-        System.out.println("NAME JAR: "+nameJar);
+        //Abrir Archivo y Leerlo
+        JarInputStream input = new JarInputStream(file.toURI().toURL().openStream());
+        int v; String name, mod_name = file.getName().replace(".jar", "");
 
-        //Extract Data Jar
-        try {
-            JarFile jar = new JarFile(url);
-            Manifest m = jar.getManifest();
-            Attributes a = m.getMainAttributes();
+        //Buscar Informacion: mcmod.info
+        for(JarEntry jar = input.getNextJarEntry(); jar != null; jar = input.getNextJarEntry()) {
+            if(!jar.isDirectory()) {
+                name = jar.getName();
+                if (name.equals("mcmod.info")) {
+                    //Copiamos el Fichero en el Cache
+                    File cache = new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
+                    if(!cache.exists())
+                        cache.mkdirs();
 
-            System.out.println(a.getValue("Manifest-Version").toString());
-        } catch (IOException ex) {
-            System.err.println("ERROR: "+ex.getMessage());
+                    FileOutputStream ou = new FileOutputStream(cache.getPath()+"/"+mod_name+".json");
+                    BufferedOutputStream buffout = new BufferedOutputStream(ou);
+                    BufferedInputStream buffin = new BufferedInputStream(input);
+                    while ((v = buffin.read()) != -1) {
+                        buffout.write(v);
+                    }
+                    buffout.flush();
+
+                    //Leer Fichero del Cache
+                    File config = new File(cache.getPath()+"/"+mod_name+".json");
+
+                    String data = new String(Files.readAllBytes(config.toPath()), StandardCharsets.UTF_8);
+
+                    JSONArray array = new JSONArray(data);
+                    JSONObject object = array.getJSONObject(0);
+
+                    id = object.getString("modid");
+                    nam = object.getString("name");
+
+                    try {
+                        version = object.getString("version");
+                    } catch (JSONException ex) {
+                        version = "1.0";
+                    }
+                    try {
+                        vmc = object.getString("mcversion");
+                    } catch (JSONException ex) {
+                        vmc = "1.12.2";
+                    }
+
+                    break ;
+                }
+            }
         }
-
-        return new Mod(id, name, url, nameJar, version);
+        return new Mod(id, nam, url, nameJar, version, vmc);
     }
 
     /**
