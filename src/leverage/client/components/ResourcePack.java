@@ -6,8 +6,10 @@ public class ResourcePack {
     private String name;
     private String url;
     private String nameZip;
-    private double diskSpace;
+    private long diskSpace;
     private final File relativeZip;
+
+    // INACTIVO
 
     public ResourcePack(String name, String nameZip) {
         this.name = name;
@@ -17,7 +19,7 @@ public class ResourcePack {
         this.diskSpace = relativeZip.length();
     }
 
-    public ResourcePack(String name, String url, double diskSpace) {
+    public ResourcePack(String name, String url, long diskSpace) {
         this.name = name;
         this.url = url;
         this.nameZip = null;
@@ -37,7 +39,7 @@ public class ResourcePack {
         return nameZip;
     }
 
-    public double getDiskSpace() {
+    public long getDiskSpace() {
         return diskSpace;
     }
 

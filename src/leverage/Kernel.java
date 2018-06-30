@@ -14,7 +14,6 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
-import leverage.client.AntiCheat;
 import leverage.client.components.Mod;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
@@ -29,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +51,6 @@ public final class Kernel {
     private final Versions versions;                        // Listado de Versiones del Juego
     private final Settings settings;                        // Configuraciones (Idioma, archivo de Config)
     private final Downloader downloader;                    // Sistema de Descarga Automatica
-    private final AntiCheat antiCheat;                      // Sistema Antiparches
     private final Authentication authentication;            // Sistema de Autenticacion
 
     private final GameLauncher gameLauncher;                // Sistema Lanzador del Juego (Abre el Juego)
@@ -67,7 +64,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.0.2";
+    public static final String KERNEL_BUILD_NAME = "1.0.3";
     public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
@@ -158,7 +155,6 @@ public final class Kernel {
         versions = new Versions(this);
         settings = new Settings(this);
         downloader = new Downloader(this);
-        antiCheat = new AntiCheat(this);
         authentication = new Authentication(this);
         gameLauncher = new GameLauncher(this);
         hostServices = hs;
@@ -325,10 +321,6 @@ public final class Kernel {
 
     public Downloader getDownloader() {
         return downloader;
-    }
-
-    public AntiCheat getAntiCheat() {
-        return antiCheat;
     }
 
     public Authentication getAuthentication() {

@@ -69,7 +69,7 @@ public class MainFX {
     // Listado de Componentes en el FXML
 
     @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
-            keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize,
+            keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize, enableReopen,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
             switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
@@ -152,6 +152,7 @@ public class MainFX {
         toggleLabel(keepLauncherOpen, settings.getKeepLauncherOpen());
         toggleLabel(outputLog, settings.getShowGameLog());
         toggleLabel(enableSnapshots, settings.getEnableSnapshots());
+        toggleLabel(enableReopen, settings.getEnableReopen());
         toggleLabel(historicalVersions, settings.getEnableHistorical());
         toggleLabel(advancedSettings, settings.getEnableAdvanced());
 
@@ -302,6 +303,7 @@ public class MainFX {
         keepLauncherOpen.setText(Language.get(46));
         outputLog.setText(Language.get(47));
         enableSnapshots.setText(Language.get(48));
+        enableReopen.setText(Language.get(136));
         historicalVersions.setText(Language.get(49));
         advancedSettings.setText(Language.get(50));
         saveButton.setText(Language.get(52));
@@ -659,36 +661,6 @@ public class MainFX {
         profileListLoaded = true;
         console.print("Lista de Perfiles Cargada.");
     }
-    /**
-     * Loads Control list items
-     */
-    private void loadModsList() {
-        console.print("Cargando Lista de Mods...");
-
-        try {
-            String text, response = Utils.readURL(Urls.modsList);
-            if (response.isEmpty()) {
-                console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
-                return;
-            }
-            JSONArray entries = new JSONArray(response);
-            for (int i = 0; i < entries.length(); i++) {
-                JSONObject entry = entries.getJSONObject(i);
-
-                text = entry.keys().next();
-                JSONObject mod = entry.getJSONObject(text);
-
-            }
-        } catch (Exception ex) {
-            newsTitle.setText(Language.get(80));
-            newsText.setText(Language.get(101));
-            console.print("No se ha podido Cargar los Datos de las Noticias.");
-            ex.printStackTrace(console.getWriter());
-            return;
-        }
-
-        console.print("Lista de Mods Comprobada Cargada.");
-    }
 
     /**
      * Loads profiles popup list items
@@ -873,11 +845,11 @@ public class MainFX {
         progressBar.setProgress(0);
         progressText.setText("");
         final Downloader d = kernel.getDownloader();
-        final AntiCheat anti = kernel.getAntiCheat();
         final GameLauncher gl = kernel.getGameLauncher();
+        AntiCheat anti = new AntiCheat(kernel);
 
         // Anticheat en Accion
-        anti.compare();
+        anti.compare();                 //Compara Local-Server
 
         //Keep track of the progress
         final TimerTask progressTask = new TimerTask() {
@@ -1773,6 +1745,9 @@ public class MainFX {
             validateSelectedProfile();
             loadProfileList();
             versionListLoaded = false;
+        } else if (source == enableReopen) {
+            settings.setEnableReopen(!settings.getEnableReopen());
+            toggleLabel(source, settings.getEnableReopen());
         } else if (source == historicalVersions) {
             if (!settings.getEnableHistorical()) {
                 kernel.showAlert(Alert.AlertType.WARNING, null, Language.get(73) + System.lineSeparator()

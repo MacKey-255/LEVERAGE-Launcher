@@ -14,7 +14,7 @@ public class Settings {
     private final Console console;
     private String locale = "es-es";
     private final HashMap<String, String> supportedLocales = new HashMap<>();
-    private boolean keepLauncherOpen, showGameLog, enableAdvanced, enableHistorical, enableSnapshots;
+    private boolean keepLauncherOpen, showGameLog, enableAdvanced, enableHistorical, enableSnapshots, enableReopen;
     private double launcherWidth, launcherHeight;
 
 
@@ -56,6 +56,9 @@ public class Settings {
                     if (settings.has("enableSnapshots")) {
                         enableSnapshots = settings.getBoolean("enableSnapshots");
                     }
+                    if (settings.has("enableReopen")) {
+                        enableReopen = settings.getBoolean("enableReopen");
+                    }
                     if (settings.has("launcherWidth")) {
                         launcherWidth = settings.getDouble("launcherWidth");
                     } else {
@@ -85,6 +88,7 @@ public class Settings {
         setLocale("es-es");
         launcherWidth = 850;
         launcherHeight = 700;
+        enableReopen = true;
     }
 
     /**
@@ -197,6 +201,22 @@ public class Settings {
     }
 
     /**
+     * Returns if the reopen Launcher are enabled
+     * @return If the reopen Launcher are enabled
+     */
+    public boolean getEnableReopen() {
+        return enableReopen;
+    }
+
+    /**
+     * Changes if the reopen Launcher are enabled
+     * @param b The new value
+     */
+    public void setEnableReopen(boolean b) {
+        enableReopen = b;
+    }
+
+    /**
      * Changes if the snapshots are enabled
      * @param b The new value
      */
@@ -248,6 +268,7 @@ public class Settings {
         o.put("enableAdvanced", this.enableAdvanced);
         o.put("enableHistorical", this.enableHistorical);
         o.put("enableSnapshots", this.enableSnapshots);
+        o.put("enableReopen", this.enableReopen);
         o.put("launcherWidth", this.launcherWidth);
         o.put("launcherHeight", this.launcherHeight);
         return o;

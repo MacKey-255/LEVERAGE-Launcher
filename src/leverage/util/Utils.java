@@ -4,6 +4,7 @@ import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
 import leverage.client.components.Mod;
+import leverage.exceptions.CheatsDetectedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -281,6 +282,8 @@ public final class Utils {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (CheatsDetectedException e) {
+            e.printStackTrace();
         }
         return list;
     }
@@ -290,7 +293,7 @@ public final class Utils {
      * @param file The Mod File
      * @return A Mod
      */
-    public static Mod getMod(File file) throws IOException {
+    public static Mod getMod(File file) throws IOException, CheatsDetectedException {
         String id = null, nam = null, version = null, vmc = null;
         String url = file.getAbsolutePath();
         String nameJar = file.getName();
@@ -335,12 +338,18 @@ public final class Utils {
                     }
                     try {
                         vmc = object.getString("mcversion");
+                        if(vmc.equals("${mcversion}") || vmc.equals("${version}"))
+                            vmc = "1.12.2";
                     } catch (JSONException ex) {
                         vmc = "1.12.2";
                     }
 
                     break ;
                 }
+            } else {
+                //Detectar Cheats
+                if(jar.getName().equals("minecraftxray"))
+                    throw new CheatsDetectedException(jar.getName());
             }
         }
         return new Mod(id, nam, url, nameJar, version, vmc);

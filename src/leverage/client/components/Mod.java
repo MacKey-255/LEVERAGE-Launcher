@@ -10,7 +10,7 @@ public class Mod {
     private String nameJar;
     private String version;
     private String vmc;
-    private double diskSpace;
+    private long diskSpace;
     private final File relativeJar;
 
     public Mod(String id, String name, String url, String nameJar, String version, String vmc) {
@@ -24,7 +24,7 @@ public class Mod {
         this.diskSpace = relativeJar.length();
     }
 
-    public Mod(String id, String name, String url, String version, double diskSpace, String vmc) {
+    public Mod(String id, String name, String url, String version, long diskSpace, String vmc) {
         this.name = name;
         this.url = url;
         this.nameJar = null;
@@ -50,7 +50,7 @@ public class Mod {
         return version;
     }
 
-    public double getdiskSpace() {
+    public long getdiskSpace() {
         return diskSpace;
     }
 

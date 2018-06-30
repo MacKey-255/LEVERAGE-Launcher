@@ -455,7 +455,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </Label>
-                        <Label fx:id="outputLog" alignment="CENTER" onMouseClicked="#updateSettings" text="Open output log when the game starts" wrapText="true">
+                        <Label fx:id="outputLog" alignment="CENTER" onMouseClicked="#updateSettings" text="Re-Open Launcher when Crash or Closed Game" wrapText="true">
                            <styleClass>
                               <String fx:value="text-5" />
                               <String fx:value="toggle-disabled" />
@@ -464,6 +464,18 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Label>
+                              <Label fx:id="enableReopen" alignment="CENTER" layoutX="10.0" layoutY="71.0" onMouseClicked="#updateSettings" text="Open output log when the game starts" wrapText="true">
+                                 <styleClass>
+                                    <String fx:value="text-5" />
+                                    <String fx:value="toggle-disabled" />
+                                 </styleClass>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                              </Label>
                      </children>
                   </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">

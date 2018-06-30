@@ -307,7 +307,8 @@ public class GameLauncher {
                         Utils.deleteDirectory(nativesDir);
                         timer.cancel();
                         timer.purge();
-                        mainFX.show();
+                        if(kernel.getSettings().getEnableReopen())
+                            mainFX.show();
                         mainFX.gameEnded(error);
                     }
                 }

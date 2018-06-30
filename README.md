@@ -2,8 +2,8 @@ Minecraft-Launcher-LEVERAGE:
 
 	- Basado en Launcher Krothium
 	- Modo Offline
-	- Gestor de Mods, ResourcesPack y Versiones de Minecraft
 	- AntiParches
-	- Mod Control
-	- Gestion de Clientes para Servidores
-	- Asociacion de Servidores
+	- Control de Mods
+	- Gestion del Cliente Minecraft
+	- Informacion del Servidor
+	- Mantenimiento al Cliente

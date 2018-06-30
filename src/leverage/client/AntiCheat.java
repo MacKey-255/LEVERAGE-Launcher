@@ -3,59 +3,104 @@ package leverage.client;
 import leverage.Console;
 import leverage.Kernel;
 import leverage.client.components.Mod;
-import leverage.client.components.ResourcePack;
+import leverage.client.components.VersionServer;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
+import leverage.game.version.VersionMeta;
+import leverage.game.version.Versions;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AntiCheat {
     private Kernel kernel;
     private Console console;
-    private List<Mod> mods;
-    private Version version;
-    private List<ResourcePack> packs;
+
+    private Version versionLocal;
+    private List<Mod> modsLocal;
+
+    private VersionServer versionServer;
+    private List<Mod> modsServer;
 
     public AntiCheat(Kernel kernel) {
         this.kernel = kernel;
         this.console = kernel.getConsole();
+    }
 
-        mods = new ArrayList<>();
-        packs = new ArrayList<>();
+    public void loadVersions() {
+        Profile p = kernel.getProfiles().getSelectedProfile();
+
+        Versions versions = kernel.getVersions();
+        VersionMeta verID;
+        switch (p.getType()) {
+            case CUSTOM:
+                verID = p.hasVersion() ? p.getVersionID() : versions.getLatestRelease();
+                break;
+            case RELEASE:
+                verID = versions.getLatestRelease();
+                break;
+            default:
+                verID = versions.getLatestSnapshot();
+                break;
+        }
+        versionLocal = versions.getVersion(verID);
     }
 
     public void generateList() {
         // Cargar Listado del Antiparches
         console.print("Cargando Mods Locales.");
-        mods = kernel.loadMods();
-
-        console.print("Cargando ResourcePack Locales.");
-        mods = kernel.loadMods();
+        modsLocal = kernel.loadMods();
+        loadVersions();
     }
 
-    public void getServerListMods() {
-        // Cargar Listado de Mods Local
-        console.print("Cargando Mods Locales.");
-        List<Mod> mods = kernel.loadMods();
-    }
+    public void generateServerList() {
+        try {
+            String text, response = Utils.readURL(Urls.modsList);
+            if (response.isEmpty()) {
+                console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
+                return;
+            }
+            JSONArray entries = new JSONArray(response);
+            for (int i = 0; i < entries.length(); i++) {
+                JSONObject entry = entries.getJSONObject(i);
 
-    public void addPacks(ResourcePack packs) {
-        this.packs.add(packs);
+                text = entry.keys().next();
+                JSONObject mod = entry.getJSONObject(text);
+
+            }
+        } catch (Exception ex) {
+            console.print("No se ha podido Cargar los Datos de las Noticias.");
+            ex.printStackTrace(console.getWriter());
+        }
     }
 
     public void writeJSON() {
-        if(mods.size() != 0) {
-            // Enviando Lista de Mods al Servidor
-            JSONArray array = Utils.getModsJSON(mods);
+        if(modsLocal.size() != 0) {
+            JSONArray array = Utils.getModsJSON(modsLocal);
 
             if (!Utils.writeToFile(array.toString(), new File(Kernel.APPLICATION_LIBS, "mods_list.json"))) {
                 console.print("Ha Fallado la Salva de Mods!");
             } else {
                 console.print("Mods Guardados.");
+            }
+        }
+
+        if(versionLocal != null) {
+            JSONObject object = new JSONObject();
+            object.put("id", versionLocal.getID());
+            object.put("diskSpace", versionLocal.getDiskSpace());
+            object.put("version", versionLocal.getJar());
+            object.put("vertionType", versionLocal.getType().name());
+
+
+            if (!Utils.writeToFile(object.toString(), new File(Kernel.APPLICATION_LIBS, "version.json"))) {
+                console.print("Ha Fallado la Salva de la Version!");
+            } else {
+                console.print("Version Guardados.");
             }
         }
     }
@@ -64,7 +109,5 @@ public class AntiCheat {
         // Comparar Cliente y Servidor
         this.generateList();
         this.writeJSON();
-
-        Profile p = kernel.getProfiles().getSelectedProfile();
     }
 }

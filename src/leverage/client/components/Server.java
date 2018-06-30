@@ -2,6 +2,9 @@ package leverage.client.components;
 
 import leverage.client.extra.StatusType;
 import leverage.game.version.Version;
+import leverage.util.Urls;
+import leverage.util.Utils;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -9,43 +12,33 @@ public class Server {
 
     private StatusType status;
     private String name;
-    private String url;
     private int players;
     private int maxPlayers;
 
     private List<Mod> modslist;
     private Version version;
 
-    public Server(StatusType status, String name, String url, int players, int maxPlayers, List<Mod> modslist, Version version) {
-        this.status = status;
-        this.name = name;
-        this.url = url;
-        this.players = players;
-        this.maxPlayers = maxPlayers;
+    // INACTIVO
 
+    public Server(String name, List<Mod> modslist, Version version) {
+        this.name = name;
         this.modslist = modslist;
         this.version = version;
+        onlineUsers();
     }
 
-    public Server(StatusType status, String name, String url, int players, int maxPlayers, Version version) {
-        this.status = status;
-        this.name = name;
-        this.url = url;
-        this.players = players;
-        this.maxPlayers = maxPlayers;
-
-        this.version = version;
-    }
-
-    public Server(String name, String url, List<Mod> modslist, Version version) {
-        this.status = StatusType.OFFLINE;
-        this.name = name;
-        this.url = url;
-        this.players = 0;
-        this.maxPlayers = 0;
-
-        this.modslist = modslist;
-        this.version = version;
+    public void onlineUsers() {
+        String response = Utils.readURL(Urls.onlineData);
+        if (!response.isEmpty()) {
+            JSONObject object = new JSONObject(response);
+            this.status = StatusType.ONLINE;
+            this.players = object.getInt("online");
+            this.maxPlayers = object.getInt("total");
+        } else {
+            this.status = StatusType.OFFLINE;
+            this.players = 0;
+            this.maxPlayers = 0;
+        }
     }
 
     public StatusType getStatus() {
@@ -54,10 +47,6 @@ public class Server {
 
     public String getName() {
         return name;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public int getPlayers() {
