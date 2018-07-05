@@ -34,7 +34,6 @@ import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
-import leverage.client.components.Mod;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -109,7 +108,7 @@ public class MainFX {
     private int currentSlide;
     private int currentPreview; // 0 = front / 1 = right / 2 = back / 3 = left
     private final Image[] skinPreviews = new Image[4];
-    private Image skin, cape, alex, steve;
+    private Image skin, alex, steve;
     private boolean texturesLoaded;
     private boolean iconListLoaded, versionListLoaded, languageListLoaded, loadingTextures, profileListLoaded,
             profileListPopupLoaded;
@@ -351,7 +350,6 @@ public class MainFX {
 
         alex = new Image("/leverage/gui/textures/alex.png");
         steve = new Image("/leverage/gui/textures/steve.png");
-        cape = null;
         User selected = kernel.getAuthentication().getSelectedUser();
 
         if (selected.getType() == UserType.OFFLINE) {
@@ -849,7 +847,23 @@ public class MainFX {
         AntiCheat anti = new AntiCheat(kernel);
 
         // Anticheat en Accion
-        anti.compare();                 //Compara Local-Server
+        anti.compare();                 // Genera y envia datos al Servidor
+        if(!anti.isAccept()) {
+            // Mostrar Mensaje
+            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
+            console.print("Cliente no concuerda con el Servidor.");
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    progressPane.setVisible(false);
+                    playPane.setVisible(true);
+                    playButton.setText(Language.get(14));
+                    playButton.setDisable(false);
+                    profilePopupButton.setDisable(false);
+                }
+            });
+            return;
+        }
 
         //Keep track of the progress
         final TimerTask progressTask = new TimerTask() {

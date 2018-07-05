@@ -133,4 +133,5 @@ El Juego se ha Actualizado, abralo nuevamente
 0 / 0
 Fuera de Linea
 En Linea
-Reabrir Launcher cuando el Juego de Crash o se Cierre.
+Re-Abrir Launcher cuando el Juego de Crash o se Cierre.
+Usted posee mods o una version Indevida, por favor contacte con la administracion.

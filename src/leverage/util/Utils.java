@@ -331,6 +331,11 @@ public final class Utils {
                     id = object.getString("modid");
                     nam = object.getString("name");
 
+                    //Detectar Cheats Especificos (Wurst)
+                    if(id == "forgewurst")
+                        throw new CheatsDetectedException(jar.getName());
+
+
                     try {
                         version = object.getString("version");
                     } catch (JSONException ex) {
@@ -347,7 +352,7 @@ public final class Utils {
                     break ;
                 }
             } else {
-                //Detectar Cheats
+                //Detectar Cheats Especificos ( XRay )
                 if(jar.getName().equals("minecraftxray"))
                     throw new CheatsDetectedException(jar.getName());
             }
@@ -528,6 +533,18 @@ public final class Utils {
                 ze = zis.getNextEntry();
             }
             new File(output, "OK").createNewFile();
+        }
+    }
+
+    public static void restartApplication() {
+        try {
+            System.out.println("Reiniciando Launcher");
+            final String javaBin = new File(Kernel.APPLICATION_WORKING_DIR, "LEVERAGE-Launcher.jar").getAbsolutePath();
+            Runtime rt = Runtime.getRuntime();
+            rt.exec(javaBin);
+            System.exit(0);
+        } catch (Exception e){
+            System.out.println("Ha fallado el reinicio del Programa!");
         }
     }
 }

@@ -202,7 +202,7 @@ public final class Kernel {
                 System.out.println(e.getMessage());
             }
             showAlert(Alert.AlertType.INFORMATION, Language.get(4), Language.get(132));
-            exitSafely();
+            Utils.restartApplication();
         }
 
         if (!APPLICATION_WORKING_DIR.isDirectory()) {

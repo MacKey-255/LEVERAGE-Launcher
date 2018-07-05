@@ -12,6 +12,7 @@ public class Urls {
     public static final String skinsPath = leverage + "/skins/";
     public static final String CHANGESKIN_URL = leverage + "/upload.php";
     public static final String serverVersion = leverage + "/versions/version.json";
+    public static final String versionManifest = leverage + "/version_manifest.json";
     public static final String cheatsWarning = leverage + "/cheats.php";
     public static final String help = leverage + "/help";
     public static final String onlineData = leverage + "/online.json";
@@ -19,7 +20,7 @@ public class Urls {
     public static final String update = leverage + "/update.json";
 
     public static final String mods = leverage + "/mods/1.12.2/";
-    public static final String modsList = leverage + "/mods/1.12.2/mods_list.json";
+    public static final String modsList = leverage + "/index.php";
 
     // URLS para el Sistema AntiCheat
     public static final String comfirmIP = leverage;

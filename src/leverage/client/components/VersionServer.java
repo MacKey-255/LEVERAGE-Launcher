@@ -9,6 +9,8 @@ public class VersionServer {
     private long diskSpance;
     private VersionType versionType;
 
+    // INACTIVO
+
     public VersionServer(String id, String versionBase, long diskSpance, VersionType versionType) {
         this.id = id;
         this.versionBase = versionBase;

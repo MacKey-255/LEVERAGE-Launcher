@@ -134,3 +134,4 @@ The Game Updated, please re-open Game
 OFFLINE
 ONLINE
 Re-Open Launcher when Crash or Closed Game.
+You have mods or version invalidate, please contact with you admin.

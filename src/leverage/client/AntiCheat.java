@@ -2,6 +2,7 @@ package leverage.client;
 
 import leverage.Console;
 import leverage.Kernel;
+import leverage.auth.user.User;
 import leverage.client.components.Mod;
 import leverage.client.components.VersionServer;
 import leverage.game.profile.Profile;
@@ -14,7 +15,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AntiCheat {
     private Kernel kernel;
@@ -23,15 +29,16 @@ public class AntiCheat {
     private Version versionLocal;
     private List<Mod> modsLocal;
 
-    private VersionServer versionServer;
-    private List<Mod> modsServer;
+    private boolean accept;
 
     public AntiCheat(Kernel kernel) {
         this.kernel = kernel;
         this.console = kernel.getConsole();
+        this.accept = false;
     }
 
     public void loadVersions() {
+        // Buscar version Selecionada
         Profile p = kernel.getProfiles().getSelectedProfile();
 
         Versions versions = kernel.getVersions();
@@ -51,30 +58,65 @@ public class AntiCheat {
     }
 
     public void generateList() {
-        // Cargar Listado del Antiparches
+        // Cargar Listado del Antiparches (Mods y Versiones)
         console.print("Cargando Mods Locales.");
-        modsLocal = kernel.loadMods();
-        loadVersions();
+        modsLocal = kernel.loadMods();      // Generar Mods
+        loadVersions();                     // Generar Version
     }
 
-    public void generateServerList() {
+    public void sendServerList() {
         try {
-            String text, response = Utils.readURL(Urls.modsList);
-            if (response.isEmpty()) {
+            boolean mods = true, version = true;
+
+            // Tomar datos generados en Ficheros JSON
+            File modFile = new File(Kernel.APPLICATION_LIBS, "mods_list.json");
+            File versionFile = new File(Kernel.APPLICATION_LIBS, "version.json");
+
+            String modString = new String(Files.readAllBytes(modFile.toPath()), StandardCharsets.UTF_8);
+            String versionString = new String(Files.readAllBytes(versionFile.toPath()), StandardCharsets.UTF_8);
+
+            JSONArray modsList = new JSONArray(modString);
+            JSONObject versionObject = new JSONObject(versionString);
+
+            // Añadir contenido al Request
+
+            Map<String, String> postParamsMods = new HashMap<>();           // Mods
+            Map<String, String> postParamsVersion = new HashMap<>();          // Version
+            postParamsMods.put("Content-Type", "application/json; charset=utf-8");
+            postParamsMods.put("Content-Length", String.valueOf(modsList.toString().length()));
+
+            postParamsVersion.put("Content-Type", "application/json; charset=utf-8");
+            postParamsVersion.put("Content-Length", String.valueOf(versionObject.toString().length()));
+
+            // Enviar Informacion en modo POST
+            String responseMods = Utils.sendPost(Urls.modsList, modsList.toString().getBytes(Charset.forName("UTF-8")), postParamsMods);
+            String responseVersion = Utils.sendPost(Urls.modsList, versionObject.toString().getBytes(Charset.forName("UTF-8")), postParamsVersion);
+
+            if (responseMods.isEmpty()) {
                 console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
+                mods = false;
+            }
+            if (responseVersion.isEmpty()) {
+                console.print("El Servidor no ha devuelto nunguna Version.");
+                version = false;
+            }
+
+            //Tomar Informacion
+            JSONObject entryMods = new JSONObject(responseMods);
+            JSONObject entryVersion = new JSONObject(responseVersion);
+
+            if(!entryMods.getBoolean("request") || !entryVersion.getBoolean("request")) {
+                console.print("Existe una diferencia en los mods o en la Version.");
+                accept = false;
                 return;
             }
-            JSONArray entries = new JSONArray(response);
-            for (int i = 0; i < entries.length(); i++) {
-                JSONObject entry = entries.getJSONObject(i);
 
-                text = entry.keys().next();
-                JSONObject mod = entry.getJSONObject(text);
+            if(entryMods.getBoolean("request") && entryVersion.getBoolean("request"))
+                accept = true;
 
-            }
         } catch (Exception ex) {
-            console.print("No se ha podido Cargar los Datos de las Noticias.");
-            ex.printStackTrace(console.getWriter());
+            console.print("No se ha podido Comprobar con el Servidor el Antiparches");
+            accept = false;
         }
     }
 
@@ -91,8 +133,9 @@ public class AntiCheat {
 
         if(versionLocal != null) {
             JSONObject object = new JSONObject();
+            File file = new File(Kernel.APPLICATION_WORKING_DIR, versionLocal.getRelativeJar().getPath());
             object.put("id", versionLocal.getID());
-            object.put("diskSpace", versionLocal.getDiskSpace());
+            object.put("diskSpace", file.length());
             object.put("version", versionLocal.getJar());
             object.put("vertionType", versionLocal.getType().name());
 
@@ -107,7 +150,12 @@ public class AntiCheat {
 
     public void compare() {
         // Comparar Cliente y Servidor
-        this.generateList();
-        this.writeJSON();
+        this.generateList();        // Genero lista Local
+        this.writeJSON();           // Guardo Listados
+        this.sendServerList();      // Envio los Listados en JSON
+    }
+
+    public boolean isAccept() {
+        return accept;
     }
 }
