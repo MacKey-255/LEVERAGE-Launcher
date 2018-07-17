@@ -3,20 +3,22 @@ package leverage.util;
 // Clase Administradora de URLS
 
 public class Urls {
-    public static final String leverage = "http://127.0.0.1";        // IP Fija de la Web de LEVERAGE;
-    public static final String authPath = leverage + "/authenticate/";
-    public static final String refreshPath = leverage + "/refresh/";
-    public static final String newsUrl = leverage + "/authenticate/news.json";
-    public static final String register = leverage + "/register/";
+    public static final String leverage = "http://127.0.0.1:90";        // IP Fija de la Web de LEVERAGE;
+    public static final String media = leverage + "/Minecraft/web/media/";
+    public static final String authPath = leverage + "/Minecraft/web/app_dev.php/user/auth";
+    public static final String closeath = leverage + "/Minecraft/web/app_dev.php/user/close";
+    public static final String refreshPath = leverage + "/Minecraft/web/app_dev.php/user/refresh";
+    public static final String newsUrl = leverage + "/Minecraft/web/app_dev.php/news/list";
+    public static final String register = leverage + "/Minecraft/web/app_dev.php/user/register";
     public static final String forgotPassword = leverage;
-    public static final String skinsPath = leverage + "/skins/";
-    public static final String CHANGESKIN_URL = leverage + "/upload.php";
+    public static final String skinsPath = leverage + "/Minecraft/web/app_dev.php/user/skins";
+    public static final String CHANGESKIN_URL = leverage + "/Minecraft/web/app_dev.php/user/skins/upload";
     public static final String serverVersion = leverage + "/versions/version.json";
     public static final String versionManifest = leverage + "/version_manifest.json";
-    public static final String cheatsWarning = leverage + "/cheats.php";
-    public static final String help = leverage + "/help";
-    public static final String onlineData = leverage + "/online.json";
-    public static final String listOnline = leverage + "/online/";
+    public static final String cheatsWarning = leverage + "/Minecraft/web/app_dev.php/user/cheats";
+    public static final String help = leverage;
+    public static final String onlineData = leverage + "/Minecraft/web/app_dev.php/user/online";
+    public static final String listOnline = leverage + "/Minecraft/web/app_dev.php/user/list";
     public static final String update = leverage + "/update.json";
 
     public static final String mods = leverage + "/mods/1.12.2/";
@@ -29,16 +31,14 @@ public class Urls {
     // URLS Modulares
 
     public static final String urlDataProfileId(String id) {
-        return leverage + "/users.php?profileID=" + id;
-    }
-
-    public static final String listDataPath(String server) {
-        return leverage + "/list/" + server + ".php";
+        return leverage + "/Minecraft/web/app_dev.php/user/staus/" + id;
     }
 
     public static final String skinsPathProfileId(String name) {
-        return leverage + "/skins/" + name + ".png";
+        return leverage + "/Minecraft/web/skins/" + name + ".png";
     }
+
+    // DISABLE
 
     public static final String libraryPath(String library) {
         return leverage + "/libraries/" + library;

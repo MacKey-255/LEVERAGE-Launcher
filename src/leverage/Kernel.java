@@ -14,6 +14,7 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
+import leverage.auth.user.UserType;
 import leverage.client.components.Mod;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
@@ -35,6 +36,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.0.3";
+    public static final String KERNEL_BUILD_NAME = "1.0.5";
     public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
@@ -342,7 +344,42 @@ public final class Kernel {
         console.print("Cerrando launcher...");
         console.close();
         saveProfiles();
+        closeWeb();
         System.exit(0);
+    }
+
+    public void closeWeb() {
+        console.print("Cerrando Session via Web");
+        if (getAuthentication().getSelectedUser() == null || getAuthentication().getSelectedUser().getType() == UserType.OFFLINE) {
+            console.print("No se pudo cerrar session via Web");
+            return;
+        }
+
+        //Cargando Informacion de session
+        JSONObject request = new JSONObject();
+        JSONObject agent = new JSONObject();
+        agent.put("name", "Minecraft");
+        agent.put("version", 1);
+        request.put("agent", agent);
+        request.put("clientToken", getAuthentication().getSelectedUser().getAccessToken());
+        request.put("requestUser", true);
+        Map<String, String> postParams = new HashMap<>();
+        postParams.put("Content-Type", "application/json; charset=utf-8");
+        postParams.put("Content-Length", String.valueOf(request.toString().length()));
+        String response;
+
+        String closeURL = Urls.closeath;
+        try {
+            response = Utils.sendPost(closeURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
+        } catch (IOException ex) {
+            console.print("Se ha Cerrado Session con Exito.");
+            return;
+        }
+
+        if (response.isEmpty()) {
+            console.print("No se pudo cerrar session via Web, el servidor no ha devuelto ningun dato!");
+            return;
+        }
     }
 
     /**

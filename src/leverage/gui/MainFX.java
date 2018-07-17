@@ -139,7 +139,6 @@ public class MainFX {
         newsTitle.setText("Cargando Noticias...");
         newsText.setText("Por favor espere un Momento..");
         loadSlideshow();
-        onlineList();
 
         // Refrescando Login
         refreshSession();
@@ -346,7 +345,9 @@ public class MainFX {
         if (loadingTextures) {
             return;
         }
-        selectSkin.setDisable(true);
+        if(kernel.getAuthentication().getSelectedUser().getType() == UserType.OFFLINE) {
+            selectSkin.setDisable(true);
+        }
 
         alex = new Image("/leverage/gui/textures/alex.png");
         steve = new Image("/leverage/gui/textures/steve.png");
@@ -424,7 +425,7 @@ public class MainFX {
         if (file != null) {
             console.print(file.length() + " - Tamaño del Skins Subido");
             if (file.length() > 131072) {
-                console.print("Skin file exceeds 128KB file size limit.");
+                console.print("Tamaño del Skins excedido, maximo 128KB ");
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -458,6 +459,7 @@ public class MainFX {
                     @Override
                     public void run() {
                         kernel.showAlert(Alert.AlertType.ERROR, null, finalText);
+                        selectSkin.setDisable(false);
                     }
                 });
                 return;
@@ -473,6 +475,7 @@ public class MainFX {
                 @Override
                 public void run() {
                     kernel.showAlert(Alert.AlertType.INFORMATION, null, finalText);
+                    selectSkin.setDisable(false);
                 }
             });
             loadTextures();
@@ -527,7 +530,7 @@ public class MainFX {
                 if (isDemo)
                     continue;
                 JSONObject content = entry.getJSONObject("content").getJSONObject("en-us");
-                Slide s = new Slide(content.getString("action"), content.getString("image"), content.getString("title"), content.getString("text"));
+                Slide s = new Slide(content.getString("action"), Urls.media + content.getString("image"), content.getString("title"), content.getString("text"));
                 slides.add(s);
             }
         } catch (Exception ex) {
@@ -559,9 +562,12 @@ public class MainFX {
         if (!response.isEmpty()) {
             console.print("Cargando listado de Usuarios Conectados al Servidor.");
             JSONObject object = new JSONObject(response);
-            String text = object.getInt("online") + " / " + object.getInt("total") + " " + Language.get(135);
-            // Mostrar Onlines
-            playersServer.setText(text);
+            if(!object.getBoolean("error")) {
+                JSONObject obj = object.getJSONObject("request");
+                String text = obj.getInt("numplayers") + " / " + obj.getInt("maxplayers") + " " + obj.getString("online");
+                // Mostrar Onlines
+                playersServer.setText(text);
+            }
 
         } else {
             console.print("No hay Usuarios conectados..");
@@ -1022,6 +1028,7 @@ public class MainFX {
             switchAccountButton.setVisible(false);
         }
         Authentication a = kernel.getAuthentication();
+        kernel.closeWeb();
         a.setSelectedUser(null);
         kernel.saveProfiles();
         showLoginPrompt(true);
@@ -1084,7 +1091,6 @@ public class MainFX {
      */
     @FXML public final void switchTab(Event e) {
         switchTab(e.getSource());
-        onlineList();
     }
 
     /**
@@ -1618,7 +1624,6 @@ public class MainFX {
                 password.setText("");
                 showLoginPrompt(false);
                 fetchAds();
-                onlineList();
                 texturesLoaded = false;
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
@@ -1660,7 +1665,6 @@ public class MainFX {
                 showLoginPrompt(true);
             }
         }
-        onlineList();
     }
 
     /**
@@ -1693,6 +1697,7 @@ public class MainFX {
             Authentication auth = kernel.getAuthentication();
             auth.removeUser(selected);
             kernel.saveProfiles();
+            kernel.closeWeb();
             updateExistingUsers();
         }
         onlineList();
