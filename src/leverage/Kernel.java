@@ -64,7 +64,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.0.5";
+    public static final String KERNEL_BUILD_NAME = "1.0.6";
     public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
