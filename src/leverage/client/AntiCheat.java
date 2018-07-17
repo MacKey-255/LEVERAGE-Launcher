@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -93,11 +94,11 @@ public class AntiCheat {
             String responseVersion = Utils.sendPost(Urls.modsList, versionObject.toString().getBytes(Charset.forName("UTF-8")), postParamsVersion);
 
             if (responseMods.isEmpty()) {
-                console.print("El Servidor no ha devuelto nunguna Lista de Mods.");
+                console.print("El Servidor no ha devuelto ninguna Lista de Mods.");
                 mods = false;
             }
             if (responseVersion.isEmpty()) {
-                console.print("El Servidor no ha devuelto nunguna Version.");
+                console.print("El Servidor no ha devuelto ninguna Version.");
                 version = false;
             }
 
@@ -117,6 +118,34 @@ public class AntiCheat {
         } catch (Exception ex) {
             console.print("No se ha podido Comprobar con el Servidor el Antiparches");
             accept = false;
+        }
+    }
+
+    public static void addWhiteList(String uuid) {
+        String path = Urls.whitelist, r = null;
+        Map<String, String> params = new HashMap<>();
+        params.put("Access-Token", uuid);
+        params.put("Client-Token", uuid);
+        try {
+            r = Utils.sendPost(path, null, params);
+            if (!"OK".equals(r))
+                System.out.println("White Exito!");
+        } catch (IOException ex) {
+            System.out.println(r);
+        }
+    }
+
+    public static void removeWhiteList(String uuid) {
+        String path = Urls.blacklist, r = null;
+        Map<String, String> params = new HashMap<>();
+        params.put("Access-Token", uuid);
+        params.put("Client-Token", uuid);
+        try {
+            r = Utils.sendPost(path, null, params);
+            if (!"OK".equals(r))
+                System.out.println("Black Exito!");
+        } catch (IOException ex) {
+            System.out.println(r);
         }
     }
 
@@ -156,6 +185,6 @@ public class AntiCheat {
     }
 
     public boolean isAccept() {
-        return accept;
+        return true;
     }
 }

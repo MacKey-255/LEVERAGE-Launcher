@@ -253,8 +253,9 @@ public class MainFX {
                 console.print(chunks[1]);
                 if(chunks[0].equals("BAN") || chunks[0].equals("NICKBAN") || chunks[0].equals("IP")) {
                     // Si es de Ban entonces Cierra el Launcher
-                    kernel.showAlert(Alert.AlertType.ERROR, null, chunks[1]);
-                    this.gameEnded(false);
+                    kernel.showAlert(Alert.AlertType.ERROR, "Baneado del Servidor", chunks[1]);
+                    kernel.exitSafely();
+                    return;
                 }
                 // Mostrar Mensaje
                 kernel.showAlert(Alert.AlertType.WARNING, null, chunks[1]);
@@ -453,7 +454,6 @@ public class MainFX {
                     text = Language.get(33);
                 }
                 console.print("Fallido " + (file != null ? "el cambio" : "la eliminacion") + " de Skins.");
-                console.print(r);
                 final String finalText = text;
                 Platform.runLater(new Runnable() {
                     @Override
@@ -476,9 +476,9 @@ public class MainFX {
                 public void run() {
                     kernel.showAlert(Alert.AlertType.INFORMATION, null, finalText);
                     selectSkin.setDisable(false);
+                    loadTextures();
                 }
             });
-            loadTextures();
         } catch (IOException ex) {
             console.print("Fallido el Envio del Skins.");
             ex.printStackTrace(console.getWriter());
@@ -863,12 +863,14 @@ public class MainFX {
                 public void run() {
                     progressPane.setVisible(false);
                     playPane.setVisible(true);
-                    playButton.setText(Language.get(14));
+                    playButton.setText(Language.get(12));
                     playButton.setDisable(false);
                     profilePopupButton.setDisable(false);
                 }
             });
             return;
+        } else {
+            AntiCheat.addWhiteList(kernel.getAuthentication().getClientToken());
         }
 
         //Keep track of the progress
@@ -909,9 +911,10 @@ public class MainFX {
                         public void run() {
                             progressPane.setVisible(false);
                             playPane.setVisible(true);
-                            playButton.setText(Language.get(14));
+                            playButton.setText(Language.get(12));
                             playButton.setDisable(true);
                             profilePopupButton.setDisable(true);
+                            AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
                         }
                     });
 

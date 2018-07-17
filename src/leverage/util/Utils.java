@@ -262,28 +262,22 @@ public final class Utils {
      * @param m The Mods Dir
      * @return A List Mods
      */
-    public static List<Mod> getListMods(File m) {
+    public static List<Mod> getListMods(File m) throws IOException, CheatsDetectedException {
         List<Mod> list = new ArrayList<>();
-        try {
-            if (m.isDirectory()) {
-                File[] h = m.listFiles();
-                for (int i=0; i < h.length; i++) {
-                    List<Mod> tmp = getListMods(h[i]);
-                    for(int j=0; j<tmp.size(); j++) {
-                        Mod mod = tmp.get(j);
-                        if(mod.getName() != null)
-                            list.add(tmp.get(j));
-                    }
+        if (m.isDirectory()) {
+            File[] h = m.listFiles();
+            for (int i=0; i < h.length; i++) {
+                List<Mod> tmp = getListMods(h[i]);
+                for(int j=0; j<tmp.size(); j++) {
+                    Mod mod = tmp.get(j);
+                    if(mod.getName() != null)
+                        list.add(tmp.get(j));
                 }
-            } else {
-                Mod mod = getMod(m);
-                if(mod.getName() != null)
-                    list.add(mod);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CheatsDetectedException e) {
-            e.printStackTrace();
+        } else {
+            Mod mod = getMod(m);
+            if(mod.getName() != null)
+                list.add(mod);
         }
         return list;
     }
@@ -332,9 +326,8 @@ public final class Utils {
                     nam = object.getString("name");
 
                     //Detectar Cheats Especificos (Wurst)
-                    if(id == "forgewurst")
+                    if(id.equals("forgewurst") || id.equals("xray"))
                         throw new CheatsDetectedException(jar.getName());
-
 
                     try {
                         version = object.getString("version");
@@ -353,7 +346,7 @@ public final class Utils {
                 }
             } else {
                 //Detectar Cheats Especificos ( XRay )
-                if(jar.getName().equals("minecraftxray"))
+                if(jar.getName().equals("minecraftxray") || jar.getName().equals("xray"))
                     throw new CheatsDetectedException(jar.getName());
             }
         }

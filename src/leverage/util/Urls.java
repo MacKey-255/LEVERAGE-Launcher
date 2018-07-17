@@ -11,6 +11,8 @@ public class Urls {
     public static final String newsUrl = leverage + "/Minecraft/web/app_dev.php/news/list";
     public static final String register = leverage + "/Minecraft/web/app_dev.php/user/register";
     public static final String forgotPassword = leverage;
+    public static final String whitelist = leverage + "/Minecraft/web/app_dev.php/user/white";
+    public static final String blacklist = leverage + "/Minecraft/web/app_dev.php/user/black";
     public static final String skinsPath = leverage + "/Minecraft/web/app_dev.php/user/skins";
     public static final String CHANGESKIN_URL = leverage + "/Minecraft/web/app_dev.php/user/skins/upload";
     public static final String serverVersion = leverage + "/versions/version.json";
@@ -19,9 +21,9 @@ public class Urls {
     public static final String help = leverage;
     public static final String onlineData = leverage + "/Minecraft/web/app_dev.php/user/online";
     public static final String listOnline = leverage + "/Minecraft/web/app_dev.php/user/list";
-    public static final String update = leverage + "/update.json";
+    public static final String update = leverage + "/Minecraft/web/app_dev.php/user/update";
 
-    public static final String mods = leverage + "/mods/1.12.2/";
+    public static final String versionList = leverage + "/mods/1.12.2/";
     public static final String modsList = leverage + "/index.php";
 
     // URLS para el Sistema AntiCheat
@@ -31,7 +33,7 @@ public class Urls {
     // URLS Modulares
 
     public static final String urlDataProfileId(String id) {
-        return leverage + "/Minecraft/web/app_dev.php/user/staus/" + id;
+        return leverage + "/Minecraft/web/app_dev.php/user/status/" + id;
     }
 
     public static final String skinsPathProfileId(String name) {

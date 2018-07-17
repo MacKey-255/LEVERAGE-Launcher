@@ -16,6 +16,7 @@ import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
 import leverage.client.components.Mod;
+import leverage.exceptions.CheatsDetectedException;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
 import leverage.game.profile.Profiles;
@@ -39,10 +40,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 // Clase Controladora de Funciones Vitales
 
@@ -275,7 +273,28 @@ public final class Kernel {
      * Cargar Mods del Cliente
      */
     public List<Mod> loadMods() {
-        return Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"));
+        List<Mod> list = new ArrayList<>();
+        try {
+            list = Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CheatsDetectedException e) {
+            String url = Urls.cheatsWarning, r = null;
+            Map<String, String> params = new HashMap<>();
+            params.put("Access-Token", getAuthentication().getSelectedUser().getAccessToken());
+            params.put("Client-Token", getAuthentication().getSelectedUser().getAccessToken());
+            try {
+                r = Utils.sendPost(url, null, params);
+                console.print(r);
+                if (!"OK".equals(r))
+                    console.print("Ban User Exito!");
+            } catch (IOException ex) {
+                console.print(r);
+            }
+            console.print("Ha sido Baneado del Servidor por el Uso de Parches!");
+            exitSafely();
+        }
+        return list;
     }
 
     /**

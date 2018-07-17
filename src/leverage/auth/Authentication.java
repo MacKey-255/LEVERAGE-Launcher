@@ -5,6 +5,7 @@ import leverage.Kernel;
 import leverage.auth.user.User;
 import leverage.auth.user.UserProfile;
 import leverage.auth.user.UserType;
+import leverage.client.AntiCheat;
 import leverage.exceptions.AuthenticationException;
 import leverage.util.Urls;
 import leverage.util.Utils;
@@ -178,6 +179,7 @@ public class Authentication {
                     selectedAccount = u;
                     authenticated = true;
                     addUser(u);
+                    AntiCheat.removeWhiteList(clientToken);
                 } catch (JSONException ex) {
                     ex.printStackTrace(console.getWriter());
                     throw new AuthenticationException("Authentication server replied wrongly.");
@@ -252,6 +254,7 @@ public class Authentication {
                 String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
                 u.setSelectedProfile(selectedProfile);
                 authenticated = true;
+                AntiCheat.removeWhiteList(clientToken);
             } catch (JSONException ex) {
                 ex.printStackTrace(console.getWriter());
                 throw new AuthenticationException("Authentication server replied wrongly.");
