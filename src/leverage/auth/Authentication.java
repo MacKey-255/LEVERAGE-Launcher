@@ -179,7 +179,7 @@ public class Authentication {
                     selectedAccount = u;
                     authenticated = true;
                     addUser(u);
-                    AntiCheat.removeWhiteList(clientToken);
+                    AntiCheat.remove(username);
                 } catch (JSONException ex) {
                     ex.printStackTrace(console.getWriter());
                     throw new AuthenticationException("Authentication server replied wrongly.");
@@ -196,7 +196,7 @@ public class Authentication {
      * Refresca la Autenticacion, verificando si el Usuario ya esta Registrado
      * @throws AuthenticationException If the refresh failed
      */
-    public final void refresh() throws AuthenticationException, JSONException{
+    public final void refresh() throws AuthenticationException, JSONException {
         console.print("Refrescando Usuarios Logeados");
         if (selectedAccount == null) {
             throw new AuthenticationException("No user is selected.");
@@ -233,7 +233,7 @@ public class Authentication {
             response = Utils.sendPost(refreshURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
         } catch (IOException ex) {
             Kernel.USE_LOCAL = true;
-            authenticated = true;
+            authenticated = false;
             console.print("Autenticado Localmente.");
             return;
         }
@@ -254,7 +254,7 @@ public class Authentication {
                 String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
                 u.setSelectedProfile(selectedProfile);
                 authenticated = true;
-                AntiCheat.removeWhiteList(clientToken);
+                AntiCheat.remove(getSelectedUser().getDisplayName());
             } catch (JSONException ex) {
                 ex.printStackTrace(console.getWriter());
                 throw new AuthenticationException("Authentication server replied wrongly.");

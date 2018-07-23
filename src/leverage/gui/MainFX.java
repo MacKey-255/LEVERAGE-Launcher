@@ -850,27 +850,44 @@ public class MainFX {
         progressText.setText("");
         final Downloader d = kernel.getDownloader();
         final GameLauncher gl = kernel.getGameLauncher();
-        AntiCheat anti = new AntiCheat(kernel);
+        if (!Kernel.USE_LOCAL) {
+            AntiCheat anti = new AntiCheat(kernel);
 
-        // Anticheat en Accion
-        anti.compare();                 // Genera y envia datos al Servidor
-        if(!anti.isAccept()) {
-            // Mostrar Mensaje
-            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
-            console.print("Cliente no concuerda con el Servidor.");
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    progressPane.setVisible(false);
-                    playPane.setVisible(true);
-                    playButton.setText(Language.get(12));
-                    playButton.setDisable(false);
-                    profilePopupButton.setDisable(false);
+            // Anticheat en Accion
+            anti.compare();                 // Genera y envia datos al Servidor
+            if(!anti.isAccept()) {
+                // Mostrar Mensaje
+                kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
+                console.print("Cliente no concuerda con el Servidor.");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        playPane.setVisible(true);
+                        progressPane.setVisible(false);
+                        playButton.setText(Language.get(12));
+                        profilePopupButton.setDisable(false);
+                        playButton.setDisable(false);
+                    }
+                });
+                return;
+            } else {
+                if(!AntiCheat.add(kernel.getAuthentication().getSelectedUser().getDisplayName())) {
+                    // Mostrar Mensaje
+                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
+                    console.print("Cliente no registrado en el Servidor.");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
+                        }
+                    });
+                    return;
                 }
-            });
-            return;
-        } else {
-            AntiCheat.addWhiteList(kernel.getAuthentication().getClientToken());
+            }
         }
 
         //Keep track of the progress
@@ -914,7 +931,6 @@ public class MainFX {
                             playButton.setText(Language.get(12));
                             playButton.setDisable(true);
                             profilePopupButton.setDisable(true);
-                            AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
                         }
                     });
 
@@ -942,6 +958,8 @@ public class MainFX {
                             kernel.showAlert(Alert.AlertType.ERROR, Language.get(81), Language.get(82));
                         }
                     });
+                    if (!Kernel.USE_LOCAL)
+                        AntiCheat.remove(kernel.getAuthentication().getSelectedUser().getDisplayName());
                     console.print("Failed to perform game launch task");
                     e.printStackTrace(console.getWriter());
                 }
@@ -963,7 +981,7 @@ public class MainFX {
                     kernel.showAlert(Alert.AlertType.ERROR, Language.get(16), Language.get(15));
                 }
                 if (!settings.getKeepLauncherOpen()) {
-                    //kernel.exitSafely();
+                    kernel.exitSafely();
                 }
                 playButton.setDisable(false);
                 profilePopupButton.setDisable(false);
@@ -972,6 +990,7 @@ public class MainFX {
                 } else {
                     playButton.setText(Language.get(12));
                 }
+                AntiCheat.remove(kernel.getAuthentication().getSelectedUser().getDisplayName());
             }
         });
     }

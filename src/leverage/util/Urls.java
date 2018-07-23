@@ -3,7 +3,7 @@ package leverage.util;
 // Clase Administradora de URLS
 
 public class Urls {
-    public static final String leverage = "http://10.30.1.31";        // IP Fija de la Web de LEVERAGE;
+    public static final String leverage = "http://10.30.1.31";        // IP Fija de la Web de LEVERAGE
     public static final String media = leverage + "/media/";
     public static final String authPath = leverage + "/user/auth";
     public static final String closeath = leverage + "/user/close";
@@ -11,8 +11,6 @@ public class Urls {
     public static final String newsUrl = leverage + "/news/list";
     public static final String register = leverage + "/user/register";
     public static final String forgotPassword = leverage;
-    public static final String whitelist = leverage + "/user/white";
-    public static final String blacklist = leverage + "/user/black";
     public static final String skinsPath = leverage + "/user/skins";
     public static final String CHANGESKIN_URL = leverage + "/user/skins/upload";
 //    public static final String serverVersion = leverage + "/versions/version.json";
@@ -29,6 +27,10 @@ public class Urls {
     // URLS para el Sistema AntiCheat
     public static final String comfirmIP = leverage;
     public static final String listData = leverage;
+
+    // RCON URLS
+    public static final String leverageIP = "10.30.1.31";        // IP LEVERAGE Server
+    public static final int rconPort = 25595;        // Rcon Port LEVERAGE Server
 
     // URLS Modulares
 

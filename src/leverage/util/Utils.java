@@ -4,7 +4,9 @@ import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
 import leverage.client.components.Mod;
+import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.CheatsDetectedException;
+import leverage.rcon.Rcon;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -527,6 +529,22 @@ public final class Utils {
             }
             new File(output, "OK").createNewFile();
         }
+    }
+
+    public static String rconAction(String command) {
+        // Connects to 127.0.0.1 on port 27015
+        Rcon rcon = null; String value = null;
+        try {
+            rcon = new Rcon(Urls.leverageIP, Urls.rconPort, "minecraft122".getBytes());
+            value = rcon.command(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+
+        // Devuelve Resultado de la Peticion RCON
+        return value;
     }
 
     public static void restartApplication() {

@@ -17,6 +17,7 @@ import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
 import leverage.client.components.Mod;
 import leverage.exceptions.CheatsDetectedException;
+import leverage.exceptions.DownloaderException;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
 import leverage.game.profile.Profiles;
@@ -64,7 +65,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.0.6";
+    public static final String KERNEL_BUILD_NAME = "1.0.7";
     public static final String KERNEL_CREATOR_NAME = "By MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
@@ -185,21 +186,29 @@ public final class Kernel {
         try {
             String response = Utils.readURL(Urls.update);
             if (response.isEmpty()) {
-                new Exception("No se ha podido Descargar la Actualizacion");
+                throw new DownloaderException("No se ha podido Descargar la Actualizacion");
             }
             JSONObject entry = new JSONObject(response);
             url = entry.getString("url");
 
-            if(!KERNEL_BUILD_NAME.equals(entry.getString("version")))
-                update = true;
-        } catch (Exception ex){}
+            char oldVersion[] = entry.getString("version").toCharArray();
+            char version[] = KERNEL_BUILD_NAME.toCharArray();
+            for(int i=0; i<oldVersion.length; i++) {
+                if(version[i] != oldVersion[i] && version[i] != '.' && oldVersion[i] != '.') {
+                    if(Integer.parseInt(String.valueOf(version[i])) < Integer.parseInt(String.valueOf(oldVersion[i])))
+                        update = true;
+                }
+            }
+        } catch (DownloaderException ex){
+            console.print(ex.getMessage());
+        }
 
         if(update) {
-            System.out.println("Actualizando Minecraft");
+            console.print("Actualizando Minecraft");
             try {
                 Utils.downloadFile(url, new File(APPLICATION_WORKING_DIR, "LEVERAGE-Launcher.jar"));
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                console.print(e.getMessage());
             }
             showAlert(Alert.AlertType.INFORMATION, Language.get(4), Language.get(132));
             Utils.restartApplication();

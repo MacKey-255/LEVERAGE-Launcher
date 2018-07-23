@@ -121,32 +121,12 @@ public class AntiCheat {
         }
     }
 
-    public static void addWhiteList(String uuid) {
-        String path = Urls.whitelist, r = null;
-        Map<String, String> params = new HashMap<>();
-        params.put("Access-Token", uuid);
-        params.put("Client-Token", uuid);
-        try {
-            r = Utils.sendPost(path, null, params);
-            if (!"OK".equals(r))
-                System.out.println("White Exito!");
-        } catch (IOException ex) {
-            System.out.println(r);
-        }
+    public static boolean add(String username) {
+        return (null != Utils.rconAction("whitelist add "+ username));
     }
 
-    public static void removeWhiteList(String uuid) {
-        String path = Urls.blacklist, r = null;
-        Map<String, String> params = new HashMap<>();
-        params.put("Access-Token", uuid);
-        params.put("Client-Token", uuid);
-        try {
-            r = Utils.sendPost(path, null, params);
-            if (!"OK".equals(r))
-                System.out.println("Black Exito!");
-        } catch (IOException ex) {
-            System.out.println(r);
-        }
+    public static boolean remove(String username) {
+        return (null != Utils.rconAction("whitelist remove "+ username));
     }
 
     public void writeJSON() {
