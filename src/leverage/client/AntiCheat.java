@@ -5,6 +5,7 @@ import leverage.Kernel;
 import leverage.auth.user.User;
 import leverage.client.components.Mod;
 import leverage.client.components.VersionServer;
+import leverage.exceptions.AuthenticationException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
 import leverage.game.version.VersionMeta;
@@ -121,11 +122,11 @@ public class AntiCheat {
         }
     }
 
-    public static boolean add(String username) {
+    public static boolean add(String username) throws AuthenticationException {
         return (null != Utils.rconAction("whitelist add "+ username));
     }
 
-    public static boolean remove(String username) {
+    public static boolean remove(String username) throws AuthenticationException {
         return (null != Utils.rconAction("whitelist remove "+ username));
     }
 
