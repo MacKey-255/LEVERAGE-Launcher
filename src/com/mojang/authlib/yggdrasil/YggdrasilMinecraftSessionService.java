@@ -21,6 +21,7 @@ import com.mojang.authlib.yggdrasil.response.MinecraftProfilePropertiesResponse;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.authlib.yggdrasil.response.Response;
 import com.mojang.util.UUIDTypeAdapter;
+import leverage.util.Urls;
 import leverage.util.Utils;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
@@ -39,14 +40,14 @@ import java.util.concurrent.TimeUnit;
 public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String BASE_URL = "https://sessionserver.mojang.com/session/minecraft/";
-    private static final URL JOIN_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/join");
-    private static final URL CHECK_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
+    private static final String BASE_URL = Urls.leverage;
+    private static final URL JOIN_URL = HttpAuthenticationService.constantURL(Urls.authPath);
+    private static final URL CHECK_URL = HttpAuthenticationService.constantURL(Urls.refreshPath);
     private final Gson gson = (new GsonBuilder()).registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
     private final LoadingCache<GameProfile, GameProfile> insecureProfiles;
     private final HashMap<String, Map<Type, MinecraftProfileTexture>> cache = new HashMap<>();
-    private static final String GET_PROFILESID = "https://mc.krothium.com/api/profiles/minecraft";
-    private static final String GET_PROFILESID_MOJANG = "https://api.mojang.com/profiles/minecraft";
+    private static final String GET_PROFILESID = Urls.leverage;
+    private static final String GET_PROFILESID_MOJANG = Urls.leverage;
 
 
     protected YggdrasilMinecraftSessionService(YggdrasilAuthenticationService authenticationService) {
@@ -144,6 +145,7 @@ public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionServic
     }
 
     public Map<Type, MinecraftProfileTexture> fetchCustomTextures(GameProfile profile, boolean requireSecure) {
+        /* // INACTIVO
         if (cache.containsKey(profile.getName())) {
             System.out.println("Serving cached textures for: " + profile.getName() + " / " + profile.getId());
             return cache.get(profile.getName());
@@ -197,7 +199,7 @@ public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionServic
             } catch (Exception ex) {
                 System.err.println("Failed to fetch data from profile " + profile.getId() + " with name " + profile.getName());
             }
-        }
+        }*/
         System.out.println("No textures found for " + profile.getName());
         return new HashMap();
     }
@@ -211,6 +213,7 @@ public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionServic
     }
 
     protected GameProfile fillGameProfile(GameProfile profile, boolean requireSecure) {
+        /* // INACTIVO
         try {
             URL url = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDTypeAdapter.fromUUID(profile.getId()));
             url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
@@ -228,7 +231,8 @@ public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionServic
         } catch (AuthenticationException var6) {
             LOGGER.warn("Couldn't look up profile properties for " + profile, var6);
             return profile;
-        }
+        }*/
+        return profile;
     }
 
     public YggdrasilAuthenticationService getAuthenticationService() {

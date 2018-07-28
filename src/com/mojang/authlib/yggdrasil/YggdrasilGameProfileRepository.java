@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.response.ProfileSearchResultsResponse;
+import leverage.util.Urls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,8 +21,8 @@ import java.util.List;
 
 public class YggdrasilGameProfileRepository implements GameProfileRepository {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String BASE_URL = "https://api.mojang.com/";
-    private static final String SEARCH_PAGE_URL = "https://api.mojang.com/profiles/";
+    private static final String BASE_URL = Urls.leverage;
+    private static final String SEARCH_PAGE_URL = Urls.leverage;
     private static final int ENTRIES_PER_PAGE = 2;
     private static final int MAX_FAIL_COUNT = 3;
     private static final int DELAY_BETWEEN_PAGES = 100;
@@ -32,8 +33,8 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
 
     static {
         try {
-            GET_PROFILESID = new URL("https://mc.krothium.com/api/profiles/minecraft");
-            GET_PROFILESID_MOJANG = new URL("https://api.mojang.com/profiles/minecraft");
+            GET_PROFILESID = new URL(Urls.leverage);
+            GET_PROFILESID_MOJANG = new URL(Urls.leverage);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
