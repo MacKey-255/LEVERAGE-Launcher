@@ -531,15 +531,11 @@ public final class Utils {
         }
     }
 
-    public static String rconAction(String command) throws AuthenticationException {
+    public static String rconAction(String command) throws AuthenticationException, IOException {
         // Connects to 127.0.0.1 on port 27015
         Rcon rcon = null; String value = null;
-        try {
-            rcon = new Rcon(Urls.leverageIP, Urls.rconPort, "minecraft122".getBytes());
-            value = rcon.command(command);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        rcon = new Rcon(Urls.leverageIP, Urls.rconPort, "minecraft122".getBytes());
+        value = rcon.command(command);
 
         // Devuelve Resultado de la Peticion RCON
         return value;

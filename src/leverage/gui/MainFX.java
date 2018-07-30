@@ -871,6 +871,7 @@ public class MainFX {
                 });
                 return;
             } else {
+                // Enviar Conexion RCON
                 try {
                     if(!AntiCheat.add(kernel.getAuthentication().getSelectedUser().getDisplayName())) {
                         // Mostrar Mensaje
@@ -888,8 +889,10 @@ public class MainFX {
                         });
                         return;
                     }
-                } catch (AuthenticationException e) {
+                } catch (IOException e) {
+                    // No se puede Conectar con el Server
                     console.print("Error de Conexion al Servidor con RCON");
+                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -900,6 +903,10 @@ public class MainFX {
                             profilePopupButton.setDisable(false);
                         }
                     });
+                    //return ;
+                } catch (AuthenticationException e) {
+                    console.print("Error de Conexion al Servidor con RCON");
+                    e.printStackTrace();
                 }
             }
         }
@@ -975,8 +982,9 @@ public class MainFX {
                     if (!Kernel.USE_LOCAL) {
                         try {
                             AntiCheat.remove(kernel.getAuthentication().getSelectedUser().getDisplayName());
-                        } catch (AuthenticationException e1) {
+                        } catch (IOException e1) {
                             console.print("Error de Conexion al Servidor con RCON");
+                            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -987,6 +995,9 @@ public class MainFX {
                                     profilePopupButton.setDisable(false);
                                 }
                             });
+                        } catch (AuthenticationException ex) {
+                            console.print("Error de Conexion al Servidor con RCON");
+                            ex.printStackTrace();
                         }
                     }
                     console.print("Failed to perform game launch task");
@@ -1018,21 +1029,26 @@ public class MainFX {
                     playButton.setText(Language.get(79));
                 } else {
                     playButton.setText(Language.get(12));
-                }
-                try {
-                    AntiCheat.remove(kernel.getAuthentication().getSelectedUser().getDisplayName());
-                } catch (AuthenticationException e) {
-                    console.print("Error de Conexion al Servidor con RCON");
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressPane.setVisible(false);
-                            playPane.setVisible(true);
-                            playButton.setText(Language.get(12));
-                            playButton.setDisable(false);
-                            profilePopupButton.setDisable(false);
-                        }
-                    });
+
+                    try {
+                        AntiCheat.remove(kernel.getAuthentication().getSelectedUser().getDisplayName());
+                    } catch (IOException e) {
+                        console.print("Error de Conexion al Servidor con RCON");
+                        kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressPane.setVisible(false);
+                                playPane.setVisible(true);
+                                playButton.setText(Language.get(12));
+                                playButton.setDisable(false);
+                                profilePopupButton.setDisable(false);
+                            }
+                        });
+                    } catch (AuthenticationException e) {
+                        console.print("Error de Conexion al Servidor con RCON");
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -1693,6 +1709,10 @@ public class MainFX {
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
                 password.setText("");
+            } catch (IOException e) {
+                console.print("Error de Conexion al Servidor con RCON");
+                kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
+                e.printStackTrace();
             }
         }
     }
@@ -1722,6 +1742,10 @@ public class MainFX {
                 username.setText(u.getUsername());
             }
             console.print("No se pudo refrescar la Session.");
+        } catch (IOException e) {
+            console.print("Error de Conexion al Servidor con RCON");
+            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
+            e.printStackTrace();
         } finally {
             if (a.isAuthenticated()) {
                 showLoginPrompt(false);
@@ -1748,6 +1772,10 @@ public class MainFX {
         } catch (AuthenticationException ex) {
             kernel.showAlert(Alert.AlertType.ERROR, Language.get(62), ex.getMessage());
             updateExistingUsers();
+        } catch (IOException e) {
+            console.print("Error de Conexion al Servidor con RCON");
+            kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
+            e.printStackTrace();
         }
         onlineList();
     }

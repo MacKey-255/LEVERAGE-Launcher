@@ -122,11 +122,11 @@ public class AntiCheat {
         }
     }
 
-    public static boolean add(String username) throws AuthenticationException {
+    public static boolean add(String username) throws AuthenticationException, IOException {
         return (null != Utils.rconAction("whitelist add "+ username));
     }
 
-    public static boolean remove(String username) throws AuthenticationException {
+    public static boolean remove(String username) throws AuthenticationException, IOException {
         return (null != Utils.rconAction("whitelist remove "+ username));
     }
 

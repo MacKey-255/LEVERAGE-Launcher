@@ -10,10 +10,10 @@ public class Urls {
     public static final String refreshPath = leverage + "/user/refresh";
     public static final String newsUrl = leverage + "/news/list";
     public static final String register = leverage + "/user/register";
-    public static final String forgotPassword = leverage;
+    public static final String forgotPassword = "ts3server://10.30.1.31/"; //leverage + "/user/login";
     public static final String skinsPath = leverage + "/user/skins";
     public static final String CHANGESKIN_URL = leverage + "/user/skins/upload";
-//    public static final String serverVersion = leverage + "/versions/version.json";
+    public static final String serverVersion = leverage + "/versions/version.json";
     public static final String versionManifest = leverage + "/version_manifest.json";
     public static final String cheatsWarning = leverage + "/user/cheats";
     public static final String help = leverage + "/user/donate";
@@ -23,10 +23,6 @@ public class Urls {
 
     public static final String versionList = leverage + "/mods/1.12.2/";
     public static final String modsList = leverage + "/index.php";
-
-    // URLS para el Sistema AntiCheat
-    public static final String comfirmIP = leverage;
-    public static final String listData = leverage;
 
     // RCON URLS
     public static final String leverageIP = "10.30.1.31";        // IP LEVERAGE Server

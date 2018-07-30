@@ -91,7 +91,7 @@ public class Authentication {
      * @param password The password
      * @throws AuthenticationException If authentication failed
      */
-    public final void authenticate(String username, String password) throws AuthenticationException {
+    public final void authenticate(String username, String password) throws AuthenticationException, IOException {
         console.print("Autenticando Usuario ...");
         // Inicializando Variables de Datos
         JSONObject request = new JSONObject();
@@ -146,18 +146,18 @@ public class Authentication {
                 // Enviar Informacion en modo POST
                 response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
             } catch (IOException ex) {
-                console.print("Failed to send request to authentication server");
+                console.print("Ha Fallado la Comunicacion con el Servidor de Auteticacion");
                 ex.printStackTrace(console.getWriter());
-                throw new AuthenticationException("Failed to send request to authentication server");
+                throw new AuthenticationException("Ha Fallado la Comunicacion con el Servidor de Auteticacion.");
             }
             if (response.isEmpty()) {
-                throw new AuthenticationException("Authentication server does not respond.");
+                throw new AuthenticationException("El Servidor de Auteticacion no ha respondido nada.");
             }
             JSONObject r;
             try {
                 r = new JSONObject(response);
             } catch (JSONException ex) {
-                throw new AuthenticationException("Failed to read authentication response.");
+                throw new AuthenticationException("Ha fallado la lectura de Autenticacion.");
             }
             if (!r.has("error")) {
                 try {
@@ -182,7 +182,7 @@ public class Authentication {
                     AntiCheat.remove(username);
                 } catch (JSONException ex) {
                     ex.printStackTrace(console.getWriter());
-                    throw new AuthenticationException("Authentication server replied wrongly.");
+                    throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
                 }
             } else {
                 authenticated = false;
@@ -196,10 +196,10 @@ public class Authentication {
      * Refresca la Autenticacion, verificando si el Usuario ya esta Registrado
      * @throws AuthenticationException If the refresh failed
      */
-    public final void refresh() throws AuthenticationException, JSONException {
+    public final void refresh() throws AuthenticationException, JSONException, IOException {
         console.print("Refrescando Usuarios Logeados");
         if (selectedAccount == null) {
-            throw new AuthenticationException("No user is selected.");
+            throw new AuthenticationException("Usuario no Seleccionado.");
         }
 
         //Cargando Informacion de Logeo
@@ -232,19 +232,18 @@ public class Authentication {
             // Enviar Informacion en modo POST
             response = Utils.sendPost(refreshURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
         } catch (IOException ex) {
-            Kernel.USE_LOCAL = true;
             authenticated = false;
-            console.print("Autenticado Localmente.");
-            return;
+            console.print("Ha Fallado la Comunicacion con el Servidor de Auteticacion.");
+            throw new AuthenticationException("Ha Fallado la Comunicacion con el Servidor de Auteticacion.");
         }
         if (response.isEmpty()) {
-            throw new AuthenticationException("Authentication server does not respond.");
+            throw new AuthenticationException("El Servidor de Auteticacion no responde.");
         }
         JSONObject r;
         try {
             r = new JSONObject(response);
         } catch (JSONException ex) {
-            throw new AuthenticationException("Failed to read authentication response.");
+            throw new AuthenticationException("Ha fallado la lectura de datos del Servidor de Autenticacion.");
         }
         if (!r.has("error")) {
             try {
@@ -257,7 +256,7 @@ public class Authentication {
                 AntiCheat.remove(getSelectedUser().getDisplayName());
             } catch (JSONException ex) {
                 ex.printStackTrace(console.getWriter());
-                throw new AuthenticationException("Authentication server replied wrongly.");
+                throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
             }
         } else {
             authenticated = false;
