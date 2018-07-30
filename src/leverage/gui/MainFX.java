@@ -893,6 +893,7 @@ public class MainFX {
                     // No se puede Conectar con el Server
                     console.print("Error de Conexion al Servidor con RCON");
                     kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
+                    /*
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -903,7 +904,8 @@ public class MainFX {
                             profilePopupButton.setDisable(false);
                         }
                     });
-                    //return ;
+                    return ;
+                    */
                 } catch (AuthenticationException e) {
                     console.print("Error de Conexion al Servidor con RCON");
                     e.printStackTrace();
