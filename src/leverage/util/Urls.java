@@ -24,6 +24,10 @@ public class Urls {
     public static final String versionList = leverage + "/mods/1.12.2/";
     public static final String modsList = leverage + "/index.php";
 
+    // Whitelist Via Web
+    public static final String whitelist = leverage + "/user/white";
+    public static final String blacklist = leverage + "/user/black";
+
     // RCON URLS
     public static final String leverageIP = "10.30.1.31";        // IP LEVERAGE Server
     public static final int rconPort = 25595;        // Rcon Port LEVERAGE Server

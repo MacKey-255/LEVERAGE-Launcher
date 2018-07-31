@@ -91,7 +91,7 @@ public class Authentication {
      * @param password The password
      * @throws AuthenticationException If authentication failed
      */
-    public final void authenticate(String username, String password) throws AuthenticationException, IOException {
+    public final void authenticate(String username, String password) throws AuthenticationException {
         console.print("Autenticando Usuario ...");
         // Inicializando Variables de Datos
         JSONObject request = new JSONObject();
@@ -179,7 +179,7 @@ public class Authentication {
                     selectedAccount = u;
                     authenticated = true;
                     addUser(u);
-                    AntiCheat.remove(username);
+                    AntiCheat.removeWhiteList(accessToken);
                 } catch (JSONException ex) {
                     ex.printStackTrace(console.getWriter());
                     throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
@@ -196,7 +196,7 @@ public class Authentication {
      * Refresca la Autenticacion, verificando si el Usuario ya esta Registrado
      * @throws AuthenticationException If the refresh failed
      */
-    public final void refresh() throws AuthenticationException, JSONException, IOException {
+    public final void refresh() throws AuthenticationException, JSONException {
         console.print("Refrescando Usuarios Logeados");
         if (selectedAccount == null) {
             throw new AuthenticationException("Usuario no Seleccionado.");
@@ -253,7 +253,7 @@ public class Authentication {
                 String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
                 u.setSelectedProfile(selectedProfile);
                 authenticated = true;
-                AntiCheat.remove(getSelectedUser().getDisplayName());
+                AntiCheat.removeWhiteList(getSelectedUser().getAccessToken());
             } catch (JSONException ex) {
                 ex.printStackTrace(console.getWriter());
                 throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
