@@ -70,7 +70,7 @@ public class MainFX {
     @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
             keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize, enableReopen,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
-            switchAccountButton, languageButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
+            switchAccountButton, antiCheatButton, newsTitle, newsText, slideBack, slideForward, rotateRight,
             rotateLeft, versionLabel, usernameLabel, passwordLabel, existingLabel, launcherSettings,
             nameLabel, profileVersionLabel, iconLabel, helpButton, gameVersion, playersServer,
             authenticationLabel, authServer, poweredLabel, profileRamLabel, profileRamAssignateLabel;
@@ -93,11 +93,9 @@ public class MainFX {
     @FXML private ComboBox<User> existingUsers;
     @FXML private ComboBox<VersionMeta> versionList;
     @FXML private StackPane versionBlock, javaArgsBlock, javaExecBlock, iconBlock, ramBlock;
-    @FXML private ImageView profileIcon, slideshow, skinPreview;
+    @FXML private ImageView profileIcon, slideshow, skinPreview, antiCheatIcon;
     @FXML private RadioButton authLeverage, authOffline;
     @FXML private Hyperlink forgotPasswordLink;
-
-    //
 
     private Kernel kernel;
     private Console console;
@@ -144,7 +142,7 @@ public class MainFX {
         refreshSession();
 
         // Preparando Lista de Lenguajes
-        languageButton.setText(settings.getSupportedLocales().get(settings.getLocale()));
+        //languageButton.setText(settings.getSupportedLocales().get(settings.getLocale()));
 
         // Actualizando Configuraciones de Labels
         toggleLabel(keepLauncherOpen, settings.getKeepLauncherOpen());
@@ -237,6 +235,130 @@ public class MainFX {
         }
         languagesList.setItems(languageListItems);
         console.print("Lenguajes Cargados.");
+    }
+
+    /**
+     * Cargar Visual de AntiCheat Status
+     */
+    private void loadAntiCheat(int type, String text) {
+        Image i = null;
+        switch (type) {
+            case 0:
+                // BAD
+                i = new Image("/leverage/gui/textures/lock_fail.png");
+            break;
+            case 1:
+                // GOOD
+                i = new Image("/leverage/gui/textures/lock_good.png");
+                break;
+            default:
+                // WARNING
+                i = new Image("/leverage/gui/textures/lock_warning.png");
+                break;
+        }
+
+        antiCheatIcon.setImage(i);
+        antiCheatButton.setText(text);
+    }
+
+    /**
+     * Discards the changes of the profile editor
+     */
+    @FXML public final void AntiCheatSystem() {
+        //loadAntiCheat(1, "Recargando AntiTrampas!");
+        /*Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                antiCheatIcon.setImage(new Image("/leverage/gui/textures/lock_warning.png"));
+                antiCheatButton.setText("Recargando AntiTrampas!");
+            }
+        });
+        t.start();*/
+
+        loadAntiCheatSystem();
+    }
+
+    /**
+     * Cargar AntiCheat Comprobacion
+     */
+    private void loadAntiCheatSystem() {
+        console.print("Cargando Sistema AntiCheat");
+        if (null == kernel.getAuthentication().getSelectedUser()) {
+            loadAntiCheat(0, "En espera ...");
+            return;
+        }
+
+        if (!Kernel.USE_LOCAL) {
+            console.print("Comprobando Sistema AntiCheat");
+
+            loadAntiCheat(2, "Comprobando ...");
+            AntiCheat anti = new AntiCheat(kernel);
+
+            // Anticheat en Accion
+            anti.compare();                 // Genera y envia datos al Servidor
+            if(!anti.isAccept()) {
+                AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                // Mostrar Mensaje
+                kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
+                console.print("Cliente no concuerda con el Servidor.");
+                loadAntiCheat(0, "Fallo de Seguridad");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        playPane.setVisible(true);
+                        progressPane.setVisible(false);
+                        playButton.setText(Language.get(12));
+                        profilePopupButton.setDisable(false);
+                        playButton.setDisable(false);
+                    }
+                });
+                return;
+            } else {
+                // Enviar Conexion RCON
+                //try {
+                try {
+                    AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                    loadAntiCheat(1, "Seguro");
+                } catch (IOException e) {
+                    // Mostrar Mensaje
+                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
+                    console.print("Cliente no registrado en el Servidor.");
+                    loadAntiCheat(0, "Fallo de Seguridad");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
+                        }
+                    });
+                    return;
+                }
+                /*} catch (IOException e) {
+                    // No se puede Conectar con el Server
+                    console.print("Error de Conexion al Servidor con RCON");
+                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
+                        }
+                    });
+                    return ;
+                } catch (AuthenticationException e) {
+                    console.print("Error de Conexion al Servidor con RCON");
+                    e.printStackTrace();
+                }*/
+            }
+        } else {
+            loadAntiCheat(0, "Modo OFFLINE");
+        }
     }
 
     /**
@@ -850,68 +972,6 @@ public class MainFX {
         progressText.setText("");
         final Downloader d = kernel.getDownloader();
         final GameLauncher gl = kernel.getGameLauncher();
-        if (!Kernel.USE_LOCAL) {
-            AntiCheat anti = new AntiCheat(kernel);
-
-            // Anticheat en Accion
-            anti.compare();                 // Genera y envia datos al Servidor
-            if(!anti.isAccept()) {
-                // Mostrar Mensaje
-                kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
-                console.print("Cliente no concuerda con el Servidor.");
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        playPane.setVisible(true);
-                        progressPane.setVisible(false);
-                        playButton.setText(Language.get(12));
-                        profilePopupButton.setDisable(false);
-                        playButton.setDisable(false);
-                    }
-                });
-                return;
-            } else {
-                // Enviar Conexion RCON
-                //try {
-                    try {
-                        AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
-                    } catch (IOException e) {
-                        // Mostrar Mensaje
-                        kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
-                        console.print("Cliente no registrado en el Servidor.");
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressPane.setVisible(false);
-                                playPane.setVisible(true);
-                                playButton.setText(Language.get(12));
-                                playButton.setDisable(false);
-                                profilePopupButton.setDisable(false);
-                            }
-                        });
-                        return;
-                    }
-                /*} catch (IOException e) {
-                    // No se puede Conectar con el Server
-                    console.print("Error de Conexion al Servidor con RCON");
-                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressPane.setVisible(false);
-                            playPane.setVisible(true);
-                            playButton.setText(Language.get(12));
-                            playButton.setDisable(false);
-                            profilePopupButton.setDisable(false);
-                        }
-                    });
-                    return ;
-                } catch (AuthenticationException e) {
-                    console.print("Error de Conexion al Servidor con RCON");
-                    e.printStackTrace();
-                }*/
-            }
-        }
 
         //Keep track of the progress
         final TimerTask progressTask = new TimerTask() {
@@ -981,9 +1041,9 @@ public class MainFX {
                             kernel.showAlert(Alert.AlertType.ERROR, Language.get(81), Language.get(82));
                         }
                     });
-                    if (!Kernel.USE_LOCAL) {
-                        AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getDisplayName());
-                        /*try {
+                    /*if (!Kernel.USE_LOCAL) {
+                        AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                        try {
                         } catch (IOException e1) {
                             console.print("Error de Conexion al Servidor con RCON");
                             kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
@@ -1000,8 +1060,8 @@ public class MainFX {
                         } catch (AuthenticationException ex) {
                             console.print("Error de Conexion al Servidor con RCON");
                             ex.printStackTrace();
-                        }*/
-                    }
+                        }
+                    }*/
                     console.print("Failed to perform game launch task");
                     e.printStackTrace(console.getWriter());
                 }
@@ -1032,8 +1092,8 @@ public class MainFX {
                 } else {
                     playButton.setText(Language.get(12));
 
-                    AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getDisplayName());
-                    /*try {
+                    /*AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                    try {
                     } catch (IOException e) {
                         console.print("Error de Conexion al Servidor con RCON");
                         kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
@@ -1068,9 +1128,17 @@ public class MainFX {
                 } else {
                     playButton.setText(Language.get(12));
                 }
-                AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                //AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
             }
         });
+    }
+
+    private void refreshData() {
+        if (Kernel.USE_LOCAL) {
+            playButton.setText(Language.get(79));
+        } else {
+            playButton.setText(Language.get(12));
+        }
     }
 
     /**
@@ -1113,10 +1181,13 @@ public class MainFX {
         }
         Authentication a = kernel.getAuthentication();
         kernel.closeWeb();
+        AntiCheat.removeWhiteList(a.getSelectedUser().getAccessToken());
         a.setSelectedUser(null);
         kernel.saveProfiles();
         showLoginPrompt(true);
         updateExistingUsers();
+        loadAntiCheatSystem();
+        refreshData();
     }
 
     /**
@@ -1255,7 +1326,7 @@ public class MainFX {
             return;
         }
         Label selected = languagesList.getSelectionModel().getSelectedItem();
-        languageButton.setText(selected.getText());
+        //languageButton.setText(selected.getText());
         settings.setLocale(selected.getId());
         languagesList.setVisible(false);
         SingleSelectionModel<Tab> selection = contentPane.getSelectionModel();
@@ -1707,7 +1778,9 @@ public class MainFX {
                 username.setText("");
                 password.setText("");
                 showLoginPrompt(false);
+                loadAntiCheatSystem();
                 fetchAds();
+
                 texturesLoaded = false;
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
@@ -1733,6 +1806,8 @@ public class MainFX {
                 texturesLoaded = false;
                 kernel.saveProfiles();
                 console.print("Session refrescada.");
+                loadAntiCheatSystem();
+                refreshData();
             } else {
                 console.print("No hay un usuario seleccionado.");
             }
@@ -1771,6 +1846,8 @@ public class MainFX {
             kernel.saveProfiles();
             texturesLoaded = false;
             showLoginPrompt(false);
+            loadAntiCheatSystem();
+            refreshData();
             fetchAds();
         } catch (AuthenticationException ex) {
             kernel.showAlert(Alert.AlertType.ERROR, Language.get(62), ex.getMessage());
@@ -1795,6 +1872,7 @@ public class MainFX {
             kernel.saveProfiles();
             kernel.closeWeb();
             updateExistingUsers();
+            loadAntiCheatSystem();
         }
         onlineList();
     }

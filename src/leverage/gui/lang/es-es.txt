@@ -118,7 +118,7 @@ Datos Extra eliminados correctamente
 Paquetes de Recursos eliminados correctamente
 Salvas eliminadas correctamente
 Paquetes de Sombras eliminados correctamente
-Optimizar Launcher:
+OPTIMIZAR CLIENTE
 Cuentas
 Tu Skin
 Control

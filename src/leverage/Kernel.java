@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
+import leverage.client.AntiCheat;
 import leverage.client.components.Mod;
 import leverage.exceptions.CheatsDetectedException;
 import leverage.exceptions.DownloaderException;
@@ -65,8 +66,8 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.1.0";
-    public static final String KERNEL_CREATOR_NAME = "Powered By MacKey";
+    public static final String KERNEL_BUILD_NAME = "1.1.1";
+    public static final String KERNEL_CREATOR_NAME = "Creado por MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
@@ -371,6 +372,7 @@ public final class Kernel {
     public void exitSafely() {
         console.print("Cerrando launcher...");
         console.close();
+        AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
         saveProfiles();
         closeWeb();
         System.exit(0);

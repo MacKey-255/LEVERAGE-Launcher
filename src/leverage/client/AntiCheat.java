@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,14 +126,14 @@ public class AntiCheat {
     }
 
     // Via RCON -- Whitelist
-    public static boolean add(String username) throws AuthenticationException, IOException {
-        return (null != Utils.rconAction("whitelist add "+ username));
-    }
+    //public static boolean add(String username) throws AuthenticationException, IOException {
+    //    return (null != Utils.rconAction("whitelist add "+ username));
+    //}
 
     // Via RCON -- Whitelist
-    public static boolean remove(String username) throws AuthenticationException, IOException {
-        return (null != Utils.rconAction("whitelist remove "+ username));
-    }
+    //public static boolean remove(String username) throws AuthenticationException, IOException {
+    //    return (null != Utils.rconAction("whitelist remove "+ username));
+    //}
 
     // Via Web -- Whitelist
     public static void addWhiteList(String uuid) throws IOException {
@@ -138,9 +141,15 @@ public class AntiCheat {
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", uuid);
         params.put("Client-Token", uuid);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd -- HH:mm:ss");
+
         r = Utils.sendPost(path, null, params);
-        if ("OK".equals(r))
-            System.out.println("White Exito!");
+
+        if ("OK".equals(r)) {
+            System.out.println('[' + dateFormat.format(new Date()) + "] " + "Usted ha entrado en la Lista Blanca del Servidor!");
+        } else {
+            System.out.println('[' + dateFormat.format(new Date()) + "] " + r);
+        }
     }
 
     // Via Web -- Whitelist
@@ -149,12 +158,16 @@ public class AntiCheat {
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", uuid);
         params.put("Client-Token", uuid);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd -- HH:mm:ss");
         try {
             r = Utils.sendPost(path, null, params);
-            if ("OK".equals(r))
-                System.out.println("Black Exito!");
+            if ("OK".equals(r)) {
+                System.out.println('[' + dateFormat.format(new Date()) + "] " + "Usted ha salido de la Lista Blanca del Servidor!");
+            } else {
+                System.out.println('[' + dateFormat.format(new Date()) + "] " + r);
+            }
         } catch (IOException ex) {
-            System.out.println(r);
+            System.out.println('[' + dateFormat.format(new Date()) + "] " + r);
         }
     }
 

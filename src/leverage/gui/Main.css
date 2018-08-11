@@ -41,10 +41,6 @@
     -fx-text-fill: yellow;
 }
 
-#languageButton {
-    -fx-graphic: url("textures/language.png");
-}
-
 #accountButton {
     -fx-graphic: url("textures/dropdown.png");
 }

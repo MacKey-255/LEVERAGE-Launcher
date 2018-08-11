@@ -5,7 +5,6 @@ import leverage.Kernel;
 import leverage.auth.user.User;
 import leverage.auth.user.UserProfile;
 import leverage.auth.user.UserType;
-import leverage.client.AntiCheat;
 import leverage.exceptions.AuthenticationException;
 import leverage.util.Urls;
 import leverage.util.Utils;
@@ -177,9 +176,9 @@ public class Authentication {
                     //Añadiendo Usuario Autenticado
                     User u = new User(userID, accessToken, username, type, userProfiles, selectedProfile);
                     selectedAccount = u;
+                    Kernel.USE_LOCAL = false;
                     authenticated = true;
                     addUser(u);
-                    AntiCheat.removeWhiteList(accessToken);
                 } catch (JSONException ex) {
                     ex.printStackTrace(console.getWriter());
                     throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
@@ -252,8 +251,8 @@ public class Authentication {
                 u.setAccessToken(r.getString("accessToken"));
                 String selectedProfile = r.getJSONObject("selectedProfile").getString("id");
                 u.setSelectedProfile(selectedProfile);
+                Kernel.USE_LOCAL = false;
                 authenticated = true;
-                AntiCheat.removeWhiteList(getSelectedUser().getAccessToken());
             } catch (JSONException ex) {
                 ex.printStackTrace(console.getWriter());
                 throw new AuthenticationException("Servidor de Autenticacion ha devuelto datos Errorneos!");
