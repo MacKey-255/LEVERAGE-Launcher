@@ -19,6 +19,7 @@ import leverage.client.AntiCheat;
 import leverage.client.components.Mod;
 import leverage.exceptions.CheatsDetectedException;
 import leverage.exceptions.DownloaderException;
+import leverage.exceptions.GameLauncherException;
 import leverage.game.GameLauncher;
 import leverage.game.download.Downloader;
 import leverage.game.profile.Profiles;
@@ -372,7 +373,13 @@ public final class Kernel {
     public void exitSafely() {
         console.print("Cerrando launcher...");
         console.close();
-        AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
+        if(getAuthentication().getSelectedUser() != null) {
+            try {
+                AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
+            } catch (GameLauncherException e) {
+                console.print(e.getMessage());
+            }
+        }
         saveProfiles();
         closeWeb();
         System.exit(0);

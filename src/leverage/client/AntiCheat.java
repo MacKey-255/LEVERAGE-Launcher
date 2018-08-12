@@ -6,6 +6,7 @@ import leverage.auth.user.User;
 import leverage.client.components.Mod;
 import leverage.client.components.VersionServer;
 import leverage.exceptions.AuthenticationException;
+import leverage.exceptions.GameLauncherException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
 import leverage.game.version.VersionMeta;
@@ -120,7 +121,7 @@ public class AntiCheat {
                 accept = true;
 
         } catch (Exception ex) {
-            console.print("No se ha podido Comprobar con el Servidor el Antiparches");
+            console.print("No se ha podido Comprobar con el Servidor las Versiones");
             accept = false;
         }
     }
@@ -136,7 +137,7 @@ public class AntiCheat {
     //}
 
     // Via Web -- Whitelist
-    public static void addWhiteList(String uuid) throws IOException {
+    public static void addWhiteList(String uuid) throws IOException, GameLauncherException {
         String path = Urls.whitelist, r = null;
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", uuid);
@@ -146,14 +147,16 @@ public class AntiCheat {
         r = Utils.sendPost(path, null, params);
 
         if ("OK".equals(r)) {
-            System.out.println('[' + dateFormat.format(new Date()) + "] " + "Usted ha entrado en la Lista Blanca del Servidor!");
+            System.out.println('[' + dateFormat.format(new Date()) + " -- Web] " + "Usted ha entrado en la Lista Blanca del Servidor!");
         } else {
-            System.out.println('[' + dateFormat.format(new Date()) + "] " + r);
+            System.out.println('[' + dateFormat.format(new Date()) + " -- Web] " + r);
+            if(!"ERROR YA USTED ESTA EN LA LISTA BLANCA.".equals(r))
+                throw new GameLauncherException("El Servidor no ha enviado Informacion Incorrecta.");
         }
     }
 
     // Via Web -- Whitelist
-    public static void removeWhiteList(String uuid) {
+    public static void removeWhiteList(String uuid) throws GameLauncherException {
         String path = Urls.blacklist, r = null;
         Map<String, String> params = new HashMap<>();
         params.put("Access-Token", uuid);
@@ -162,9 +165,11 @@ public class AntiCheat {
         try {
             r = Utils.sendPost(path, null, params);
             if ("OK".equals(r)) {
-                System.out.println('[' + dateFormat.format(new Date()) + "] " + "Usted ha salido de la Lista Blanca del Servidor!");
+                System.out.println('[' + dateFormat.format(new Date()) + " -- Web] " + "Usted ha salido de la Lista Blanca del Servidor!");
             } else {
-                System.out.println('[' + dateFormat.format(new Date()) + "] " + r);
+                System.out.println('[' + dateFormat.format(new Date()) + " -- Web] " + r);
+                if(!"ERROR USTED NO ESTA EN LA LISTA BLANCA.".equals(r))
+                    throw new GameLauncherException("El Servidor no ha enviado Informacion Incorrecta.");
             }
         } catch (IOException ex) {
             System.out.println('[' + dateFormat.format(new Date()) + "] " + r);

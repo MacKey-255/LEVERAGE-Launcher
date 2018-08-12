@@ -265,17 +265,13 @@ public class MainFX {
      * Discards the changes of the profile editor
      */
     @FXML public final void AntiCheatSystem() {
-        //loadAntiCheat(1, "Recargando AntiTrampas!");
-        /*Thread t = new Thread(new Runnable() {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                antiCheatIcon.setImage(new Image("/leverage/gui/textures/lock_warning.png"));
-                antiCheatButton.setText("Recargando AntiTrampas!");
+                loadAntiCheatSystem();
             }
         });
-        t.start();*/
-
-        loadAntiCheatSystem();
+        t.start();
     }
 
     /**
@@ -284,27 +280,46 @@ public class MainFX {
     private void loadAntiCheatSystem() {
         console.print("Cargando Sistema AntiCheat");
         if (null == kernel.getAuthentication().getSelectedUser()) {
-            loadAntiCheat(0, "En espera ...");
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadAntiCheat(0, "En espera ...");
+                }
+            });
             return;
         }
 
         if (!Kernel.USE_LOCAL) {
             console.print("Comprobando Sistema AntiCheat");
-
-            loadAntiCheat(2, "Comprobando ...");
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadAntiCheat(2, "Comprobando ...");
+                }
+            });
             AntiCheat anti = new AntiCheat(kernel);
 
             // Anticheat en Accion
             anti.compare();                 // Genera y envia datos al Servidor
             if(!anti.isAccept()) {
-                AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                try {
+                    AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                } catch (GameLauncherException e) {
+                    console.print(e.getMessage());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAntiCheat(0, "Fallo Añadir Lista Blanca");
+                        }
+                    });
+                }
                 // Mostrar Mensaje
                 kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
                 console.print("Cliente no concuerda con el Servidor.");
-                loadAntiCheat(0, "Fallo de Seguridad");
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        loadAntiCheat(0, "Fallo de Seguridad");
                         playPane.setVisible(true);
                         progressPane.setVisible(false);
                         playButton.setText(Language.get(12));
@@ -314,16 +329,24 @@ public class MainFX {
                 });
                 return;
             } else {
-                // Enviar Conexion RCON
-                //try {
                 try {
                     AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
-                    loadAntiCheat(1, "Seguro");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAntiCheat(1, "Seguro");
+                        }
+                    });
                 } catch (IOException e) {
                     // Mostrar Mensaje
                     kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
                     console.print("Cliente no registrado en el Servidor.");
-                    loadAntiCheat(0, "Fallo de Seguridad");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAntiCheat(0, "Fallo de Seguridad");
+                        }
+                    });
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -335,29 +358,23 @@ public class MainFX {
                         }
                     });
                     return;
-                }
-                /*} catch (IOException e) {
-                    // No se puede Conectar con el Server
-                    console.print("Error de Conexion al Servidor con RCON");
-                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(138));
+                } catch (GameLauncherException e) {
+                    console.print(e.getMessage());
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            progressPane.setVisible(false);
-                            playPane.setVisible(true);
-                            playButton.setText(Language.get(12));
-                            playButton.setDisable(false);
-                            profilePopupButton.setDisable(false);
+                            loadAntiCheat(0, "Fallo Añadir Lista Blanca");
                         }
                     });
-                    return ;
-                } catch (AuthenticationException e) {
-                    console.print("Error de Conexion al Servidor con RCON");
-                    e.printStackTrace();
-                }*/
+                }
             }
         } else {
-            loadAntiCheat(0, "Modo OFFLINE");
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadAntiCheat(0, "Modo OFFLINE");
+                }
+            });
         }
     }
 
@@ -990,6 +1007,8 @@ public class MainFX {
         Thread runThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                // Sistema AntiParches
+                loadAntiCheatSystem();
                 //Begin download and game launch task
                 try {
                     Timer timer = new Timer();
@@ -1181,7 +1200,17 @@ public class MainFX {
         }
         Authentication a = kernel.getAuthentication();
         kernel.closeWeb();
-        AntiCheat.removeWhiteList(a.getSelectedUser().getAccessToken());
+        try {
+            AntiCheat.removeWhiteList(a.getSelectedUser().getAccessToken());
+        } catch (GameLauncherException e) {
+            console.print(e.getMessage());
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadAntiCheat(0, "Fallo Añadir Lista Blanca");
+                }
+            });
+        }
         a.setSelectedUser(null);
         kernel.saveProfiles();
         showLoginPrompt(true);
