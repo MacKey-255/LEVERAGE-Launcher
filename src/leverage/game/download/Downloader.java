@@ -97,7 +97,7 @@ public class Downloader {
                     break;
                 } catch (IOException ex) {
                     console.print("Fallida la Descargan del Archivo " + indexJSON.getName() + " (Intento " + tries + ')');
-                    ex.printStackTrace(console.getWriter());
+                    //ex.printStackTrace(console.getWriter());
                     tries++;
                 }
             }

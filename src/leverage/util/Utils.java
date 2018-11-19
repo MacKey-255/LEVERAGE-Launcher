@@ -304,11 +304,11 @@ public final class Utils {
                 name = jar.getName();
                 if (name.equals("mcmod.info")) {
                     //Copiamos el Fichero en el Cache
-                    File cache = new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
+                    File cache = new File(Kernel.APPLICATION_CACHE, "mods"); //new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
                     if(!cache.exists())
                         cache.mkdirs();
 
-                    FileOutputStream ou = new FileOutputStream(cache.getPath()+"/"+mod_name+".json");
+                    FileOutputStream ou = new FileOutputStream(cache.getPath() + File.separator + mod_name + ".json");
                     BufferedOutputStream buffout = new BufferedOutputStream(ou);
                     BufferedInputStream buffin = new BufferedInputStream(input);
                     while ((v = buffin.read()) != -1) {
@@ -317,39 +317,45 @@ public final class Utils {
                     buffout.flush();
 
                     //Leer Fichero del Cache
-                    File config = new File(cache.getPath()+"/"+mod_name+".json");
-
-                    String data = new String(Files.readAllBytes(config.toPath()), StandardCharsets.UTF_8);
-
-                    JSONArray array = new JSONArray(data);
-                    JSONObject object = array.getJSONObject(0);
-
-                    id = object.getString("modid");
-                    nam = object.getString("name");
-
-                    //Detectar Cheats Especificos (Wurst)
-                    if(id.equals("forgewurst") || id.equals("xray"))
-                        throw new CheatsDetectedException(jar.getName());
-
                     try {
-                        version = object.getString("version");
+                        File config = new File(cache.getPath() + File.separator + mod_name + ".json");
+                        String data = new String(Files.readAllBytes(config.toPath()), StandardCharsets.UTF_8);
+
+                        JSONArray array = new JSONArray(data);
+                        JSONObject object = array.getJSONObject(0);
+
+                        id = object.getString("modid");
+                        nam = object.getString("name");
+
+                        //Detectar Cheats Especificos (Wurst)
+                        if(id.equals("forgewurst") || id.equals("xray"))
+                            throw new CheatsDetectedException(jar.getName(), true);
+
+                        try {
+                            version = object.getString("version");
+                        } catch (JSONException ex) {
+                            version = "?";
+                        }
+                        try {
+                            vmc = object.getString("mcversion");
+                            if(vmc.equals("${mcversion}") || vmc.equals("${version}"))
+                                vmc = "?";
+                        } catch (JSONException ex) {
+                            vmc = "?";
+                        }
                     } catch (JSONException ex) {
-                        version = "1.0";
-                    }
-                    try {
-                        vmc = object.getString("mcversion");
-                        if(vmc.equals("${mcversion}") || vmc.equals("${version}"))
-                            vmc = "1.12.2";
-                    } catch (JSONException ex) {
-                        vmc = "1.12.2";
+                        System.out.println("Mods PreCargado: "+ mod_name );
                     }
 
                     break ;
+                } else {
+                    // Valor por defecto ( Si no encuentra el mcmod.info entonces se asigna esto)
+                    nam = mod_name; id = mod_name; nameJar = mod_name; version = "?"; vmc = "?";
                 }
             } else {
                 //Detectar Cheats Especificos ( XRay )
                 if(jar.getName().equals("minecraftxray") || jar.getName().equals("xray"))
-                    throw new CheatsDetectedException(jar.getName());
+                    throw new CheatsDetectedException(jar.getName(), true);
             }
         }
         return new Mod(id, nam, url, nameJar, version, vmc);
@@ -530,7 +536,7 @@ public final class Utils {
             new File(output, "OK").createNewFile();
         }
     }
-/*
+
     public static String rconAction(String command) throws AuthenticationException, IOException {
         // Connects to 127.0.0.1 on port 27015
         Rcon rcon = null; String value = null;
@@ -540,7 +546,7 @@ public final class Utils {
         // Devuelve Resultado de la Peticion RCON
         return value;
     }
-*/
+
     public static void restartApplication() {
         try {
             System.out.println("Reiniciando Launcher");

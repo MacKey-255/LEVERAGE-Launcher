@@ -73,7 +73,7 @@ public class GameLauncher {
             throw new GameLauncherException("Informacion de Version no obtenida.");
         }
         File workingDir = Kernel.APPLICATION_WORKING_DIR;
-        console.print("Eliminandos Nativos Antiguoss.");
+        console.print("Eliminandos Nativos Antiguos.");
         File nativesRoot = new File(workingDir + File.separator + "versions" + File.separator + ver.getID());
         if (nativesRoot.isDirectory()) {
             File[] files = nativesRoot.listFiles();
@@ -316,7 +316,7 @@ public class GameLauncher {
             timer.schedule(process_status, 0, 25);
         } catch (IOException ex) {
             ex.printStackTrace(console.getWriter());
-            throw new GameLauncherException("El juego ha devielto un error de Codigo..");
+            throw new GameLauncherException("El juego ha devuelto un error de Codigo..");
         }
     }
 

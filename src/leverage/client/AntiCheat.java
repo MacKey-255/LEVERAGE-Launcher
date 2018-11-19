@@ -1,19 +1,23 @@
 package leverage.client;
 
+import javafx.scene.control.Alert;
 import leverage.Console;
 import leverage.Kernel;
 import leverage.auth.user.User;
 import leverage.client.components.Mod;
-import leverage.client.components.VersionServer;
+import leverage.client.components.ResourcePack;
 import leverage.exceptions.AuthenticationException;
+import leverage.exceptions.CheatsDetectedException;
 import leverage.exceptions.GameLauncherException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
 import leverage.game.version.VersionMeta;
 import leverage.game.version.Versions;
+import leverage.gui.lang.Language;
 import leverage.util.Urls;
 import leverage.util.Utils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -34,6 +38,7 @@ public class AntiCheat {
 
     private Version versionLocal;
     private List<Mod> modsLocal;
+    private List<ResourcePack> resourceLocal;
 
     private boolean accept;
 
@@ -72,8 +77,6 @@ public class AntiCheat {
 
     public void sendServerList() {
         try {
-            boolean mods = true, version = true;
-
             // Tomar datos generados en Ficheros JSON
             File modFile = new File(Kernel.APPLICATION_LIBS, "mods_list.json");
             File versionFile = new File(Kernel.APPLICATION_LIBS, "version.json");
@@ -98,43 +101,74 @@ public class AntiCheat {
             String responseMods = Utils.sendPost(Urls.modsList, modsList.toString().getBytes(Charset.forName("UTF-8")), postParamsMods);
             String responseVersion = Utils.sendPost(Urls.modsList, versionObject.toString().getBytes(Charset.forName("UTF-8")), postParamsVersion);
 
-            if (responseMods.isEmpty()) {
-                console.print("El Servidor no ha devuelto ninguna Lista de Mods.");
-                mods = false;
-            }
-            if (responseVersion.isEmpty()) {
-                console.print("El Servidor no ha devuelto ninguna Version.");
-                version = false;
-            }
+            console.print(responseMods);
 
             //Tomar Informacion
-            JSONObject entryMods = new JSONObject(responseMods);
-            JSONObject entryVersion = new JSONObject(responseVersion);
+            JSONObject entryMods = null;
+            JSONObject entryVersion = null;
 
-            if(!entryMods.getBoolean("request") || !entryVersion.getBoolean("request")) {
+            if (responseMods.isEmpty())
+                console.print("El Servidor no ha devuelto ninguna respuesta sobre los Mods.");
+            else
+                entryMods = new JSONObject(responseMods);
+            if (responseVersion.isEmpty())
+                console.print("El Servidor no ha devuelto ninguna respuesta sobre la Version.");
+            else
+                entryVersion = new JSONObject(responseVersion);
+
+            if(entryMods != null && entryVersion != null) {
+                if (entryMods.getBoolean("error") && entryVersion.getBoolean("error")) {
+                    console.print("Los mods y la version de su cliente concuerdan con el Servidor.");
+                    accept = true;
+                } else {
+                    console.print("Existe una diferencia en los mods o en la Version.");
+                    accept = false;
+                    // Buscamos el Problema y lo mostramos
+                    String request = "Existe una diferencia en los ";
+                    if(!entryMods.getBoolean("error"))
+                        request += "Mods: " + entryMods.getString("request");
+                    if(!entryVersion.getBoolean("error"))
+                        request += "y en la Version: " + entryVersion.getString("request");
+
+                    boolean cheatDetected = false;
+                    if("CHEAT".equals(request)) {
+                        cheatDetected = true;
+                        request = "Parche detectado!!";
+                    }
+
+                    throw new CheatsDetectedException(request, cheatDetected);
+                }
+            } else {
                 console.print("Existe una diferencia en los mods o en la Version.");
+                kernel.showAlert(Alert.AlertType.ERROR, null, "Existe una diferencia en los mods o en la Version.");
                 accept = false;
-                return;
             }
 
-            if(entryMods.getBoolean("request") && entryVersion.getBoolean("request"))
-                accept = true;
-
-        } catch (Exception ex) {
+        } catch (CheatsDetectedException ex) {
             console.print("No se ha podido Comprobar con el Servidor las Versiones");
+            kernel.showAlert(Alert.AlertType.ERROR, null, "No se ha podido Comprobar con el Servidor las Versiones");
+            console.print(ex.getMessage());
+
+            ex.printStackTrace();
+            accept = false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            console.print(e.getMessage());
+        } catch (JSONException j) {
+            console.print("El Servidor no ha respondido correctamente!");
             accept = false;
         }
     }
 
     // Via RCON -- Whitelist
-    //public static boolean add(String username) throws AuthenticationException, IOException {
-    //    return (null != Utils.rconAction("whitelist add "+ username));
-    //}
+    public static boolean addWhiteListRCON(String username) throws AuthenticationException, IOException {
+        return (null != Utils.rconAction("whitelist add "+ username));
+    }
 
     // Via RCON -- Whitelist
-    //public static boolean remove(String username) throws AuthenticationException, IOException {
-    //    return (null != Utils.rconAction("whitelist remove "+ username));
-    //}
+    public static boolean removeWhiteListRCON(String username) throws AuthenticationException, IOException {
+        return (null != Utils.rconAction("whitelist remove "+ username));
+    }
 
     // Via Web -- Whitelist
     public static void addWhiteList(String uuid) throws IOException, GameLauncherException {
@@ -176,7 +210,7 @@ public class AntiCheat {
         }
     }
 
-    public void writeJSON() {
+    private void writeJSON() {
         if(modsLocal.size() != 0) {
             JSONArray array = Utils.getModsJSON(modsLocal);
 

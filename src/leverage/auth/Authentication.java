@@ -146,7 +146,7 @@ public class Authentication {
                 response = Utils.sendPost(authURL, request.toString().getBytes(Charset.forName("UTF-8")), postParams);
             } catch (IOException ex) {
                 console.print("Ha Fallado la Comunicacion con el Servidor de Auteticacion");
-                ex.printStackTrace(console.getWriter());
+                //ex.printStackTrace(console.getWriter());
                 throw new AuthenticationException("Ha Fallado la Comunicacion con el Servidor de Auteticacion.");
             }
             if (response.isEmpty()) {

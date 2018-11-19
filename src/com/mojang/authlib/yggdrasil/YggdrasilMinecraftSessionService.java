@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class YggdrasilMinecraftSessionService extends HttpMinecraftSessionServic
         } else {
             MinecraftTexturesPayload result;
             try {
-                String json = new String(Base64.decodeBase64(textureProperty.getValue()), Charsets.UTF_8);
+                String json = new String(Base64.decodeBase64(textureProperty.getValue()), Charset.forName("UTF-8"));
                 result = (MinecraftTexturesPayload)this.gson.fromJson(json, MinecraftTexturesPayload.class);
             } catch (JsonParseException var7) {
                 LOGGER.error("Could not decode textures payload", var7);

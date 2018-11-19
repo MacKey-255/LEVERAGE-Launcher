@@ -277,7 +277,7 @@ public class MainFX {
     /**
      * Cargar AntiCheat Comprobacion
      */
-    private void loadAntiCheatSystem() {
+    private boolean loadAntiCheatSystem() {
         console.print("Cargando Sistema AntiCheat");
         if (null == kernel.getAuthentication().getSelectedUser()) {
             Platform.runLater(new Runnable() {
@@ -286,7 +286,7 @@ public class MainFX {
                     loadAntiCheat(0, "En espera ...");
                 }
             });
-            return;
+            return false;
         }
 
         if (!Kernel.USE_LOCAL) {
@@ -314,11 +314,11 @@ public class MainFX {
                     });
                 }
                 // Mostrar Mensaje
-                kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
-                console.print("Cliente no concuerda con el Servidor.");
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
+                        console.print("Cliente no concuerda con el Servidor.");
                         loadAntiCheat(0, "Fallo de Seguridad");
                         playPane.setVisible(true);
                         progressPane.setVisible(false);
@@ -327,7 +327,7 @@ public class MainFX {
                         playButton.setDisable(false);
                     }
                 });
-                return;
+                return false;
             } else {
                 try {
                     AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
@@ -357,7 +357,7 @@ public class MainFX {
                             profilePopupButton.setDisable(false);
                         }
                     });
-                    return;
+                    return false;
                 } catch (GameLauncherException e) {
                     console.print(e.getMessage());
                     Platform.runLater(new Runnable() {
@@ -366,7 +366,9 @@ public class MainFX {
                             loadAntiCheat(0, "Fallo Añadir Lista Blanca");
                         }
                     });
+                    return false;
                 }
+                return true;
             }
         } else {
             Platform.runLater(new Runnable() {
@@ -375,6 +377,7 @@ public class MainFX {
                     loadAntiCheat(0, "Modo OFFLINE");
                 }
             });
+            return true;
         }
     }
 
@@ -709,9 +712,8 @@ public class MainFX {
             }
 
         } else {
-            console.print("No hay Usuarios conectados..");
-            String text = Language.get(133) + Language.get(134);
-            playersServer.setText(text);
+            console.print("No hay Usuarios conectados.");
+            playersServer.setText(String.valueOf(Language.get(133) + Language.get(134)));
         }
     }
 
@@ -1008,8 +1010,9 @@ public class MainFX {
             @Override
             public void run() {
                 // Sistema AntiParches
-                loadAntiCheatSystem();
+                boolean anticheat = loadAntiCheatSystem();
                 //Begin download and game launch task
+                if(!anticheat) return;
                 try {
                     Timer timer = new Timer();
                     timer.schedule(progressTask, 0, 25);
@@ -1051,13 +1054,34 @@ public class MainFX {
                             kernel.showAlert(Alert.AlertType.ERROR, Language.get(83), Language.get(84));
                         }
                     });
-                    console.print("Failed to perform game download task");
-                    e.printStackTrace(console.getWriter());
+                    console.print("La descarga de contenido del Juego ha fallado!");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            if (Kernel.USE_LOCAL)
+                                playButton.setText(Language.get(79));
+                            else
+                                playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
+                        }
+                    });
+                    //e.printStackTrace(console.getWriter());
                 } catch (GameLauncherException e) {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
                             kernel.showAlert(Alert.AlertType.ERROR, Language.get(81), Language.get(82));
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            if (Kernel.USE_LOCAL)
+                                playButton.setText(Language.get(79));
+                            else
+                                playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
                         }
                     });
                     /*if (!Kernel.USE_LOCAL) {
@@ -1081,8 +1105,8 @@ public class MainFX {
                             ex.printStackTrace();
                         }
                     }*/
-                    console.print("Failed to perform game launch task");
-                    e.printStackTrace(console.getWriter());
+                    console.print("Lanzamiento del Juego fallido, revize los Logs");
+                    //e.printStackTrace(console.getWriter());
                 }
             }
         });

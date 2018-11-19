@@ -55,6 +55,7 @@ public final class Kernel {
     private final Settings settings;                        // Configuraciones (Idioma, archivo de Config)
     private final Downloader downloader;                    // Sistema de Descarga Automatica
     private final Authentication authentication;            // Sistema de Autenticacion
+    private static Authentication authentications;
 
     private final GameLauncher gameLauncher;                // Sistema Lanzador del Juego (Abre el Juego)
     private final HostServices hostServices;                // Permite abrir Navegador Web
@@ -67,12 +68,12 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.1.1";
+    public static final String KERNEL_BUILD_NAME = "1.1.2";
     public static final String KERNEL_CREATOR_NAME = "Creado por MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
-    public static final File APPLICATION_LIBS = new File(APPLICATION_WORKING_DIR, "launcher-libraries");
+    public static final File APPLICATION_LIBS = new File(APPLICATION_WORKING_DIR, "launcher_libraries");
     private static final File APPLICATION_CONFIG = new File(APPLICATION_LIBS, "launcher_profiles.json");
     public static final File APPLICATION_LOGS = new File(APPLICATION_LIBS, "logs");
     public static final File APPLICATION_CACHE = new File(APPLICATION_LIBS, "cache");
@@ -216,7 +217,7 @@ public final class Kernel {
             Utils.restartApplication();
         }
 
-        if (!APPLICATION_WORKING_DIR.isDirectory()) {
+        if (!APPLICATION_WORKING_DIR.isDirectory() || !(new File(APPLICATION_WORKING_DIR, "versions")).exists() || !(new File(APPLICATION_WORKING_DIR, "assets")).exists()) {
             // Error Falta Instalar el Juego
             showAlert(Alert.AlertType.ERROR, Language.get(131), Language.get(130));
             getHostServices().showDocument(Urls.leverage);
@@ -249,6 +250,8 @@ public final class Kernel {
             e.printStackTrace(console.getWriter());
             exitSafely();
         }
+
+        authentications = authentication;
     }
 
     /**
@@ -289,6 +292,7 @@ public final class Kernel {
             list = Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"));
         } catch (IOException e) {
             e.printStackTrace();
+            console.print(e.getMessage());
         } catch (CheatsDetectedException e) {
             String url = Urls.cheatsWarning, r = null;
             Map<String, String> params = new HashMap<>();
@@ -359,6 +363,10 @@ public final class Kernel {
         return authentication;
     }
 
+    public static Authentication getAuthenticationStatic() {
+        return authentications;
+    }
+
     public JSONObject getLauncherProfiles() {
         return launcherProfiles;
     }
@@ -372,7 +380,6 @@ public final class Kernel {
      */
     public void exitSafely() {
         console.print("Cerrando launcher...");
-        console.close();
         if(getAuthentication().getSelectedUser() != null) {
             try {
                 AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
@@ -382,6 +389,7 @@ public final class Kernel {
         }
         saveProfiles();
         closeWeb();
+        console.close();
         System.exit(0);
     }
 
