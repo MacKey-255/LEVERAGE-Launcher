@@ -5,24 +5,24 @@ import java.io.File;
 public class ResourcePack {
     private String name;
     private String url;
-    private String nameZip;
+    private String description;
     private long diskSpace;
     private final File relativeZip;
 
     // INACTIVO
 
-    public ResourcePack(String name, String nameZip) {
-        this.name = name;
+    public ResourcePack(File file, String description) {
+        this.name = file.getName().replace(".zip", "");;
         this.url = null;
-        this.nameZip = nameZip;
-        this.relativeZip = new File("resourcepacks" + File.separator + nameZip + ".zip");;
+        this.description = description;
+        this.relativeZip = file;;
         this.diskSpace = relativeZip.length();
     }
 
-    public ResourcePack(String name, String url, long diskSpace) {
+    public ResourcePack(String name, String url, String description, long diskSpace) {
         this.name = name;
         this.url = url;
-        this.nameZip = null;
+        this.description = null;
         this.diskSpace = diskSpace;
         this.relativeZip = null;
     }
@@ -35,8 +35,8 @@ public class ResourcePack {
         return url;
     }
 
-    public String getNameZip() {
-        return nameZip;
+    public String getDescription() {
+        return description;
     }
 
     public long getDiskSpace() {

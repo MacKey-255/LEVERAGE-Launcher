@@ -204,6 +204,17 @@ public class MainFX {
         };
         Timer resize = new Timer();
         resize.schedule(newsResize, 0, 25);
+        
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Utils.downloadFile(Urls.custonSkins_URL, new File(Kernel.APPLICATION_SKINS_CONFIG, "CustomSkinLoader.json"));
+                } catch (IOException e) {
+                    console.print(e.getMessage());
+                }
+            }
+        });
 
         //Close popups on resize
         mainScene.heightProperty().addListener(new ChangeListener<Number>() {
@@ -353,6 +364,10 @@ public class MainFX {
                             progressPane.setVisible(false);
                             playPane.setVisible(true);
                             playButton.setText(Language.get(12));
+                            if (Kernel.USE_LOCAL)
+                                playButton.setText(Language.get(79));
+                            else
+                                playButton.setText(Language.get(12));
                             playButton.setDisable(false);
                             profilePopupButton.setDisable(false);
                         }
@@ -364,6 +379,16 @@ public class MainFX {
                         @Override
                         public void run() {
                             loadAntiCheat(0, "Fallo Añadir Lista Blanca");
+                            kernel.showAlert(Alert.AlertType.ERROR, "Fallo Añadir a la Lista Blanca", e.getMessage());
+                            progressPane.setVisible(false);
+                            playPane.setVisible(true);
+                            playButton.setText(Language.get(12));
+                            if (Kernel.USE_LOCAL)
+                                playButton.setText(Language.get(79));
+                            else
+                                playButton.setText(Language.get(12));
+                            playButton.setDisable(false);
+                            profilePopupButton.setDisable(false);
                         }
                     });
                     return false;
@@ -504,6 +529,17 @@ public class MainFX {
             return ;
         }
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Utils.downloadFile(Urls.custonSkins_URL, new File(Kernel.APPLICATION_SKINS_CONFIG, "CustomSkinLoader.json"));
+                } catch (IOException e) {
+                    console.print(e.getMessage());
+                }
+            }
+        });
+
         console.print("Cargando Texturas...");
         Thread t = new Thread(new Runnable() {
             @Override
@@ -621,6 +657,8 @@ public class MainFX {
                     loadTextures();
                 }
             });
+            // Descargar config de Skines
+            console.print("Actualizando Minecraft");
         } catch (IOException ex) {
             console.print("Fallido el Envio del Skins.");
             ex.printStackTrace(console.getWriter());

@@ -4,6 +4,7 @@ import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
 import leverage.client.components.Mod;
+import leverage.client.components.ResourcePack;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.CheatsDetectedException;
 import leverage.rcon.Rcon;
@@ -257,6 +258,96 @@ public final class Utils {
                 list.put(i, mod);
             }
         return list;
+    }
+
+    /**
+     * Return List JSONArray ResourcesPack List
+     * @param pack ResourcesPack List
+     * @return A List ResourcesPack
+     */
+    public static JSONArray getResourceJSON(List<ResourcePack> pack) {
+        JSONArray list = new JSONArray();
+            JSONObject resource, o;
+            for(int i=0; i<pack.size(); i++) {
+                resource = new JSONObject();
+                o = new JSONObject();
+
+                o.put("name", pack.get(i).getName());
+                o.put("description", pack.get(i).getDescription());
+                o.put("diskSpace", pack.get(i).getDiskSpace());
+
+                resource.put(pack.get(i).getName(), o);
+
+                list.put(i, resource);
+            }
+        return list;
+    }
+
+    /**
+     * Reader a List ResourcesPack
+     * @param m The ResourcePack Dir
+     * @return A List ResourcePack
+     */
+    public static List<ResourcePack> getListResoucesPack(File m) throws IOException {
+        List<ResourcePack> list = new ArrayList<>();
+        File[] h = m.listFiles();
+        ResourcePack resourcePack = null;
+        if(h != null) {
+            for (int i = 0; i < h.length; i++) {
+                resourcePack = getResourcePack(h[i]);
+                if (resourcePack.getName() != null)
+                    list.add(resourcePack);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Reader a ResourcePack File
+     * @param file The ResourcePack File
+     * @return A ResourcePack
+     */
+
+    public static ResourcePack getResourcePack(File file) throws IOException {
+        String description = "?", tmp = null; int v;
+        //Abrir Archivo y Leerlo
+        ZipInputStream input = new ZipInputStream(file.toURI().toURL().openStream());
+
+        //Buscar Informacion: pack.mcmeta
+        for(ZipEntry zip = input.getNextEntry(); zip != null; zip = input.getNextEntry()) {
+            if(!zip.isDirectory()) {
+                tmp = zip.getName();
+                if (tmp.equals("pack.mcmeta")) {
+                    //Copiamos el Fichero en el Cache
+                    File cache = new File(Kernel.APPLICATION_CACHE, "resourcespack"); //new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
+                    if(!cache.exists())
+                        cache.mkdirs();
+
+                    FileOutputStream ou = new FileOutputStream(cache.getPath() + File.separator + file.getName().replace(".zip", "") + ".json");
+                    BufferedOutputStream buffout = new BufferedOutputStream(ou);
+                    BufferedInputStream buffin = new BufferedInputStream(input);
+                    while ((v = buffin.read()) != -1) {
+                        buffout.write(v);
+                    }
+                    buffout.flush();
+
+                    //Leer Fichero del Cache
+                    try {
+                        File config = new File(cache.getPath() + File.separator + file.getName().replace(".zip", "") + ".json");
+                        String data = new String(Files.readAllBytes(config.toPath()), StandardCharsets.UTF_8);
+
+                        JSONObject obj = new JSONObject(data);
+                        JSONObject object = obj.getJSONObject("pack");
+
+                        description = object.getString("description");
+                    } catch (JSONException ex) {
+                        System.out.println("ResourePack PreCargado: "+ file.getName().replace(".zip", "") );
+                    }
+                    break ;
+                }
+            }
+        }
+        return new ResourcePack(file, description);
     }
 
     /**

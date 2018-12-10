@@ -13,7 +13,7 @@ public class Urls {
     public static final String forgotPassword = "ts3server://10.30.1.31/"; //leverage + "/user/login";
     public static final String skinsPath = leverage + "/user/skins";
     public static final String CHANGESKIN_URL = leverage + "/user/skins/upload";
-    public static final String serverVersion = leverage + "/versions/version.json";
+    public static final String custonSkins_URL = leverage + "/media/CustomSkinLoader.json";
     public static final String versionManifest = leverage + "/version_manifest.json";
     public static final String cheatsWarning = leverage + "/user/cheats";
     public static final String help = leverage + "/user/donate";
@@ -21,8 +21,9 @@ public class Urls {
     public static final String listOnline = leverage + "/user/list";
     public static final String update = leverage + "/user/update";
 
-    public static final String versionList = leverage + "/mods/1.12.2/";
-    public static final String modsList = leverage + "/index.php";
+    public static final String versionList = leverage + "/check/versions";
+    public static final String modsList = leverage + "/check/mods";
+    public static final String resourceList = leverage + "/check/resource";
 
     // Whitelist Via Web
     public static final String whitelist = leverage + "/user/white";

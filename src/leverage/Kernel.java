@@ -17,6 +17,7 @@ import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
 import leverage.client.components.Mod;
+import leverage.client.components.ResourcePack;
 import leverage.exceptions.CheatsDetectedException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -68,12 +69,13 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.1.2";
+    public static final String KERNEL_BUILD_NAME = "1.1.6";
     public static final String KERNEL_CREATOR_NAME = "Creado por MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
     public static final File APPLICATION_WORKING_DIR = Utils.getWorkingDirectory();
     public static final File APPLICATION_LIBS = new File(APPLICATION_WORKING_DIR, "launcher_libraries");
+    public static final File APPLICATION_SKINS_CONFIG = new File(APPLICATION_WORKING_DIR, "CustomSkinLoader");
     private static final File APPLICATION_CONFIG = new File(APPLICATION_LIBS, "launcher_profiles.json");
     public static final File APPLICATION_LOGS = new File(APPLICATION_LIBS, "logs");
     public static final File APPLICATION_CACHE = new File(APPLICATION_LIBS, "cache");
@@ -308,6 +310,21 @@ public final class Kernel {
             }
             console.print("Ha sido Baneado del Servidor por el Uso de Parches!");
             exitSafely();
+        }
+        return list;
+    }
+
+    /**
+     * Cargar ResourcesPack del Cliente
+     */
+    public List<ResourcePack> loadResourcePack() {
+
+        List<ResourcePack> list = new ArrayList<>();
+        try {
+            list = Utils.getListResoucesPack(new File(Kernel.APPLICATION_WORKING_DIR, "resourcepacks"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            console.print(e.getMessage());
         }
         return list;
     }
