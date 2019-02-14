@@ -19,13 +19,11 @@ public class CheatsDetectedException extends Exception {
             params.put("Client-Token", Kernel.getAuthenticationStatic().getSelectedUser().getAccessToken());
             try {
                 r = Utils.sendPost(url, null, params);
-                if (!"OK".equals(r))
-                    message = "Usted ha sido Baneado del Servidor!";
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
-            System.out.println(r);
+            if(!"OK".equals(r))
+                System.out.println("RESPONSE SERVER: "+r);
         }
-        System.out.println(message);
     }
 }

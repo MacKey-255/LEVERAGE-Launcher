@@ -67,7 +67,7 @@ public class Settings {
                     if (settings.has("launcherHeight")) {
                         launcherHeight = settings.getDouble("launcherHeight");
                     } else {
-                        launcherHeight = 700;
+                        launcherHeight = 750;
                     }
                 } catch (JSONException ex) {
                     console.print("Ha fallado la carga de las Configuraciones.");
@@ -87,7 +87,7 @@ public class Settings {
     private void setDefaults() {
         setLocale("es-es");
         launcherWidth = 850;
-        launcherHeight = 700;
+        launcherHeight = 750;
         enableReopen = true;
     }
 

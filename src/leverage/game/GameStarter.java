@@ -8,7 +8,7 @@ import java.net.URL;
 public class GameStarter {
 
     public static void main(String[] args) {
-        System.out.println("GameStarter lanzandose con " + args.length + " argumetnos.");
+        System.out.println("GameStarter lanzandose con " + args.length + " argumentos.");
         URL.setURLStreamHandlerFactory(new URLHandler());
         System.out.println("Cargando URL Handler.");
         if (args.length == 0) {

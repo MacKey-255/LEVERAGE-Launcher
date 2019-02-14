@@ -9,7 +9,6 @@ import javafx.css.Styleable;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -34,6 +33,7 @@ import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
+import leverage.client.Promotion;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -52,12 +52,9 @@ import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -229,6 +226,20 @@ public class MainFX {
                 MainFX.this.checkPopups();
             }
         });
+
+        // Cargar Sistema Publicitario
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Promotion promotion = new Promotion(kernel, 10);
+                promotion.run();
+            }
+        });
+        t.start();
+    }
+
+    public void showPromotion() {
+        kernel.showAlert(Alert.AlertType.INFORMATION, "Publicidad", "Done Tarjeta Nauta");
     }
 
     /**
@@ -529,6 +540,7 @@ public class MainFX {
             return ;
         }
 
+        // Descargar Config Skins
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -710,7 +722,7 @@ public class MainFX {
                 if (isDemo)
                     continue;
                 JSONObject content = entry.getJSONObject("content").getJSONObject("en-us");
-                Slide s = new Slide(content.getString("action"), Urls.media + content.getString("image"), content.getString("title"), content.getString("text"));
+                Slide s = new Slide(content.getString("action"), Urls.leverage + content.getString("image"), content.getString("title"), content.getString("text"));
                 slides.add(s);
             }
         } catch (Exception ex) {
@@ -742,12 +754,10 @@ public class MainFX {
         if (!response.isEmpty()) {
             console.print("Cargando listado de Usuarios Conectados al Servidor.");
             JSONObject object = new JSONObject(response);
-            if(!object.getBoolean("error")) {
-                JSONObject obj = object.getJSONObject("request");
-                String text = obj.getInt("numplayers") + " / " + obj.getInt("maxplayers") + " " + obj.getString("online");
-                // Mostrar Onlines
-                playersServer.setText(text);
-            }
+            String status = (object.getBoolean("online"))?"ONLINE":"OFFLINE";
+            String text = object.getInt("numplayers") + " / " + object.getInt("maxplayers") + " " + status;
+            // Mostrar Onlines
+            playersServer.setText(text);
 
         } else {
             console.print("No hay Usuarios conectados.");
@@ -1277,7 +1287,6 @@ public class MainFX {
         kernel.saveProfiles();
         showLoginPrompt(true);
         updateExistingUsers();
-        loadAntiCheatSystem();
         refreshData();
     }
 
@@ -1861,6 +1870,14 @@ public class MainFX {
                 if (authLeverage.isSelected()) {
                     user = "leverage://" + username.getText();
                     auth.authenticate(user, password.getText());
+                    // Compraobacion de Parches
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAntiCheatSystem();
+                        }
+                    });
+                    t.start();
                 } else {
                     user = username.getText();
                     auth.authenticate(user, null);
@@ -1869,7 +1886,6 @@ public class MainFX {
                 username.setText("");
                 password.setText("");
                 showLoginPrompt(false);
-                loadAntiCheatSystem();
                 fetchAds();
 
                 texturesLoaded = false;
@@ -1897,7 +1913,14 @@ public class MainFX {
                 texturesLoaded = false;
                 kernel.saveProfiles();
                 console.print("Session refrescada.");
-                loadAntiCheatSystem();
+                // Compraobacion de Parches
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadAntiCheatSystem();
+                    }
+                });
+                t.start();
                 refreshData();
             } else {
                 console.print("No hay un usuario seleccionado.");
@@ -1937,7 +1960,14 @@ public class MainFX {
             kernel.saveProfiles();
             texturesLoaded = false;
             showLoginPrompt(false);
-            loadAntiCheatSystem();
+            // Compraobacion de Parches
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    loadAntiCheatSystem();
+                }
+            });
+            t.start();
             refreshData();
             fetchAds();
         } catch (AuthenticationException ex) {
@@ -1963,7 +1993,6 @@ public class MainFX {
             kernel.saveProfiles();
             kernel.closeWeb();
             updateExistingUsers();
-            loadAntiCheatSystem();
         }
         onlineList();
     }

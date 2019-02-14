@@ -16,6 +16,7 @@ import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
+import leverage.client.Promotion;
 import leverage.client.components.Mod;
 import leverage.client.components.ResourcePack;
 import leverage.exceptions.CheatsDetectedException;
@@ -69,7 +70,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.1.6";
+    public static final String KERNEL_BUILD_NAME = "1.1.7";
     public static final String KERNEL_CREATOR_NAME = "Creado por MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
@@ -226,6 +227,9 @@ public final class Kernel {
             exitSafely();
         }
 
+        //Cargar Autenticacion
+        authentications = authentication;
+
         //Cargando Pantalla Principal de JavaFX
         try {
             loader.setLocation(getClass().getResource("/leverage/gui/fxml/Main.fxml"));
@@ -252,8 +256,6 @@ public final class Kernel {
             e.printStackTrace(console.getWriter());
             exitSafely();
         }
-
-        authentications = authentication;
     }
 
     /**
@@ -296,18 +298,6 @@ public final class Kernel {
             e.printStackTrace();
             console.print(e.getMessage());
         } catch (CheatsDetectedException e) {
-            String url = Urls.cheatsWarning, r = null;
-            Map<String, String> params = new HashMap<>();
-            params.put("Access-Token", getAuthentication().getSelectedUser().getAccessToken());
-            params.put("Client-Token", getAuthentication().getSelectedUser().getAccessToken());
-            try {
-                r = Utils.sendPost(url, null, params);
-                console.print(r);
-                if (!"OK".equals(r))
-                    console.print("Ban User Exito!");
-            } catch (IOException ex) {
-                console.print(r);
-            }
             console.print("Ha sido Baneado del Servidor por el Uso de Parches!");
             exitSafely();
         }
@@ -440,7 +430,6 @@ public final class Kernel {
 
         if (response.isEmpty()) {
             console.print("No se pudo cerrar session via Web, el servidor no ha devuelto ningun dato!");
-            return;
         }
     }
 

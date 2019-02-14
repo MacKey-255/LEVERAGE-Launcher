@@ -387,10 +387,18 @@ public final class Utils {
 
         //Abrir Archivo y Leerlo
         JarInputStream input = new JarInputStream(file.toURI().toURL().openStream());
-        int v; String name, mod_name = file.getName().replace(".jar", "");
+        int v; String name, mod_name = file.getName().replace(".jar", ""); String[] text;
 
         //Buscar Informacion: mcmod.info
         for(JarEntry jar = input.getNextJarEntry(); jar != null; jar = input.getNextJarEntry()) {
+            //Comprobar Intensiva
+            text = jar.getName().split("/");
+            for(int i=0; i<text.length; i++){
+                //Detectar Cheats Especificos ( XRay )
+                if(text[i].equals("minecraftxray") || text[i].equals("xray") || text[i].equals("forgewurst") || text[i].equals("wurstclient"))
+                    throw new CheatsDetectedException(jar.getName(), true);
+            }
+
             if(!jar.isDirectory()) {
                 name = jar.getName();
                 if (name.equals("mcmod.info")) {
