@@ -54,6 +54,8 @@ public final class Version {
                     Object element = game.get(i);
                     if (element instanceof String) {
                         b.append(element).append(" ");
+                    } else {
+                        b.append(game.getJSONObject(i).getJSONArray("values").get(0)).append(" ");
                     }
                 }
                 minecraftArguments = b.toString().trim();

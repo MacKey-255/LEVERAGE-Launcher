@@ -101,6 +101,7 @@ public class GameLauncher {
         if (!p.hasJavaArgs()) {
             if (Utils.getOSArch() == OSArch.OLD) {
                 gameArgs.add("-Xmx1G");
+                gameArgs.add("-Xss1M");
             } else {
                 gameArgs.add("-Xmx2G");
             }
@@ -236,6 +237,9 @@ public class GameLauncher {
                         break;
                 }
             }
+            // Comprobar demo y removerlo
+            if(versionArgs[i].equals("--demo"))
+                versionArgs[i] = "";
         }
         Collections.addAll(gameArgs, versionArgs);
         if (p.hasResolution()) {
@@ -243,10 +247,17 @@ public class GameLauncher {
             gameArgs.add(String.valueOf(p.getResolutionWidth()));
             gameArgs.add("--height");
             gameArgs.add(String.valueOf(p.getResolutionHeight()));
+        } else {
+            // Crear Tamaño si no existe (854x480)
+            gameArgs.add("--width");
+            gameArgs.add(String.valueOf(854));
+            gameArgs.add("--height");
+            gameArgs.add(String.valueOf(480));
         }
-        for (String arg : gameArgs) {
+        // Mostrar todos los Argumentos
+        /*for (String arg : gameArgs) {
             console.print(arg);
-        }
+        }*/
         ProcessBuilder pb = new ProcessBuilder(gameArgs);
         pb.directory(workingDir);
         try {

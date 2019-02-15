@@ -69,6 +69,10 @@ public class Settings {
                     } else {
                         launcherHeight = 750;
                     }
+                    if (launcherWidth < 450 || launcherHeight < 400) {
+                        launcherWidth = 850;
+                        launcherHeight = 750;
+                    }
                 } catch (JSONException ex) {
                     console.print("Ha fallado la carga de las Configuraciones.");
                     ex.printStackTrace(console.getWriter());

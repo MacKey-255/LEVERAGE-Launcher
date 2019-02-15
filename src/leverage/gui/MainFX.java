@@ -226,16 +226,6 @@ public class MainFX {
                 MainFX.this.checkPopups();
             }
         });
-
-        // Cargar Sistema Publicitario
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Promotion promotion = new Promotion(kernel, 10);
-                promotion.run();
-            }
-        });
-        t.start();
     }
 
     public void showPromotion() {
@@ -1494,6 +1484,7 @@ public class MainFX {
                 StringBuilder jA = new StringBuilder(15);
                 if (Utils.getOSArch() == OSArch.OLD) {
                     jA.append("-Xmx1G");
+                    jA.append("-Xss1M");
                 } else {
                     jA.append("-Xmx2G");
                 }
@@ -2057,6 +2048,7 @@ public class MainFX {
             toggleLabel(source, settings.getEnableSnapshots());
             validateSelectedProfile();
             loadProfileList();
+            profileListPopupLoaded = false;
             versionListLoaded = false;
         } else if (source == enableReopen) {
             settings.setEnableReopen(!settings.getEnableReopen());
@@ -2072,6 +2064,7 @@ public class MainFX {
             toggleLabel(source, settings.getEnableHistorical());
             validateSelectedProfile();
             loadProfileList();
+            profileListPopupLoaded = false;
             versionListLoaded = false;
         } else if (source == advancedSettings) {
             if (!settings.getEnableAdvanced()) {
