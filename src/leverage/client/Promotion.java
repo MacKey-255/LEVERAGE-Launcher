@@ -2,8 +2,6 @@ package leverage.client;
 
 import javafx.scene.control.Alert;
 import leverage.Kernel;
-
-import java.io.File;
 import java.util.TimerTask;
 
 public class Promotion extends TimerTask {

@@ -7,6 +7,7 @@ import leverage.client.components.Mod;
 import leverage.client.components.ResourcePack;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.CheatsDetectedException;
+import leverage.exceptions.HashGenerationException;
 import leverage.rcon.Rcon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -250,7 +251,7 @@ public final class Utils {
                 o.put("id", mods.get(i).getId());
                 o.put("nameJar", mods.get(i).getNameJar());
                 o.put("version", mods.get(i).getVersion());
-                o.put("diskSpace", mods.get(i).getdiskSpace());
+                o.put("fileHash", mods.get(i).getFileHash());
                 o.put("vmc", mods.get(i).gerVMC());
 
                 mod.put(mods.get(i).getName(), o);
@@ -391,19 +392,23 @@ public final class Utils {
 
         //Buscar Informacion: mcmod.info
         for(JarEntry jar = input.getNextJarEntry(); jar != null; jar = input.getNextJarEntry()) {
-            //Comprobar Intensiva
+            // Comprobar Intensiva de parches (Comprobar carpetas internas y archivos)
             text = jar.getName().split("/");
             for(int i=0; i<text.length; i++){
                 //Detectar Cheats Especificos ( XRay )
-                if(text[i].equals("minecraftxray") || text[i].equals("xray") || text[i].equals("forgewurst") || text[i].equals("wurstclient"))
+                try {
+                    Utils.searchCheat(text[i]);
+                } catch (CheatsDetectedException ex) {
                     throw new CheatsDetectedException(jar.getName(), true);
+                }
             }
 
+            // Compraobacion Intensiva del mvmod.info (Comprobar archivos)
             if(!jar.isDirectory()) {
-                name = jar.getName();
+                name = jar.getName().split("/")[jar.getName().split("/").length-1];     // Ultimo elemento (Nombre del Archivo example: minecraft.class)
                 if (name.equals("mcmod.info")) {
                     //Copiamos el Fichero en el Cache
-                    File cache = new File(Kernel.APPLICATION_CACHE, "mods"); //new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
+                    File cache = new File(Kernel.APPLICATION_CACHE, "mods");
                     if(!cache.exists())
                         cache.mkdirs();
 
@@ -453,11 +458,44 @@ public final class Utils {
                 }
             } else {
                 //Detectar Cheats Especificos ( XRay )
-                if(jar.getName().equals("minecraftxray") || jar.getName().equals("xray"))
-                    throw new CheatsDetectedException(jar.getName(), true);
+                Utils.searchCheat(jar.getName());
             }
         }
         return new Mod(id, nam, url, nameJar, version, vmc);
+    }
+
+    /**
+    * Get Data in mcmod.info
+    * @param f Fichero mcmod.info
+    * @return Un Array con datos del Mod [id,version,vmc]
+    * */
+    public static String[] getInfoMcMod(File f) {
+        /*
+        * Luego de encontrar el mcmod.info, se hacen diferentes tipos de lectura
+        * Se realizan estas lecturas ya que todos los mcmod.info no son iguales
+        * Cada JSON es diferente, por lo que existen diferentes attr y formas de
+        * acceder a estos.
+        * */
+        String[] response = new String[5];
+
+
+
+        return response;
+    }
+
+    /**
+    * Get Data in mcmod.info
+    * @param data String Dato a comparar, sea URL o archivo
+    * */
+    public static void searchCheat(String data) throws CheatsDetectedException {
+        /*
+        * Separo el sistema de busqueda de Parches para que sea mas comodo,
+        * ya que a medida que pase el tiempo van apareciendo nuevos y mucho mas
+        * avanzados sistemas de Parches, los cuales desconocemos.
+        * */
+        if(data.equals("minecraftxray") || data.equals("xray") ||
+                data.equals("forgewurst") || data.equals("wurstclient"))
+            throw new CheatsDetectedException(data, true);
     }
 
     /**

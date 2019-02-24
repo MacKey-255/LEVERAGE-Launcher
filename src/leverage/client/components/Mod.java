@@ -1,5 +1,7 @@
 package leverage.client.components;
 
+import leverage.util.Hashed;
+
 import java.io.File;
 
 public class Mod {
@@ -10,7 +12,7 @@ public class Mod {
     private String nameJar;
     private String version;
     private String vmc;
-    private long diskSpace;
+    private String fileHash;
     private final File relativeJar;
 
     public Mod(String id, String name, String url, String nameJar, String version, String vmc) {
@@ -21,17 +23,7 @@ public class Mod {
         this.version = version;
         this.vmc = vmc;
         relativeJar = new File(url);
-        this.diskSpace = relativeJar.length();
-    }
-
-    public Mod(String id, String name, String url, String version, long diskSpace, String vmc) {
-        this.name = name;
-        this.url = url;
-        this.nameJar = null;
-        this.version = version;
-        this.vmc = vmc;
-        this.diskSpace = diskSpace;
-        relativeJar = null;
+        this.fileHash = Hashed.generateSHA1(relativeJar);
     }
 
     public String getId() {
@@ -50,8 +42,8 @@ public class Mod {
         return version;
     }
 
-    public long getdiskSpace() {
-        return diskSpace;
+    public String getFileHash() {
+        return fileHash;
     }
 
     public String getNameJar() {
