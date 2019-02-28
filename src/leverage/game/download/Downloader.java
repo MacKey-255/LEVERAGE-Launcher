@@ -2,6 +2,7 @@ package leverage.game.download;
 
 import leverage.Console;
 import leverage.Kernel;
+import leverage.client.AntiCheat;
 import leverage.exceptions.DownloaderException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
@@ -58,18 +59,7 @@ public class Downloader {
         //Fetch version used by profile
         Profile p = kernel.getProfiles().getSelectedProfile();
         Versions versions = kernel.getVersions();
-        VersionMeta verID;
-        switch (p.getType()) {
-            case CUSTOM:
-                verID = p.hasVersion() ? p.getVersionID() : versions.getLatestRelease();
-                break;
-            case RELEASE:
-                verID = versions.getLatestRelease();
-                break;
-            default:
-                verID = versions.getLatestSnapshot();
-                break;
-        }
+        VersionMeta verID = Utils.getVersionMeta(p, versions);
         if (verID == null) {
             downloading = false;
             throw new DownloaderException("Version ID es nula.");

@@ -11,6 +11,7 @@ import leverage.OSArch;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
+import leverage.client.AntiCheat;
 import leverage.exceptions.GameLauncherException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
@@ -53,18 +54,7 @@ public class GameLauncher {
             throw new GameLauncherException("El juego ya estaba ejecutado!");
         }
         Versions versions = kernel.getVersions();
-        VersionMeta verID;
-        switch (p.getType()) {
-            case CUSTOM:
-                verID = p.hasVersion() ? p.getVersionID() : versions.getLatestRelease();
-                break;
-            case RELEASE:
-                verID = versions.getLatestRelease();
-                break;
-            default:
-                verID = versions.getLatestSnapshot();
-                break;
-        }
+        VersionMeta verID = Utils.getVersionMeta(p, versions);
         if (verID == null) {
             throw new GameLauncherException("ID Version es nulo.");
         }

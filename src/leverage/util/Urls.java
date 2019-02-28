@@ -9,8 +9,8 @@ public class Urls {
     public static final String closeath = leverage + "/api/logout/";
     public static final String refreshPath = leverage + "/api/refresh/";
     public static final String newsUrl = leverage + "/api/news/";
-    public static final String register = leverage + "/user/register";
-    public static final String forgotPassword = "ts3server://10.30.1.31/"; //leverage + "/user/login";
+    public static final String register = leverage + "/user/register/";
+    public static final String forgotPassword = "/user/login/";
     public static final String skinsPath = leverage + "/media/skins/";
     public static final String CHANGESKIN_URL = leverage + "/api/skins/";
     public static final String custonSkins_URL = leverage + "/media/CustomSkinLoader.json";
@@ -22,9 +22,9 @@ public class Urls {
     public static final String update = leverage + "/api/client/update/";
     public static final String crash = leverage + "/api/crash/";
 
-    public static final String versionList = leverage + "/check/versions";
-    public static final String modsList = leverage + "/check/mods";
-    public static final String resourceList = leverage + "/check/resource";
+    public static final String versionList = leverage + "/api/check/version/";
+    public static final String modsList = leverage + "/api/check/mods/";
+    public static final String resourceList = leverage + "/api/check/resources/";
 
     // Whitelist Via Web
     public static final String whitelist = leverage + "/api/white/";

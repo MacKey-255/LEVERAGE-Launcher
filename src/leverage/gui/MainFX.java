@@ -33,7 +33,6 @@ import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
-import leverage.client.Promotion;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;

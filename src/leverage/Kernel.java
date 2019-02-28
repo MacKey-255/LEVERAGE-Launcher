@@ -16,9 +16,7 @@ import javafx.stage.WindowEvent;
 import leverage.auth.Authentication;
 import leverage.auth.user.UserType;
 import leverage.client.AntiCheat;
-import leverage.client.Promotion;
-import leverage.client.components.Mod;
-import leverage.client.components.ResourcePack;
+import leverage.client.components.MFile;
 import leverage.exceptions.CheatsDetectedException;
 import leverage.exceptions.DownloaderException;
 import leverage.exceptions.GameLauncherException;
@@ -290,10 +288,10 @@ public final class Kernel {
     /**
      * Cargar Mods del Cliente
      */
-    public List<Mod> loadMods() {
-        List<Mod> list = new ArrayList<>();
+    public List<MFile> loadMods() {
+        List<MFile> list = new ArrayList<>();
         try {
-            list = Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"));
+            Utils.getListMods(new File(APPLICATION_WORKING_DIR, "mods"), list);
         } catch (IOException e) {
             e.printStackTrace();
             console.print(e.getMessage());
@@ -307,16 +305,8 @@ public final class Kernel {
     /**
      * Cargar ResourcesPack del Cliente
      */
-    public List<ResourcePack> loadResourcePack() {
-
-        List<ResourcePack> list = new ArrayList<>();
-        try {
-            list = Utils.getListResoucesPack(new File(Kernel.APPLICATION_WORKING_DIR, "resourcepacks"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            console.print(e.getMessage());
-        }
-        return list;
+    public List<MFile> loadResourcePack() {
+        return Utils.getListResoucesPack(new File(Kernel.APPLICATION_WORKING_DIR, "resourcepacks"));
     }
 
     /**

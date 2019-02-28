@@ -3,11 +3,12 @@ package leverage.util;
 import leverage.Kernel;
 import leverage.OS;
 import leverage.OSArch;
-import leverage.client.components.Mod;
-import leverage.client.components.ResourcePack;
+import leverage.client.components.MFile;
 import leverage.exceptions.AuthenticationException;
 import leverage.exceptions.CheatsDetectedException;
-import leverage.exceptions.HashGenerationException;
+import leverage.game.profile.Profile;
+import leverage.game.version.VersionMeta;
+import leverage.game.version.Versions;
 import leverage.rcon.Rcon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -241,23 +242,9 @@ public final class Utils {
      * @param mods mods Mods List
      * @return A List Mods
      */
-    public static JSONArray getModsJSON(List<Mod> mods) {
+    public static JSONArray getModsJSON(List<MFile> mods) {
         JSONArray list = new JSONArray();
-            JSONObject mod, o;
-            for(int i=0; i<mods.size(); i++) {
-                mod = new JSONObject();
-                o = new JSONObject();
-
-                o.put("id", mods.get(i).getId());
-                o.put("nameJar", mods.get(i).getNameJar());
-                o.put("version", mods.get(i).getVersion());
-                o.put("fileHash", mods.get(i).getFileHash());
-                o.put("vmc", mods.get(i).gerVMC());
-
-                mod.put(mods.get(i).getName(), o);
-
-                list.put(i, mod);
-            }
+        getJSONData(mods, list);
         return list;
     }
 
@@ -266,22 +253,20 @@ public final class Utils {
      * @param pack ResourcesPack List
      * @return A List ResourcesPack
      */
-    public static JSONArray getResourceJSON(List<ResourcePack> pack) {
+    public static JSONArray getResourceJSON(List<MFile> pack) {
         JSONArray list = new JSONArray();
-            JSONObject resource, o;
-            for(int i=0; i<pack.size(); i++) {
-                resource = new JSONObject();
-                o = new JSONObject();
-
-                o.put("name", pack.get(i).getName());
-                o.put("description", pack.get(i).getDescription());
-                o.put("diskSpace", pack.get(i).getDiskSpace());
-
-                resource.put(pack.get(i).getName(), o);
-
-                list.put(i, resource);
-            }
+        getJSONData(pack, list);
         return list;
+    }
+
+    private static void getJSONData(List<MFile> pack, JSONArray list) {
+        JSONObject obj;
+        for(int i = 0; i<pack.size(); i++) {
+            obj = new JSONObject();
+            obj.put("id", pack.get(i).getId());
+            obj.put("filehash", pack.get(i).getFileHash());
+            list.put(i, obj);
+        }
     }
 
     /**
@@ -289,14 +274,14 @@ public final class Utils {
      * @param m The ResourcePack Dir
      * @return A List ResourcePack
      */
-    public static List<ResourcePack> getListResoucesPack(File m) throws IOException {
-        List<ResourcePack> list = new ArrayList<>();
+    public static List<MFile> getListResoucesPack(File m) {
+        List<MFile> list = new ArrayList<>();
         File[] h = m.listFiles();
-        ResourcePack resourcePack = null;
+        MFile resourcePack;
         if(h != null) {
             for (int i = 0; i < h.length; i++) {
-                resourcePack = getResourcePack(h[i]);
-                if (resourcePack.getName() != null)
+                resourcePack = new MFile(h[i]);
+                if (resourcePack.getId() != null)
                     list.add(resourcePack);
             }
         }
@@ -304,76 +289,21 @@ public final class Utils {
     }
 
     /**
-     * Reader a ResourcePack File
-     * @param file The ResourcePack File
-     * @return A ResourcePack
-     */
-
-    public static ResourcePack getResourcePack(File file) throws IOException {
-        String description = "?", tmp = null; int v;
-        //Abrir Archivo y Leerlo
-        ZipInputStream input = new ZipInputStream(file.toURI().toURL().openStream());
-
-        //Buscar Informacion: pack.mcmeta
-        for(ZipEntry zip = input.getNextEntry(); zip != null; zip = input.getNextEntry()) {
-            if(!zip.isDirectory()) {
-                tmp = zip.getName();
-                if (tmp.equals("pack.mcmeta")) {
-                    //Copiamos el Fichero en el Cache
-                    File cache = new File(Kernel.APPLICATION_CACHE, "resourcespack"); //new File(Kernel.APPLICATION_CACHE.getPath()+"/mods/");
-                    if(!cache.exists())
-                        cache.mkdirs();
-
-                    FileOutputStream ou = new FileOutputStream(cache.getPath() + File.separator + file.getName().replace(".zip", "") + ".json");
-                    BufferedOutputStream buffout = new BufferedOutputStream(ou);
-                    BufferedInputStream buffin = new BufferedInputStream(input);
-                    while ((v = buffin.read()) != -1) {
-                        buffout.write(v);
-                    }
-                    buffout.flush();
-
-                    //Leer Fichero del Cache
-                    try {
-                        File config = new File(cache.getPath() + File.separator + file.getName().replace(".zip", "") + ".json");
-                        String data = new String(Files.readAllBytes(config.toPath()), StandardCharsets.UTF_8);
-
-                        JSONObject obj = new JSONObject(data);
-                        JSONObject object = obj.getJSONObject("pack");
-
-                        description = object.getString("description");
-                    } catch (JSONException ex) {
-                        System.out.println("ResourePack PreCargado: "+ file.getName().replace(".zip", "") );
-                    }
-                    break ;
-                }
-            }
-        }
-        return new ResourcePack(file, description);
-    }
-
-    /**
      * Reader a List Mods
      * @param m The Mods Dir
-     * @return A List Mods
+     * @param list The Mods List
      */
-    public static List<Mod> getListMods(File m) throws IOException, CheatsDetectedException {
-        List<Mod> list = new ArrayList<>();
+    public static void getListMods(File m, List<MFile> list) throws IOException, CheatsDetectedException {
         if (m.isDirectory()) {
             File[] h = m.listFiles();
             for (int i=0; i < h.length; i++) {
-                List<Mod> tmp = getListMods(h[i]);
-                for(int j=0; j<tmp.size(); j++) {
-                    Mod mod = tmp.get(j);
-                    if(mod.getName() != null)
-                        list.add(tmp.get(j));
-                }
+                getListMods(h[i], list);
             }
         } else {
-            Mod mod = getMod(m);
-            if(mod.getName() != null)
+            MFile mod = getMod(m);
+            if(mod.getId() != null)
                 list.add(mod);
         }
-        return list;
     }
 
     /**
@@ -381,12 +311,11 @@ public final class Utils {
      * @param file The Mod File
      * @return A Mod
      */
-    public static Mod getMod(File file) throws IOException, CheatsDetectedException {
-        String id = null, nam = null, version = null, vmc = null;
+    public static MFile getMod(File file) throws IOException, CheatsDetectedException {
         String url = file.getAbsolutePath();
         String nameJar = file.getName();
 
-        //Abrir Archivo y Leerlo
+        //Abrir Archivo y Leerlo (Comprobar si es un Parche)
         JarInputStream input = new JarInputStream(file.toURI().toURL().openStream());
         int v; String name, mod_name = file.getName().replace(".jar", ""); String[] text;
 
@@ -419,7 +348,6 @@ public final class Utils {
                         buffout.write(v);
                     }
                     buffout.flush();
-
                     //Leer Fichero del Cache
                     try {
                         File config = new File(cache.getPath() + File.separator + mod_name + ".json");
@@ -427,67 +355,30 @@ public final class Utils {
 
                         JSONArray array = new JSONArray(data);
                         JSONObject object = array.getJSONObject(0);
-
-                        id = object.getString("modid");
-                        nam = object.getString("name");
-
                         //Detectar Cheats Especificos (Wurst)
-                        if(id.equals("forgewurst") || id.equals("xray"))
+                        try {
+                            Utils.searchCheat(object.getString("modid"));
+                        } catch (CheatsDetectedException ex) {
                             throw new CheatsDetectedException(jar.getName(), true);
-
-                        try {
-                            version = object.getString("version");
-                        } catch (JSONException ex) {
-                            version = "?";
-                        }
-                        try {
-                            vmc = object.getString("mcversion");
-                            if(vmc.equals("${mcversion}") || vmc.equals("${version}"))
-                                vmc = "?";
-                        } catch (JSONException ex) {
-                            vmc = "?";
                         }
                     } catch (JSONException ex) {
-                        System.out.println("Mods PreCargado: "+ mod_name );
+                        //System.out.println("Mods PreCargado: "+ mod_name);
                     }
-
                     break ;
-                } else {
-                    // Valor por defecto ( Si no encuentra el mcmod.info entonces se asigna esto)
-                    nam = mod_name; id = mod_name; nameJar = mod_name; version = "?"; vmc = "?";
                 }
             } else {
                 //Detectar Cheats Especificos ( XRay )
                 Utils.searchCheat(jar.getName());
             }
         }
-        return new Mod(id, nam, url, nameJar, version, vmc);
-    }
-
-    /**
-    * Get Data in mcmod.info
-    * @param f Fichero mcmod.info
-    * @return Un Array con datos del Mod [id,version,vmc]
-    * */
-    public static String[] getInfoMcMod(File f) {
-        /*
-        * Luego de encontrar el mcmod.info, se hacen diferentes tipos de lectura
-        * Se realizan estas lecturas ya que todos los mcmod.info no son iguales
-        * Cada JSON es diferente, por lo que existen diferentes attr y formas de
-        * acceder a estos.
-        * */
-        String[] response = new String[5];
-
-
-
-        return response;
+        return new MFile(file);
     }
 
     /**
     * Get Data in mcmod.info
     * @param data String Dato a comparar, sea URL o archivo
     * */
-    public static void searchCheat(String data) throws CheatsDetectedException {
+    private static void searchCheat(String data) throws CheatsDetectedException {
         /*
         * Separo el sistema de busqueda de Parches para que sea mas comodo,
         * ya que a medida que pase el tiempo van apareciendo nuevos y mucho mas
@@ -496,6 +387,22 @@ public final class Utils {
         if(data.equals("minecraftxray") || data.equals("xray") ||
                 data.equals("forgewurst") || data.equals("wurstclient"))
             throw new CheatsDetectedException(data, true);
+    }
+
+    public static VersionMeta getVersionMeta(Profile p, Versions versions) {
+        VersionMeta verID;
+        switch (p.getType()) {
+            case CUSTOM:
+                verID = p.hasVersion() ? p.getVersionID() : versions.getLatestRelease();
+                break;
+            case RELEASE:
+                verID = versions.getLatestRelease();
+                break;
+            default:
+                verID = versions.getLatestSnapshot();
+                break;
+        }
+        return verID;
     }
 
     /**

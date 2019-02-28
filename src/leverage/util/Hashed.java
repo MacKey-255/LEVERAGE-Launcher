@@ -7,6 +7,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Hashed {
 
@@ -39,30 +42,33 @@ public class Hashed {
 
     public static String generateMD5(File file) {
         String response = null;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd -- HH:mm:ss");
         try {
             response = hashFile(file, "MD5");
         } catch (HashGenerationException e) {
-            e.printStackTrace();
+            System.out.println('[' + dateFormat.format(new Date()) + "] Archivo: \"" + file.getName() + "\" en \"" + file.getPath() + "\" es un Directorio. Eliminelo por favor.");
         }
         return response;
     }
 
     public static String generateSHA1(File file) {
         String response = null;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd -- HH:mm:ss");
         try {
             response = hashFile(file, "SHA-1");
         } catch (HashGenerationException e) {
-            e.printStackTrace();
+            System.out.println('[' + dateFormat.format(new Date()) + "] Archivo: \"" + file.getName() + "\" en \"" + file.getPath() + "\" es un Directorio. Eliminelo por favor.");
         }
         return response;
     }
 
     public static String generateSHA256(File file) {
         String response = null;
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd -- HH:mm:ss");
         try {
             response = hashFile(file, "SHA-256");
         } catch (HashGenerationException e) {
-            e.printStackTrace();
+            System.out.println('[' + dateFormat.format(new Date()) + "] Archivo: \"" + file.getName() + "\" en \"" + file.getPath() + "\" es un Directorio. Eliminelo por favor.");
         }
         return response;
     }

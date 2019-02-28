@@ -22,8 +22,6 @@ public class CheatsDetectedException extends Exception {
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
-            if(!"OK".equals(r))
-                System.out.println("RESPONSE SERVER: "+r);
         }
     }
 }
