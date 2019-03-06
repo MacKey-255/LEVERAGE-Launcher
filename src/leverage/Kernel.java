@@ -1,6 +1,7 @@
 package leverage;
 
 import javafx.application.HostServices;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -184,38 +185,32 @@ public final class Kernel {
         }
 
         // AutoUpdate
-        boolean update = false;
-        String url = null;
-
         try {
             String response = Utils.readURL(Urls.update);
             if (response.isEmpty()) {
                 throw new DownloaderException("No se ha podido Descargar la Actualizacion");
             }
             JSONObject entry = new JSONObject(response);
-            url = entry.getString("url");
+            String url = entry.getString("url");
 
             char oldVersion[] = entry.getString("version").toCharArray();
             char version[] = KERNEL_BUILD_NAME.toCharArray();
             for(int i=0; i<oldVersion.length; i++) {
                 if(version[i] != oldVersion[i] && version[i] != '.' && oldVersion[i] != '.') {
-                    if(Integer.parseInt(String.valueOf(version[i])) < Integer.parseInt(String.valueOf(oldVersion[i])))
-                        update = true;
+                    if(Integer.parseInt(String.valueOf(version[i])) < Integer.parseInt(String.valueOf(oldVersion[i]))) {
+                        console.print("Actualizando Minecraft");
+                        try {
+                            Utils.downloadFile(url, new File(APPLICATION_WORKING_DIR, "LEVERAGE-Launcher.jar"));
+                        } catch (IOException e) {
+                            console.print(e.getMessage());
+                        }
+                        showAlert(Alert.AlertType.INFORMATION, Language.get(4), Language.get(132));
+                        Utils.restartApplication();
+                    }
                 }
             }
         } catch (DownloaderException ex){
             console.print(ex.getMessage());
-        }
-
-        if(update) {
-            console.print("Actualizando Minecraft");
-            try {
-                Utils.downloadFile(url, new File(APPLICATION_WORKING_DIR, "LEVERAGE-Launcher.jar"));
-            } catch (IOException e) {
-                console.print(e.getMessage());
-            }
-            showAlert(Alert.AlertType.INFORMATION, Language.get(4), Language.get(132));
-            Utils.restartApplication();
         }
 
         // Error Falta Instalar el Juego
@@ -262,7 +257,7 @@ public final class Kernel {
      * @param file The JAR file to be loaded
      * @return A boolean indicating if the file has been loaded
      */
-    private static boolean addToSystemClassLoader(File file) {
+    public static boolean addToSystemClassLoader(File file) {
         if (ClassLoader.getSystemClassLoader() instanceof URLClassLoader) {
             URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
             try {
@@ -560,5 +555,29 @@ public final class Kernel {
             return 0;
         }
         return -1;
+    }
+
+    public void promotion(int time) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        console.print("Mostrando Promocion");
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Update UI here.
+                                showAlert(Alert.AlertType.INFORMATION, "Publicidad", "Done Tarjeta Nauta");
+                            }
+                        });
+                        Thread.sleep(1000*time);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        t.start();
     }
 }

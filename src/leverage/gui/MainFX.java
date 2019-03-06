@@ -1911,6 +1911,7 @@ public class MainFX {
                     }
                 });
                 t.start();
+                kernel.promotion(10);
                 refreshData();
             } else {
                 console.print("No hay un usuario seleccionado.");
