@@ -218,8 +218,8 @@ public final class Kernel {
             Utils.restartApplication();
         }
 
+        // Error Falta Instalar el Juego
         if (!APPLICATION_WORKING_DIR.isDirectory() || !(new File(APPLICATION_WORKING_DIR, "versions")).exists() || !(new File(APPLICATION_WORKING_DIR, "assets")).exists()) {
-            // Error Falta Instalar el Juego
             showAlert(Alert.AlertType.ERROR, Language.get(131), Language.get(130));
             getHostServices().showDocument(Urls.leverage);
             exitSafely();

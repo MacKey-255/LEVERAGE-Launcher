@@ -4,17 +4,17 @@ package leverage.util;
 
 public class Urls {
     public static final String leverage = "http://127.0.0.1:8000";        // IP Fija de la Web de LEVERAGE
-    public static final String media = leverage + "/media/";
+    public static final String media = leverage + "/media";
     public static final String authPath = leverage + "/api/login/";
     public static final String closeath = leverage + "/api/logout/";
     public static final String refreshPath = leverage + "/api/refresh/";
     public static final String newsUrl = leverage + "/api/news/";
     public static final String register = leverage + "/user/register/";
     public static final String forgotPassword = "/user/login/";
-    public static final String skinsPath = leverage + "/media/skins/";
+    public static final String skinsPath = media + "/skins/";
     public static final String CHANGESKIN_URL = leverage + "/api/skins/";
-    public static final String custonSkins_URL = leverage + "/media/CustomSkinLoader.json";
-    public static final String versionManifest = leverage + "/version_manifest.json";
+    public static final String custonSkins_URL = media + "/CustomSkinLoader.json";
+    public static final String versionManifest = media + "/version_manifest.json";
     public static final String cheatsWarning = leverage + "/api/ban/";
     public static final String help = leverage + "/user/donate";
     public static final String onlineData = leverage + "/api/online/";
@@ -41,28 +41,20 @@ public class Urls {
     }
 
     public static final String skinsPathProfileId(String name) {
-        return leverage + "/media/skins/" + name + ".png";
+        return media + "/skins/" + name + ".png";
     }
 
     // DISABLE
 
     public static final String libraryPath(String library) {
-        return leverage + "/libraries/" + library;
+        return media + "/libraries/" + library;
     }
 
     public static final String versionsPath(String version) {
-        return leverage + "/versions/" + version;
-    }
-
-    public static final String modsPath(String mod) {
-        return leverage + "/mods/" + mod;
+        return media + "/versions/" + version;
     }
 
     public static final String assetsPath(String assets) {
-        return leverage + "/assets/" + assets;
-    }
-
-    public static final String resourcePackPath(String pack) {
-        return leverage + "/resources/" + pack;
+        return media + "/assets/" + assets;
     }
 }

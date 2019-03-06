@@ -1,16 +1,12 @@
 package leverage.rcon;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import leverage.exceptions.MalformedPacketException;
+
+import java.io.*;
 import java.net.SocketException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import leverage.exceptions.MalformedPacketException;
 
 public class RconPacket {
 	

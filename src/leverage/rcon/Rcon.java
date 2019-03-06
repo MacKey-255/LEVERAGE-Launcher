@@ -1,11 +1,11 @@
 package leverage.rcon;
 
+import leverage.exceptions.AuthenticationException;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Random;
-
-import leverage.exceptions.AuthenticationException;
 
 public class Rcon {
 	

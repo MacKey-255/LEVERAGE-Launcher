@@ -2,7 +2,6 @@ package leverage.game.download;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.client.AntiCheat;
 import leverage.exceptions.DownloaderException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;

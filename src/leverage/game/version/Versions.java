@@ -2,8 +2,8 @@ package leverage.game.version;
 
 import leverage.Console;
 import leverage.Kernel;
-import leverage.util.Utils;
 import leverage.util.Urls;
+import leverage.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,17 +105,7 @@ public class Versions {
                     if (id == null || url == null) {
                         continue;
                     }
-                    if (ver.has("type")) {
-                        try {
-                            type = VersionType.valueOf(ver.getString("type").toUpperCase(Locale.ENGLISH));
-                        } catch (IllegalArgumentException ex) {
-                            type = VersionType.RELEASE;
-                            console.print("Tipo de version invalida: " + id);
-                        }
-                    } else {
-                        type = VersionType.RELEASE;
-                        console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
-                    }
+                    type = getVersionType(ver, id);
                     VersionMeta vm = new VersionMeta(id, url, type);
                     if (lr.equalsIgnoreCase(id)) {
                         latestRel = vm;
@@ -154,17 +144,7 @@ public class Versions {
                                 } else {
                                     continue;
                                 }
-                                if (ver.has("type")) {
-                                    try {
-                                        type = VersionType.valueOf(ver.getString("type").toUpperCase(Locale.ENGLISH));
-                                    } catch (IllegalArgumentException ex) {
-                                        type = VersionType.RELEASE;
-                                        console.print("Tipo de version invalida: " + id);
-                                    }
-                                } else {
-                                    type = VersionType.RELEASE;
-                                    console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
-                                }
+                                type = getVersionType(ver, id);
                                 VersionMeta vm = new VersionMeta(id, url, type);
                                 versions.add(vm);
                                 if (ver.has("releaseTime")) {
@@ -192,6 +172,22 @@ public class Versions {
             console.print("Ha fallado la busqueda de Versiones Locales.");
             ex.printStackTrace(console.getWriter());
         }
+    }
+
+    private VersionType getVersionType(JSONObject ver, String id) {
+        VersionType type;
+        if (ver.has("type")) {
+            try {
+                type = VersionType.valueOf(ver.getString("type").toUpperCase(Locale.ENGLISH));
+            } catch (IllegalArgumentException ex) {
+                type = VersionType.RELEASE;
+                console.print("Tipo de version invalida: " + id);
+            }
+        } else {
+            type = VersionType.RELEASE;
+            console.print("Version remota " + id + " no es una version. Se ha establecido de tipo RELEASE.");
+        }
+        return type;
     }
 
     /**

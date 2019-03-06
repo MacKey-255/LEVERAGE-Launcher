@@ -11,7 +11,6 @@ import leverage.OSArch;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
-import leverage.client.AntiCheat;
 import leverage.exceptions.GameLauncherException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
