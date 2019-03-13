@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import leverage.Console;
 import leverage.Kernel;
@@ -11,6 +12,7 @@ import leverage.OSArch;
 import leverage.auth.Authentication;
 import leverage.auth.user.User;
 import leverage.auth.user.UserType;
+import leverage.client.AntiCheat;
 import leverage.exceptions.GameLauncherException;
 import leverage.game.profile.Profile;
 import leverage.game.version.Version;
@@ -20,6 +22,7 @@ import leverage.game.version.asset.AssetIndex;
 import leverage.game.version.library.Library;
 import leverage.gui.MainFX;
 import leverage.gui.OutputFX;
+import leverage.gui.lang.Language;
 import leverage.util.Utils;
 import org.json.JSONObject;
 
@@ -36,6 +39,8 @@ public class GameLauncher {
     private Process process;
     private OutputFX output;
     private Stage outputGUI;
+    private static Thread checker = null;
+    private boolean checkerDetected = false;
 
     public GameLauncher(Kernel k) {
         kernel = k;
@@ -78,7 +83,7 @@ public class GameLauncher {
         if (!nativesDir.isDirectory()) {
             nativesDir.mkdirs();
         }
-        console.print("Lanzando Minecraft " + ver.getID() + " on " + workingDir.getAbsolutePath());
+        console.print("Lanzando Minecraft " + ver.getID() + " en " + workingDir.getAbsolutePath());
         console.print("Usando Directorio Nativo: " + nativesDir);
         console.print("Extrañendo Nativos.");
         List<String> gameArgs = new ArrayList<>();
@@ -178,54 +183,56 @@ public class GameLauncher {
         console.print("Estan Listos todos los Parametros del Juego");
         String[] versionArgs = ver.getMinecraftArguments().split(" ");
         for (int i = 0; i < versionArgs.length; i++) {
-            if (versionArgs[i].startsWith("$")) {
-                switch (versionArgs[i]) {
-                    case "${auth_player_name}":
-                        versionArgs[i] = versionArgs[i].replace("${auth_player_name}", u.getDisplayName());
-                        break;
-                    case "${version_name}":
-                        versionArgs[i] = versionArgs[i].replace("${version_name}", ver.getID());
-                        break;
-                    case "${game_directory}":
-                        if (p.hasGameDir()) {
-                            File gameDir = p.getGameDir();
-                            if (!gameDir.isDirectory()) {
-                                gameDir.mkdirs();
+            try {
+                if (versionArgs[i].startsWith("$")) {
+                    switch (versionArgs[i]) {
+                        case "${auth_player_name}":
+                            versionArgs[i] = versionArgs[i].replace("${auth_player_name}", u.getDisplayName());
+                            break;
+                        case "${version_name}":
+                            versionArgs[i] = versionArgs[i].replace("${version_name}", ver.getID());
+                            break;
+                        case "${game_directory}":
+                            if (p.hasGameDir()) {
+                                File gameDir = p.getGameDir();
+                                if (!gameDir.isDirectory()) {
+                                    gameDir.mkdirs();
+                                }
+                                versionArgs[i] = versionArgs[i].replace("${game_directory}", gameDir.getAbsolutePath());
+                            } else {
+                                versionArgs[i] = versionArgs[i].replace("${game_directory}", workingDir.getAbsolutePath());
                             }
-                            versionArgs[i] = versionArgs[i].replace("${game_directory}", gameDir.getAbsolutePath());
-                        } else {
-                            versionArgs[i] = versionArgs[i].replace("${game_directory}", workingDir.getAbsolutePath());
-                        }
-                        break;
-                    case "${assets_root}":
-                        versionArgs[i] = versionArgs[i].replace("${assets_root}", assetsDir.getAbsolutePath());
-                        break;
-                    case "${game_assets}":
-                        versionArgs[i] = versionArgs[i].replace("${game_assets}", assetsDir.getAbsolutePath());
-                        break;
-                    case "${assets_index_name}":
-                        versionArgs[i] = versionArgs[i].replace("${assets_index_name}", index.getID());
-                        break;
-                    case "${auth_uuid}":
-                        versionArgs[i] = versionArgs[i].replace("${auth_uuid}", u.getSelectedProfile());
-                        break;
-                    case "${auth_access_token}":
-                        versionArgs[i] = versionArgs[i].replace("${auth_access_token}", u.getAccessToken());
-                        break;
-                    case "${version_type}":
-                        versionArgs[i] = versionArgs[i].replace("${version_type}", ver.getType().name());
-                        break;
-                    case "${user_properties}":
-                        versionArgs[i] = versionArgs[i].replace("${user_properties}", "{}");
-                        break;
-                    case "${user_type}":
-                        versionArgs[i] = versionArgs[i].replace("${user_type}", "mojang");
-                        break;
-                    case "${auth_session}":
-                        versionArgs[i] = versionArgs[i].replace("${auth_session}", "token:" + u.getAccessToken() + ':' + u.getSelectedProfile().replace("-", ""));
-                        break;
+                            break;
+                        case "${assets_root}":
+                            versionArgs[i] = versionArgs[i].replace("${assets_root}", assetsDir.getAbsolutePath());
+                            break;
+                        case "${game_assets}":
+                            versionArgs[i] = versionArgs[i].replace("${game_assets}", assetsDir.getAbsolutePath());
+                            break;
+                        case "${assets_index_name}":
+                            versionArgs[i] = versionArgs[i].replace("${assets_index_name}", index.getID());
+                            break;
+                        case "${auth_uuid}":
+                            versionArgs[i] = versionArgs[i].replace("${auth_uuid}", u.getUserID());
+                            break;
+                        case "${auth_access_token}":
+                            versionArgs[i] = versionArgs[i].replace("${auth_access_token}", u.getAccessToken());
+                            break;
+                        case "${version_type}":
+                            versionArgs[i] = versionArgs[i].replace("${version_type}", ver.getType().name());
+                            break;
+                        case "${user_properties}":
+                            versionArgs[i] = versionArgs[i].replace("${user_properties}", "{}");
+                            break;
+                        case "${user_type}":
+                            versionArgs[i] = versionArgs[i].replace("${user_type}", "mojang");
+                            break;
+                        case "${auth_session}":
+                            versionArgs[i] = versionArgs[i].replace("${auth_session}", "token:" + u.getAccessToken() + ':' + u.getSelectedProfile().replace("-", ""));
+                            break;
+                    }
                 }
-            }
+            } catch(Exception ex) { }
             // Comprobar demo y removerlo
             if(versionArgs[i].equals("--demo"))
                 versionArgs[i] = "";
@@ -297,11 +304,16 @@ public class GameLauncher {
                 public void run() {
                     if (!GameLauncher.this.isRunning()) {
                         boolean error;
-                        if (GameLauncher.this.process.exitValue() != 0) {
+                        if (GameLauncher.this.process.exitValue() != 0 && !checkerDetected) {
                             error = true;
                             GameLauncher.this.console.print("Juego parado inesperadamente.");
                         } else {
                             error = false;
+                        }
+                        if(checkerDetected) {
+                            GameLauncher.this.console.print("El AntiCheat ha detectado cambios!");
+                            mainFX.loadAntiCheat(0, "Fallo de Seguridad!");
+                            checker.stop();
                         }
                         GameLauncher.this.console.print("Borrando Directorio de Nativos.");
                         Utils.deleteDirectory(nativesDir);
@@ -314,10 +326,52 @@ public class GameLauncher {
                 }
             };
             timer.schedule(process_status, 0, 25);
+            // Activar comprobador en otro Thread y revizar cada 1 hora
+            antiCheat(3600);
         } catch (IOException ex) {
             ex.printStackTrace(console.getWriter());
             throw new GameLauncherException("El juego ha devuelto un error de Codigo..");
         }
+    }
+
+    public void antiCheat(int time) {
+        if(checker!=null){
+            // Detener proceso de comprobacion anterior
+            checker.stop();
+            checker.destroy();
+        }
+        final AntiCheat anti = new AntiCheat(kernel);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while(true) {
+                        anti.compare();                 // Genera y envia datos al Servidor
+                        if(!anti.isAccept()) {
+                            try {
+                                AntiCheat.removeWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                            } catch (GameLauncherException e) {
+                                console.print(e.getMessage());
+                            }
+                            // Mostrar Mensaje
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(137));
+                                    console.print("Cliente no concuerda con el Servidor.");
+                                }
+                            });
+                            // Cerrar juego
+                            stop();
+                            checkerDetected = true;
+                        }
+                        Thread.sleep(1000*time);
+                    }
+                } catch (InterruptedException e) { }
+            }
+        });
+        t.start();
+        checker = t;
     }
 
     private void pipeOutput(InputStream in) {
@@ -344,4 +398,7 @@ public class GameLauncher {
         return process != null && process.isAlive();
     }
 
+    public void stop() {
+        process.destroy();
+    }
 }

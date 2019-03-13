@@ -69,7 +69,7 @@ public final class Kernel {
     private final Image profileIcons;
 
     //Informacion del Launcher
-    public static final String KERNEL_BUILD_NAME = "1.1.7";
+    public static final String KERNEL_BUILD_NAME = "1.2.0";
     public static final String KERNEL_CREATOR_NAME = "Creado por MacKey";
     private static final int KERNEL_FORMAT = 21;
     private static final int KERNEL_PROFILES_FORMAT = 2;
@@ -557,7 +557,7 @@ public final class Kernel {
         return -1;
     }
 
-    public void promotion(int time) {
+    public void promotion(int time, String msg) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -568,7 +568,7 @@ public final class Kernel {
                             @Override
                             public void run() {
                                 // Update UI here.
-                                showAlert(Alert.AlertType.INFORMATION, "Publicidad", "Done Tarjeta Nauta");
+                                showAlert(Alert.AlertType.WARNING, "Publicidad", msg);
                             }
                         });
                         Thread.sleep(1000*time);

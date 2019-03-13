@@ -132,10 +132,13 @@ public class MainFX {
         slideshowBox.setManaged(false);
         newsTitle.setText("Cargando Noticias...");
         newsText.setText("Por favor espere un Momento..");
-        loadSlideshow();
 
         // Refrescando Login
         refreshSession();
+
+        if (!Kernel.USE_LOCAL) {
+            loadSlideshow();
+        }
 
         // Preparando Lista de Lenguajes
         //languageButton.setText(settings.getSupportedLocales().get(settings.getLocale()));
@@ -153,7 +156,7 @@ public class MainFX {
         resH.setEditable(true);
 
         // Verificar si el Usuario esta OFFLINE
-        if (Kernel.USE_LOCAL) {
+        if (!Kernel.USE_LOCAL) {
             playButton.setMinWidth(290);
         }
 
@@ -200,17 +203,19 @@ public class MainFX {
         };
         Timer resize = new Timer();
         resize.schedule(newsResize, 0, 25);
-        
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Utils.downloadFile(Urls.custonSkins_URL, new File(Kernel.APPLICATION_SKINS_CONFIG, "CustomSkinLoader.json"));
-                } catch (IOException e) {
-                    console.print(e.getMessage());
+
+        if (!Kernel.USE_LOCAL) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Utils.downloadFile(Urls.custonSkins_URL, new File(Kernel.APPLICATION_SKINS_CONFIG, "CustomSkinLoader.json"));
+                    } catch (IOException e) {
+                        console.print(e.getMessage());
+                    }
                 }
-            }
-        });
+            });
+        }
 
         //Close popups on resize
         mainScene.heightProperty().addListener(new ChangeListener<Number>() {
@@ -225,10 +230,6 @@ public class MainFX {
                 MainFX.this.checkPopups();
             }
         });
-    }
-
-    public void showPromotion() {
-        kernel.showAlert(Alert.AlertType.INFORMATION, "Publicidad", "Done Tarjeta Nauta");
     }
 
     /**
@@ -251,7 +252,7 @@ public class MainFX {
     /**
      * Cargar Visual de AntiCheat Status
      */
-    private void loadAntiCheat(int type, String text) {
+    public void loadAntiCheat(int type, String text) {
         Image i = null;
         switch (type) {
             case 0:
@@ -341,7 +342,12 @@ public class MainFX {
                 return false;
             } else {
                 try {
-                    AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                    if(false) {
+                        throw new IOException("ASD");
+                    } else if(false && false) {
+                        throw new GameLauncherException("ASD");
+                    }
+                    //AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -416,16 +422,26 @@ public class MainFX {
             String adsCheck = Urls.urlDataProfileId(profileID);
             String response = Utils.readURL(adsCheck);
             if (!response.isEmpty()) {
-                String[] chunks = response.split(":");
-                console.print(chunks[1]);
-                if(chunks[0].equals("BAN") || chunks[0].equals("NICKBAN") || chunks[0].equals("IP")) {
-                    // Si es de Ban entonces Cierra el Launcher
-                    kernel.showAlert(Alert.AlertType.ERROR, "Baneado del Servidor", chunks[1]);
-                    kernel.exitSafely();
-                    return;
+
+                // Comprobar si hay algun error
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if(!obj.has("error"))
+                        throw new Exception("No hay errores");
+                    else
+                        kernel.showAlert(Alert.AlertType.ERROR, "El Servidor ha devuelto un error", obj.getString   ("error"));
+                } catch(Exception ex) {
+                    String[] chunks = response.split(":");
+                    console.print(chunks[1]);
+                    if(chunks[0].equals("BAN") || chunks[0].equals("NICKBAN") || chunks[0].equals("IP")) {
+                        // Si es de Ban entonces Cierra el Launcher
+                        kernel.showAlert(Alert.AlertType.ERROR, "Baneado del Servidor", chunks[1]);
+                        kernel.exitSafely();
+                        return;
+                    }
+                    // Mostrar Mensaje
+                    kernel.promotion(3600, chunks[1]);     // cada 1 hora enviar Promocion
                 }
-                // Mostrar Mensaje
-                kernel.showAlert(Alert.AlertType.WARNING, null, chunks[1]);
                 console.print("Anuncios Cargados.");
             } else {
                 console.print("No existe Informacion en los Anuncios.");
@@ -496,7 +512,8 @@ public class MainFX {
         forgotPasswordLink.setText(Language.get(97));
         profileName.setPromptText(Language.get(98));
         authenticationLabel.setText(Language.get(99));
-        onlineList();
+        if(!Kernel.USE_LOCAL)
+            onlineList();
         profileRamAssignateLabel.setText(String.valueOf((int) profileRam.getValue()) + " MB");
         if (slides.isEmpty()) {
             newsTitle.setText(Language.get(102));
@@ -1046,10 +1063,9 @@ public class MainFX {
         Thread runThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                // Sistema AntiParches
-                boolean anticheat = loadAntiCheatSystem();
                 //Begin download and game launch task
-                if(!anticheat) return;
+                if(!loadAntiCheatSystem())
+                    return;
                 try {
                     Timer timer = new Timer();
                     timer.schedule(progressTask, 0, 25);
@@ -1876,8 +1892,8 @@ public class MainFX {
                 username.setText("");
                 password.setText("");
                 showLoginPrompt(false);
-                fetchAds();
-
+                if(!Kernel.USE_LOCAL)
+                    fetchAds();
                 texturesLoaded = false;
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
@@ -1911,7 +1927,6 @@ public class MainFX {
                     }
                 });
                 t.start();
-                kernel.promotion(10);
                 refreshData();
             } else {
                 console.print("No hay un usuario seleccionado.");
@@ -1932,7 +1947,8 @@ public class MainFX {
         }*/ finally {
             if (a.isAuthenticated()) {
                 showLoginPrompt(false);
-                fetchAds();
+                if(!Kernel.USE_LOCAL)
+                    fetchAds();
             } else {
                 showLoginPrompt(true);
             }
@@ -1960,7 +1976,8 @@ public class MainFX {
             });
             t.start();
             refreshData();
-            fetchAds();
+            if(!Kernel.USE_LOCAL)
+                fetchAds();
         } catch (AuthenticationException ex) {
             kernel.showAlert(Alert.AlertType.ERROR, Language.get(62), ex.getMessage());
             updateExistingUsers();
@@ -1969,7 +1986,8 @@ public class MainFX {
             kernel.showAlert(Alert.AlertType.ERROR, null, Language.get(139));
             e.printStackTrace();
         }*/
-        onlineList();
+        if(!Kernel.USE_LOCAL)
+            onlineList();
     }
 
     /**
@@ -1985,7 +2003,8 @@ public class MainFX {
             kernel.closeWeb();
             updateExistingUsers();
         }
-        onlineList();
+        if(!Kernel.USE_LOCAL)
+            onlineList();
     }
 
     /**

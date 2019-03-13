@@ -81,7 +81,6 @@ public class Downloader {
         if (!Utils.verifyChecksum(indexJSON, index.getSHA1(), "SHA-1")) {
             while (tries < DOWNLOAD_TRIES) {
                 try {
-                    console.print(index.getURL());
                     Utils.downloadFile(index.getURL(), indexJSON);
                     break;
                 } catch (IOException ex) {
