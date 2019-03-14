@@ -372,11 +372,13 @@ public final class Kernel {
      */
     public void exitSafely() {
         console.print("Cerrando launcher...");
-        if(getAuthentication().getSelectedUser() != null) {
-            try {
-                AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
-            } catch (GameLauncherException e) {
-                console.print(e.getMessage());
+        if(!USE_LOCAL) {
+            if (getAuthentication().getSelectedUser() != null) {
+                try {
+                    AntiCheat.removeWhiteList(getAuthentication().getSelectedUser().getAccessToken());
+                } catch (GameLauncherException e) {
+                    console.print(e.getMessage());
+                }
             }
         }
         saveProfiles();

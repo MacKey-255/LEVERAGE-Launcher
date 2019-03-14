@@ -399,7 +399,6 @@ public class MainFX {
                     });
                     return false;
                 }
-                return true;
             }
         } else {
             Platform.runLater(new Runnable() {
@@ -408,8 +407,8 @@ public class MainFX {
                     loadAntiCheat(0, "Modo OFFLINE");
                 }
             });
-            return true;
         }
+        return true;
     }
 
     /**
@@ -1277,16 +1276,18 @@ public class MainFX {
         }
         Authentication a = kernel.getAuthentication();
         kernel.closeWeb();
-        try {
-            AntiCheat.removeWhiteList(a.getSelectedUser().getAccessToken());
-        } catch (GameLauncherException e) {
-            console.print(e.getMessage());
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    loadAntiCheat(0, "Fallo Añadir Lista Blanca");
-                }
-            });
+        if(!kernel.USE_LOCAL) {
+            try {
+                AntiCheat.removeWhiteList(a.getSelectedUser().getAccessToken());
+            } catch (GameLauncherException e) {
+                console.print(e.getMessage());
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadAntiCheat(0, "Fallo Añadir Lista Blanca");
+                    }
+                });
+            }
         }
         a.setSelectedUser(null);
         kernel.saveProfiles();
@@ -1892,8 +1893,12 @@ public class MainFX {
                 username.setText("");
                 password.setText("");
                 showLoginPrompt(false);
-                if(!Kernel.USE_LOCAL)
+                if(!Kernel.USE_LOCAL) {
                     fetchAds();
+                    playButton.setText(Language.get(12));
+                } else {
+                    playButton.setText(Language.get(79));
+                }
                 texturesLoaded = false;
             } catch (AuthenticationException ex) {
                 kernel.showAlert(Alert.AlertType.ERROR, Language.get(22), ex.getMessage());
