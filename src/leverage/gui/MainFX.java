@@ -342,12 +342,7 @@ public class MainFX {
                 return false;
             } else {
                 try {
-                    if(false) {
-                        throw new IOException("ASD");
-                    } else if(false && false) {
-                        throw new GameLauncherException("ASD");
-                    }
-                    //AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
+                    AntiCheat.addWhiteList(kernel.getAuthentication().getSelectedUser().getAccessToken());
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -1392,9 +1387,7 @@ public class MainFX {
         } else if (source == skinsLabel) {
             skinsLabel.getStyleClass().add("selectedItem");
             selection.select(skinsTab);
-            if (!texturesLoaded) {
-                loadTextures();
-            }
+            loadTextures();
         } else if (source == settingsLabel) {
             settingsLabel.getStyleClass().add("selectedItem");
             selection.select(settingsTab);

@@ -3,7 +3,7 @@ package leverage.util;
 // Clase Administradora de URLS
 
 public class Urls {
-    public static final String leverage = "http://127.0.0.1:8000";        // IP Fija de la Web de LEVERAGE
+    public static final String leverage = "http://10.30.1.31";        // IP Fija de la Web de LEVERAGE
     public static final String media = leverage + "/media";
     public static final String authPath = leverage + "/api/login/";
     public static final String closeath = leverage + "/api/logout/";
