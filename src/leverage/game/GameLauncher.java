@@ -337,8 +337,9 @@ public class GameLauncher {
     public void antiCheat(int time) {
         if(checker!=null){
             // Detener proceso de comprobacion anterior
-            checker.stop();
-            checker.destroy();
+            try {
+                checker.stop();
+            } catch (Exception ignored) {}
         }
         final AntiCheat anti = new AntiCheat(kernel);
         Thread t = new Thread(new Runnable() {

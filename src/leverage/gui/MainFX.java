@@ -565,9 +565,15 @@ public class MainFX {
                         steve = new Image("/leverage/gui/textures/steve.png");
                     }
 
-                    String skinPath = Urls.skinsPathProfileId(selected.getUsername().replace("leverage://", "").toLowerCase());
-                    skin = new Image(Utils.readCachedStream(skinPath));
-                    if (skin == null || skin.getHeight() == 0) {
+                    String skinPath = Urls.skinsPathProfileId(selected.getUsername().replace("leverage://", ""));
+                    console.print(skinPath);
+                    while(true) {
+                        try {
+                            skin = new Image(Utils.readCachedStream(skinPath));
+                            break;
+                        } catch (Exception ignored) { }
+                    }
+                    if (skin == null) {
                         skin = steve;
                     } else if (skin.getHeight() == 0) {
                         skin = alex;
