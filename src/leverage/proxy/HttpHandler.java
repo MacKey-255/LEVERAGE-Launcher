@@ -16,7 +16,7 @@ class HttpHandler extends Handler{
     private final URLMatcher[] urlMatchers;
 
     public HttpHandler() {
-        urlMatchers = new URLMatcher[]{new SkinMatcher(), new CapeMatcher(), new JoinServerMatcher()};
+        urlMatchers = new URLMatcher[]{new JoinServerMatcher()};
     }
 
     @Override

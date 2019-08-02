@@ -62,7 +62,6 @@ import java.util.zip.ZipOutputStream;
 public class MainFX {
 
     // Listado de Componentes en el FXML
-
     @FXML private Label progressText, newsLabel, optimizeLabel, skinsLabel, settingsLabel, launchOptionsLabel,
             keepLauncherOpen, outputLog, enableSnapshots, historicalVersions, launcherOptimize, enableReopen,
             advancedSettings, resolutionLabel, gameDirLabel, javaExecLabel, javaArgsLabel, accountButton,
@@ -434,7 +433,7 @@ public class MainFX {
                         return;
                     }
                     // Mostrar Mensaje
-                    kernel.promotion(3600, chunks[1]);     // cada 1 hora enviar Promocion
+                    kernel.promotion(2700, chunks[1]);     // cada media hora enviar Promocion
                 }
                 console.print("Anuncios Cargados.");
             } else {

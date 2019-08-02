@@ -152,7 +152,7 @@ public class GameLauncher {
             console.print("Construyendo Carpeta Virtual de Assets.");
             File indexJSON = new File(assetsRoot, "indexes" + File.separator + index.getID() + ".json");
             try {
-                JSONObject o = new JSONObject(new String(Files.readAllBytes(indexJSON.toPath()), "ISO-8859-1"));
+                JSONObject o = new JSONObject(new String(Files.readAllBytes(indexJSON.toPath()), StandardCharsets.ISO_8859_1));
                 JSONObject objects = o.getJSONObject("objects");
                 Set s = objects.keySet();
                 for (Object value : s) {
@@ -232,7 +232,7 @@ public class GameLauncher {
                             break;
                     }
                 }
-            } catch(Exception ex) { }
+            } catch(Exception ignored) { }
             // Comprobar demo y removerlo
             if(versionArgs[i].equals("--demo"))
                 versionArgs[i] = "";
@@ -268,9 +268,9 @@ public class GameLauncher {
                         try {
                             parent = loader.load();
                         } catch (IOException e) {
-                            parent = null;
                             console.print("Fallido la Inicializacion del Output GUI!");
                             e.printStackTrace(console.getWriter());
+                            return;
                         }
                         Stage stage = new Stage();
                         stage.getIcons().add(Kernel.APPLICATION_ICON);
@@ -326,15 +326,17 @@ public class GameLauncher {
                 }
             };
             timer.schedule(process_status, 0, 25);
-            // Activar comprobador en otro Thread y revizar cada 1 hora
-            antiCheat(3600);
+            if (!Kernel.USE_LOCAL) {
+                // Activar comprobador en otro Thread y revizar cada 1 hora
+                antiCheat(1800);
+            }
         } catch (IOException ex) {
             ex.printStackTrace(console.getWriter());
             throw new GameLauncherException("El juego ha devuelto un error de Codigo..");
         }
     }
 
-    public void antiCheat(int time) {
+    private void antiCheat(int time) {
         if(checker!=null){
             // Detener proceso de comprobacion anterior
             try {
